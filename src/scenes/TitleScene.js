@@ -71,9 +71,20 @@ export default class TitleScene extends Phaser.Scene {
             this.scene.start('GameScene');
         });
 
+        // Start at Level 80 button
+        const lv80Btn = this.add.rectangle(w/2, h/2 + 230, 200, 50, 0xaa00ff).setInteractive();
+        const lv80Txt = this.add.text(w/2, h/2 + 230, 'START AT LV 80', { fontSize: '18px', color: 'black' }).setOrigin(0.5);
+
+        lv80Btn.on('pointerdown', () => {
+            const lv80Stats = SaveSystem.calculateStatsForLevel(80);
+            SaveSystem.save(lv80Stats);
+            this.scene.start('UIScene');
+            this.scene.start('GameScene');
+        });
+
         // Reset Stats button
-        const resetBtn = this.add.rectangle(w/2, h/2 + 230, 200, 50, 0xff3333).setInteractive();
-        const resetTxt = this.add.text(w/2, h/2 + 230, 'RESET STATS', { fontSize: '18px', color: 'black' }).setOrigin(0.5);
+        const resetBtn = this.add.rectangle(w/2, h/2 + 295, 200, 50, 0xff3333).setInteractive();
+        const resetTxt = this.add.text(w/2, h/2 + 295, 'RESET STATS', { fontSize: '18px', color: 'black' }).setOrigin(0.5);
 
         resetBtn.on('pointerdown', () => {
             SaveSystem.reset();
