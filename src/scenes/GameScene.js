@@ -34,13 +34,15 @@ export default class GameScene extends Phaser.Scene {
         this.bullets = this.physics.add.group({ defaultKey: 'bullet', maxSize: 50 });
         this.xpItems = this.physics.add.group({ defaultKey: 'xp', maxSize: 50 });
 
-        // 4. Entities
-        this.player = new Player(this, this.scale.width / 2, 710, this.stats);
+        // 4. Entities - position based on screen height
+        const playerY = Math.min(this.scale.height - 90, 710); // 90px from bottom or max 710
+        this.player = new Player(this, this.scale.width / 2, playerY, this.stats);
         this.enemyManager = new EnemyManager(this);
         this.powerupManager = new PowerupManager(this);
 
-        // 5. Inputs (Joystick)
-        this.joystick = new Joystick(this, this.scale.width - 90, 710);
+        // 5. Inputs (Joystick) - position based on screen height
+        const joystickY = Math.min(this.scale.height - 90, 710); // 90px from bottom or max 710
+        this.joystick = new Joystick(this, this.scale.width - 90, joystickY);
 
         // 6. Collisions
         this.physics.add.overlap(this.bullets, this.enemyManager.enemies,
