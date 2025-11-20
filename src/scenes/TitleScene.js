@@ -5,6 +5,9 @@ export default class TitleScene extends Phaser.Scene {
     constructor() { super({ key: 'TitleScene' }); }
 
     preload() {
+        // Load logo (from public folder, respects base path in production)
+        this.load.image('logo', 'assets/od-logo.png');
+
         // Generate textures once globally here
         const make = (k, c, r) => {
             if(this.textures.exists(k)) return;
@@ -25,7 +28,11 @@ export default class TitleScene extends Phaser.Scene {
         // Load player stats
         const stats = SaveSystem.load();
 
-        this.add.text(w/2, h/2 - 150, 'ORBITAL DECAY', { fontSize: '40px', color: '#0f0' }).setOrigin(0.5);
+        // Display logo
+        const logo = this.add.image(w/2, 120, 'logo');
+        // Scale logo to fit width (with padding)
+        const logoScale = Math.min((w - 40) / logo.width, 150 / logo.height);
+        logo.setScale(logoScale);
 
         // Display player stats
         const statsText = [
