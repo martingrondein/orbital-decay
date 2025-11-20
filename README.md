@@ -76,6 +76,42 @@ npm run build
 npm run preview
 ```
 
+## Deployment
+
+### GitHub Pages (Automatic)
+
+This project includes a GitHub Actions workflow for automatic deployment:
+
+1. **Enable GitHub Pages:**
+   - Go to your repository Settings → Pages
+   - Under "Build and deployment", select **GitHub Actions** as the source
+
+2. **Push to main branch:**
+   ```bash
+   git add .
+   git commit -m "feat: add deployment workflow"
+   git push origin main
+   ```
+
+3. **Monitor deployment:**
+   - Go to the "Actions" tab in your repository
+   - Wait for the workflow to complete
+   - Your game will be live at `https://<username>.github.io/<repository>/`
+
+### Manual Deployment
+
+If you prefer manual deployment:
+
+```bash
+# Build the project
+npm run build
+
+# Deploy the 'dist' folder to your hosting provider
+# The dist folder contains all the bundled files
+```
+
+**Important:** Always deploy the `dist` folder contents, not the source files. The browser cannot resolve bare module imports like `import Phaser from 'phaser'` without bundling.
+
 ## Controls
 
 ### Mobile
