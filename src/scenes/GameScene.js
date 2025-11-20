@@ -40,9 +40,8 @@ export default class GameScene extends Phaser.Scene {
         this.enemyManager = new EnemyManager(this);
         this.powerupManager = new PowerupManager(this);
 
-        // 5. Inputs (Joystick) - position based on screen height
-        const joystickY = Math.min(this.scale.height - 90, 710); // 90px from bottom or max 710
-        this.joystick = new Joystick(this, this.scale.width - 90, joystickY);
+        // 5. Inputs (Dynamic Joystick - appears at touch location)
+        this.joystick = new Joystick(this, 0, 0); // Initial position doesn't matter
 
         // 6. Collisions
         this.physics.add.overlap(this.bullets, this.enemyManager.enemies,

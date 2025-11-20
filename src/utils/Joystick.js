@@ -17,15 +17,25 @@ export default class Joystick {
     createVisuals() {
         this.base = this.scene.add.circle(this.x, this.y, this.radius, 0x888888, 0.5).setDepth(100);
         this.knob = this.scene.add.circle(this.x, this.y, this.radius * 0.5, 0xffffff, 0.8).setDepth(100);
+
+        // Hide joystick initially
+        this.base.setVisible(false);
+        this.knob.setVisible(false);
     }
 
     setupEvents() {
-        // Touch zone logic (optional: restrict to specific area)
+        // Dynamic joystick - appears wherever user touches
         this.scene.input.on('pointerdown', (pointer) => {
-            if (this.isHit(pointer)) {
-                this.active = true;
-                this.updateKnob(pointer);
-            }
+            // Position joystick at touch location
+            this.x = pointer.x;
+            this.y = pointer.y;
+            this.base.setPosition(this.x, this.y);
+            this.knob.setPosition(this.x, this.y);
+
+            // Show and activate
+            this.base.setVisible(true);
+            this.knob.setVisible(true);
+            this.active = true;
         });
 
         this.scene.input.on('pointermove', (pointer) => {
@@ -69,6 +79,10 @@ export default class Joystick {
         this.valX = 0;
         this.valY = 0;
         this.knob.setPosition(this.x, this.y);
+
+        // Hide joystick when released
+        this.base.setVisible(false);
+        this.knob.setVisible(false);
     }
 
     // Getter for the update loop
