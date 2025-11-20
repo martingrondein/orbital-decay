@@ -1,3 +1,4 @@
+import Phaser from 'phaser';
 import { GameBalance } from '../config/GameBalance.js';
 
 export default class UIScene extends Phaser.Scene {

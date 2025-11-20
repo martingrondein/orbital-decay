@@ -1,3 +1,4 @@
+import Phaser from 'phaser';
 import Player from '../entities/Player.js';
 import EnemyManager from '../managers/EnemyManager.js';
 import Background from '../systems/Background.js';

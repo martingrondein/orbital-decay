@@ -1,3 +1,4 @@
+import Phaser from 'phaser';
 import { AudioEngine } from '../systems/AudioEngine.js';
 import { GameBalance } from '../config/GameBalance.js';
 
