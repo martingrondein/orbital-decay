@@ -110,6 +110,9 @@ export default class GameScene extends Phaser.Scene {
     }
 
     collectXP(xpItem) {
+        // Create collection effect before disabling
+        this.createCollectionEffect(xpItem.x, xpItem.y);
+
         xpItem.disableBody(true, true);
         this.stats.xp += (GameBalance.progression.xpPerPickup * this.stats.xpMult);
         AudioEngine.play('xp');
@@ -118,6 +121,36 @@ export default class GameScene extends Phaser.Scene {
             this.levelUp();
         }
         this.events.emit('updateXP', this.stats.xp, this.stats.reqXp);
+    }
+
+    createCollectionEffect(x, y) {
+        // Create a burst of small particles
+        for (let i = 0; i < 6; i++) {
+            const angle = (Math.PI * 2 / 6) * i;
+            const particle = this.add.circle(x, y, 4, 0x00ffff, 1).setDepth(50);
+
+            this.tweens.add({
+                targets: particle,
+                x: x + Math.cos(angle) * 30,
+                y: y + Math.sin(angle) * 30,
+                scale: 0,
+                alpha: 0,
+                duration: 300,
+                ease: 'Power2',
+                onComplete: () => particle.destroy()
+            });
+        }
+
+        // Create a scaling/fading circle
+        const circle = this.add.circle(x, y, 8, 0x00ffff, 0.6).setDepth(50);
+        this.tweens.add({
+            targets: circle,
+            scale: 2.5,
+            alpha: 0,
+            duration: 250,
+            ease: 'Power2',
+            onComplete: () => circle.destroy()
+        });
     }
 
     collectPowerup(powerup) {

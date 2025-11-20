@@ -71,9 +71,44 @@ export default class EnemyManager {
         });
 
         if (enemy.hp <= 0) {
+            // Create explosion effect
+            this.createExplosion(enemy.x, enemy.y);
+
             this.scene.onEnemyKilled(enemy.x, enemy.y);
             enemy.disableBody(true, true);
             AudioEngine.play('explode');
+        }
+    }
+
+    createExplosion(x, y) {
+        // Create multiple expanding circles for explosion effect
+        for (let i = 0; i < 3; i++) {
+            const circle = this.scene.add.circle(x, y, 5, 0xff0000, 0.8).setDepth(50);
+
+            this.scene.tweens.add({
+                targets: circle,
+                radius: 40 + (i * 10),
+                alpha: 0,
+                duration: 300 + (i * 100),
+                ease: 'Power2',
+                onComplete: () => circle.destroy()
+            });
+        }
+
+        // Add some particles
+        for (let i = 0; i < 8; i++) {
+            const angle = (Math.PI * 2 / 8) * i;
+            const particle = this.scene.add.circle(x, y, 3, 0xffaa00, 1).setDepth(50);
+
+            this.scene.tweens.add({
+                targets: particle,
+                x: x + Math.cos(angle) * 50,
+                y: y + Math.sin(angle) * 50,
+                alpha: 0,
+                duration: 400,
+                ease: 'Power2',
+                onComplete: () => particle.destroy()
+            });
         }
     }
 
