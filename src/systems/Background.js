@@ -26,16 +26,16 @@ export default class Background {
         const texKey = `bg_layer_${scrollFactor}`;
         const rt = this.scene.make.renderTexture({ width: 450, height: 800 }, false);
 
+        // Draw stars using drawFrame
         for(let i=0; i<count; i++) {
             const x = Phaser.Math.Between(0, 450);
             const y = Phaser.Math.Between(0, 800);
-            rt.draw('star', x, y);
+            rt.drawFrame('star', 0, x, y, layerAlpha);
         }
         rt.saveTexture(texKey);
 
         const tile = this.scene.add.tileSprite(225, 400, 450, 800, texKey);
         tile.setDepth(-10); // Behind everything
-        tile.setAlpha(layerAlpha); // Set opacity for entire layer for depth effect
         this.layers.push({ sprite: tile, speed: scrollFactor });
     }
 
