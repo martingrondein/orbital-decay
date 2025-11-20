@@ -1,3 +1,5 @@
+import { GameBalance } from '../config/GameBalance.js';
+
 export default class UIScene extends Phaser.Scene {
     constructor() { super({ key: 'UIScene', active: false }); }
 
@@ -39,21 +41,28 @@ export default class UIScene extends Phaser.Scene {
         const con = this.add.container(0,0);
 
         const bg = this.add.rectangle(w/2, h/2, w, h, 0x000000, 0.9);
-        const title = this.add.text(w/2, h/2-100, 'LEVEL UP!', { fontSize: '40px', color: '#ff0' }).setOrigin(0.5);
-        const info = this.add.text(w/2, h/2,
-            `Stats Saved!\nHP: ${stats.maxHealth}\nSpeed: ${stats.moveSpeed}`,
-            { fontSize: '24px', align: 'center' }
+        const title = this.add.text(w/2, h/2-150, 'LEVEL UP!', { fontSize: '40px', color: '#ff0' }).setOrigin(0.5);
+
+        const levelText = this.add.text(w/2, h/2-90, `Level ${stats.level}`, { fontSize: '24px', color: '#0ff' }).setOrigin(0.5);
+
+        const info = this.add.text(w/2, h/2-20,
+            `Stats Increased:\n` +
+            `Health: ${stats.maxHealth} (+${GameBalance.levelUp.healthIncrease})\n` +
+            `Speed: ${stats.moveSpeed} (+${GameBalance.levelUp.speedIncrease})\n` +
+            `Fire Rate: ${stats.fireRateMs}ms (-${GameBalance.levelUp.fireRateDecrease}ms)\n` +
+            `Damage: x${stats.damageMult.toFixed(1)} (+${GameBalance.levelUp.damageIncrease})`,
+            { fontSize: '20px', align: 'center', lineSpacing: 5, color: '#0f0' }
         ).setOrigin(0.5);
 
-        const btn = this.add.rectangle(w/2, h/2+100, 200, 50, 0x00ff00).setInteractive();
-        const btnTxt = this.add.text(w/2, h/2+100, 'CONTINUE', { color: 'black' }).setOrigin(0.5);
+        const btn = this.add.rectangle(w/2, h/2+130, 200, 50, 0x00ff00).setInteractive();
+        const btnTxt = this.add.text(w/2, h/2+130, 'CONTINUE', { color: 'black', fontSize: '20px' }).setOrigin(0.5);
 
         btn.on('pointerdown', () => {
             con.destroy();
             onResume();
         });
 
-        con.add([bg, title, info, btn, btnTxt]);
+        con.add([bg, title, levelText, info, btn, btnTxt]);
     }
 
     showGameOver(finalScore) {
