@@ -44,12 +44,33 @@ export default class TitleScene extends Phaser.Scene {
             lineSpacing: 5
         }).setOrigin(0.5);
 
-        const btn = this.add.rectangle(w/2, h/2 + 120, 200, 60, 0x00aaff).setInteractive();
-        const txt = this.add.text(w/2, h/2 + 120, 'START', { fontSize: '24px', color: 'black' }).setOrigin(0.5);
+        // START button
+        const startBtn = this.add.rectangle(w/2, h/2 + 100, 200, 50, 0x00aaff).setInteractive();
+        const startTxt = this.add.text(w/2, h/2 + 100, 'START', { fontSize: '24px', color: 'black' }).setOrigin(0.5);
 
-        btn.on('pointerdown', () => {
-            this.scene.start('UIScene'); // Start UI first to set up event listeners
+        startBtn.on('pointerdown', () => {
+            this.scene.start('UIScene');
             this.scene.start('GameScene');
+        });
+
+        // Start at Level 40 button
+        const lv40Btn = this.add.rectangle(w/2, h/2 + 165, 200, 50, 0xff9900).setInteractive();
+        const lv40Txt = this.add.text(w/2, h/2 + 165, 'START AT LV 40', { fontSize: '18px', color: 'black' }).setOrigin(0.5);
+
+        lv40Btn.on('pointerdown', () => {
+            const lv40Stats = SaveSystem.calculateStatsForLevel(40);
+            SaveSystem.save(lv40Stats);
+            this.scene.start('UIScene');
+            this.scene.start('GameScene');
+        });
+
+        // Reset Stats button
+        const resetBtn = this.add.rectangle(w/2, h/2 + 230, 200, 50, 0xff3333).setInteractive();
+        const resetTxt = this.add.text(w/2, h/2 + 230, 'RESET STATS', { fontSize: '18px', color: 'black' }).setOrigin(0.5);
+
+        resetBtn.on('pointerdown', () => {
+            SaveSystem.reset();
+            this.scene.restart();
         });
     }
 }

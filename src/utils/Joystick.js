@@ -1,5 +1,5 @@
 export default class Joystick {
-    constructor(scene, x, y, radius = 50) {
+    constructor(scene, x, y, radius = 70) {
         this.scene = scene;
         this.x = x;
         this.y = y;

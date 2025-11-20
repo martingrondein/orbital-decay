@@ -30,7 +30,7 @@ export default class GameScene extends Phaser.Scene {
         this.enemyManager = new EnemyManager(this);
 
         // 5. Inputs (Joystick)
-        this.joystick = new Joystick(this, this.scale.width - 70, 710, 50);
+        this.joystick = new Joystick(this, this.scale.width - 90, 710);
 
         // 6. Collisions
         this.physics.add.overlap(this.bullets, this.enemyManager.enemies,
