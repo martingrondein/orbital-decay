@@ -29,6 +29,9 @@ orbital-decay/
 ├── index.html              # Entry point
 ├── package.json            # Dependencies and scripts
 ├── vite.config.js          # Vite configuration (base path for deployment)
+├── public/                 # Static assets (copied to dist during build)
+│   └── assets/
+│       └── od-logo.png     # Game logo
 ├── src/
 │   ├── main.js            # Game configuration and initialization
 │   ├── config/            # Game balance configuration
