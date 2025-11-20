@@ -10,7 +10,7 @@ A mobile-first vertical scrolling shoot 'em up where you fight to survive in dec
 
 ### Core Gameplay
 - **Auto-firing Combat** - Focus on movement and dodging
-- **Progressive Difficulty** - Enemy health scales with player level
+- **Progressive Difficulty** - Player power scales through permanent upgrades
 - **XP & Leveling System** - Permanent stat upgrades
 - **Persistent Progression** - Save system using localStorage
 
@@ -150,7 +150,7 @@ npm run build
 ### Enemy Behavior
 - **Random Spawning** - Every 800ms at random X position
 - **Homing Bullets** - Enemies fire tracking projectiles
-- **Scaling HP** - `2 + (level * 0.5)` health per enemy
+- **Static HP** - 2 health per enemy (no scaling)
 
 ## Development
 

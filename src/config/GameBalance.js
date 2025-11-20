@@ -35,9 +35,8 @@ export const GameBalance = {
         velocityX: { min: -25, max: 25 },
         velocityY: { min: 50, max: 100 },
 
-        // Health scaling
+        // Health (static, no scaling)
         baseHealth: 2,
-        healthScalingPerLevel: 0.5,
 
         // Bullets
         bulletSpeed: 300,

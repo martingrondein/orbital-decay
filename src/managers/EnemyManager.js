@@ -39,9 +39,7 @@ export default class EnemyManager {
                 Phaser.Math.Between(GameBalance.enemy.velocityX.min, GameBalance.enemy.velocityX.max),
                 Phaser.Math.Between(GameBalance.enemy.velocityY.min, GameBalance.enemy.velocityY.max)
             );
-            e.hp = GameBalance.enemy.baseHealth + Math.floor(
-                this.scene.stats.level * GameBalance.enemy.healthScalingPerLevel
-            );
+            e.hp = GameBalance.enemy.baseHealth;
         }
     }
 
