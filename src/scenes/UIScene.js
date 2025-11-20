@@ -89,12 +89,48 @@ export default class UIScene extends Phaser.Scene {
             'firerate': '#ffff00'
         };
 
-        this.powerupText.setText(names[type]);
-        this.powerupText.setColor(colors[type]);
+        this.powerupType = type;
+        this.powerupName = names[type];
+        this.powerupColor = colors[type];
+        this.powerupTimeLeft = 15;
+
+        // Update text with countdown
+        this.powerupText.setText(`${this.powerupName} (${this.powerupTimeLeft}s)`);
+        this.powerupText.setColor(this.powerupColor);
         this.powerupText.setVisible(true);
+
+        // Clear any existing countdown timer
+        if (this.powerupCountdownTimer) {
+            this.powerupCountdownTimer.remove();
+        }
+
+        // Start countdown timer (updates every second)
+        this.powerupCountdownTimer = this.time.addEvent({
+            delay: 1000,
+            callback: this.updatePowerupCountdown,
+            callbackScope: this,
+            loop: true
+        });
+    }
+
+    updatePowerupCountdown() {
+        this.powerupTimeLeft--;
+
+        if (this.powerupTimeLeft > 0) {
+            this.powerupText.setText(`${this.powerupName} (${this.powerupTimeLeft}s)`);
+        } else {
+            // Time's up, this will be called right before hidePowerup
+            this.powerupText.setText(`${this.powerupName} (0s)`);
+        }
     }
 
     hidePowerup() {
+        // Stop countdown timer
+        if (this.powerupCountdownTimer) {
+            this.powerupCountdownTimer.remove();
+            this.powerupCountdownTimer = null;
+        }
+
         this.powerupText.setVisible(false);
     }
 
