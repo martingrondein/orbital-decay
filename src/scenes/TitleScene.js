@@ -13,7 +13,7 @@ export default class TitleScene extends Phaser.Scene {
         };
         make('player', 0x00ff00, 20);
         make('bullet', 0xffff00, 5);
-        make('enemy', 0xff0000, 20);
+        make('enemy', 0xffffff, 20); // White texture, will be tinted red
         make('ebullet', 0xffaa00, 6);
         make('xp', 0x00ffff, 8);
     }
