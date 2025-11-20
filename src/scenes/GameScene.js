@@ -106,6 +106,7 @@ export default class GameScene extends Phaser.Scene {
         this.player.currentHealth = this.stats.maxHealth;
         this.stats.moveSpeed += 10;
         this.stats.fireRateMs = Math.max(50, this.stats.fireRateMs - 10);
+        this.stats.damageMult += 0.1;
 
         SaveSystem.save(this.stats); // Save progress immediately
 
