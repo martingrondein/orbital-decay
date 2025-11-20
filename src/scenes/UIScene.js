@@ -166,7 +166,19 @@ export default class UIScene extends Phaser.Scene {
             onResume();
         });
 
-        con.add([bg, title, levelText, info, btn, btnTxt]);
+        // Save & Exit button
+        const exitBtn = this.add.rectangle(w/2, h/2+200, 200, 50, 0xff9900).setInteractive();
+        const exitTxt = this.add.text(w/2, h/2+200, 'SAVE & EXIT RUN', { color: 'black', fontSize: '18px' }).setOrigin(0.5);
+
+        exitBtn.on('pointerdown', () => {
+            con.destroy();
+            // Stats already saved in levelUp(), just exit to title
+            this.scene.stop('UIScene');
+            this.scene.stop('GameScene');
+            this.scene.start('TitleScene');
+        });
+
+        con.add([bg, title, levelText, info, btn, btnTxt, exitBtn, exitTxt]);
     }
 
     showGameOver(finalScore, isNewHighScore = false) {
