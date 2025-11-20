@@ -45,7 +45,10 @@ export default class Background {
             // Occasional colored stars
             const tint = Math.random() < 0.85 ? 0xffffff : Phaser.Utils.Array.GetRandom(colors);
 
-            rt.draw(starKey, x, y, alpha, tint);
+            // Create temporary sprite to draw with alpha and tint
+            const tempSprite = this.scene.add.sprite(x, y, starKey).setAlpha(alpha).setTint(tint);
+            rt.draw(tempSprite, x, y);
+            tempSprite.destroy();
         }
         rt.saveTexture(texKey);
 
