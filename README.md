@@ -1,6 +1,6 @@
 # Orbital Decay
 
-A mobile-first vertical scrolling shoot 'em up built with **Phaser 3** and modern ES6 modules. Features procedurally generated assets, persistent progression, and a clean modular architecture.
+A mobile-first vertical scrolling shoot 'em up where you fight to survive in decaying orbital space. Built with **Phaser 3** and modern ES6 modules, featuring procedurally generated assets, persistent progression, and a clean modular architecture.
 
 ![Phaser 3](https://img.shields.io/badge/Phaser-3.90-brightgreen)
 ![Vite](https://img.shields.io/badge/Vite-7.0-646CFF)
@@ -25,11 +25,13 @@ A mobile-first vertical scrolling shoot 'em up built with **Phaser 3** and moder
 ## Project Structure
 
 ```
-shmup1/
+orbital-decay/
 ├── index.html              # Entry point
 ├── package.json            # Dependencies and scripts
 ├── src/
 │   ├── main.js            # Game configuration and initialization
+│   ├── config/            # Game balance configuration
+│   │   └── GameBalance.js # Centralized gameplay values
 │   ├── scenes/            # Game scenes
 │   │   ├── TitleScene.js  # Menu and texture generation
 │   │   ├── GameScene.js   # Main gameplay loop
@@ -90,19 +92,21 @@ npm run preview
 1. **Defeat Enemies** - Earn score and XP drops
 2. **Collect XP Orbs** - Fill the blue XP bar
 3. **Level Up** - Gain permanent stat increases:
-   - Max Health +20
+   - Max Health +10
    - Move Speed +10
    - Fire Rate +10ms faster (min 50ms)
+   - Damage +0.1x multiplier
 4. **Stats Persist** - Progress saved automatically on death
 
 ### Stats Overview
 
 | Stat | Starting Value | Per Level | Cap |
 |------|----------------|-----------|-----|
-| Health | 100 | +20 | ∞ |
+| Health | 10 | +10 | ∞ |
 | Speed | 200 | +10 | ∞ |
-| Fire Rate | 200ms | -10ms | 50ms |
-| Damage | 1x | - | - |
+| Fire Rate | 1000ms | -10ms | 50ms |
+| Damage | 1.0x | +0.1x | ∞ |
+| XP Mult | 1.0x | - | - |
 
 ### Enemy Behavior
 - **Random Spawning** - Every 800ms at random X position
@@ -146,10 +150,12 @@ const config = {
 ```
 
 #### Modify Game Balance
-- **Starting Stats** - Edit `src/systems/SaveSystem.js:4-12`
-- **Enemy Spawn Rate** - Edit `src/managers/EnemyManager.js:10`
-- **Level Up Bonuses** - Edit `src/scenes/GameScene.js:105-109`
-- **Screen Size** - Edit `src/main.js:8-10`
+All gameplay values are centralized in `src/config/GameBalance.js`:
+- **Starting Stats** - Edit `GameBalance.player`
+- **Level Up Bonuses** - Edit `GameBalance.levelUp`
+- **Enemy Behavior** - Edit `GameBalance.enemy`
+- **XP & Scoring** - Edit `GameBalance.progression`
+- **Screen Size** - Edit `src/main.js:7-8`
 
 ### Code Quality
 - **ES6 Modules** - All files use `import`/`export`
