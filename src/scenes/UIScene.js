@@ -27,6 +27,23 @@ export default class UIScene extends Phaser.Scene {
         this.hpBar = this.add.rectangle(10, h - 62, 1, 15, 0xff0000).setOrigin(0).setDepth(100);
         this.xpBar = this.add.rectangle(10, h - 37, 1, 15, 0x00aaff).setOrigin(0).setDepth(100);
 
+        // Bar text labels
+        this.hpText = this.add.text(w/2, h - 54.5, '', {
+            fontSize: '12px',
+            color: '#fff',
+            fontStyle: 'bold',
+            stroke: '#000',
+            strokeThickness: 3
+        }).setOrigin(0.5).setDepth(101);
+
+        this.xpText = this.add.text(w/2, h - 29.5, '', {
+            fontSize: '12px',
+            color: '#fff',
+            fontStyle: 'bold',
+            stroke: '#000',
+            strokeThickness: 3
+        }).setOrigin(0.5).setDepth(101);
+
         this.scoreText = this.add.text(10, 10, 'Score: 0', { fontSize: '20px' }).setDepth(100);
         this.lvlText = this.add.text(w-10, 10, 'Lvl: 1', { fontSize: '20px' }).setOrigin(1,0).setDepth(100);
     }
@@ -39,10 +56,12 @@ export default class UIScene extends Phaser.Scene {
 
     updateHealth(curr, max) {
         this.hpBar.width = (this.scale.width - 20) * Math.max(0, curr/max);
+        this.hpText.setText(`HP: ${Math.floor(curr)}/${max}`);
     }
 
     updateXP(curr, req) {
         this.xpBar.width = (this.scale.width - 20) * Math.max(0, curr/req);
+        this.xpText.setText(`XP: ${Math.floor(curr)}/${req}`);
     }
 
     showLevelUp(stats, onResume) {
