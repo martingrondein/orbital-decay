@@ -52,6 +52,12 @@ export default class TitleScene extends Phaser.Scene {
         const logoScale = Math.min((w - 40) / logo.width, 150 / logo.height);
         logo.setScale(logoScale);
 
+        // Display version number
+        this.add.text(w - 10, h - 10, 'v1.0.0', {
+            fontSize: '16px',
+            color: '#888888'
+        }).setOrigin(1, 1);
+
         // Display high score
         const highScore = SaveSystem.loadHighScore();
         this.add.text(w/2, 190, `High Score: ${highScore}`, {
