@@ -17,4 +17,13 @@ const config = {
     scene: [TitleScene, GameScene, UIScene]
 };
 
-new Phaser.Game(config);
+const game = new Phaser.Game(config);
+
+// Hide loader once game is ready
+game.events.once('ready', () => {
+    const loader = document.getElementById('loader');
+    if (loader) {
+        loader.classList.add('hidden');
+        setTimeout(() => loader.remove(), 500); // Remove after fade out
+    }
+});
