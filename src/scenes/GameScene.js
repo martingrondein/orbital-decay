@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import Player from '../entities/Player.js';
 import EnemyManager from '../managers/EnemyManager.js';
+import PowerupManager from '../managers/PowerupManager.js';
 import Background from '../systems/Background.js';
 import { SaveSystem } from '../systems/SaveSystem.js';
 import { AudioEngine } from '../systems/AudioEngine.js';
@@ -17,6 +18,12 @@ export default class GameScene extends Phaser.Scene {
         this.score = 0;
         this.isGameOver = false;
 
+        // Powerup tracking
+        this.activePowerupType = null;
+        this.activePowerupTimer = null;
+        this.baseDamageMult = this.stats.damageMult;
+        this.baseFireRateMs = this.stats.fireRateMs;
+
         // 2. Systems
         this.background = new Background(this);
         this.events.emit('startUI', this.stats); // Notify UIScene
@@ -28,6 +35,7 @@ export default class GameScene extends Phaser.Scene {
         // 4. Entities
         this.player = new Player(this, this.scale.width / 2, 710, this.stats);
         this.enemyManager = new EnemyManager(this);
+        this.powerupManager = new PowerupManager(this);
 
         // 5. Inputs (Joystick)
         this.joystick = new Joystick(this, this.scale.width - 90, 710);
@@ -44,6 +52,9 @@ export default class GameScene extends Phaser.Scene {
 
         this.physics.add.overlap(this.player, this.enemyManager.enemyBullets,
             (p, b) => { b.disableBody(true,true); this.handlePlayerHit(5); });
+
+        this.physics.add.overlap(this.player, this.powerupManager.powerups,
+            (p, powerup) => this.collectPowerup(powerup));
     }
 
     update(time, delta) {
@@ -52,6 +63,7 @@ export default class GameScene extends Phaser.Scene {
         this.background.update();
         this.player.update(time, this.joystick.getData());
         this.enemyManager.cleanup();
+        this.powerupManager.cleanup();
 
         // Cleanup bullets/XP
         [this.bullets, this.xpItems].forEach(g => {
@@ -97,6 +109,66 @@ export default class GameScene extends Phaser.Scene {
         this.events.emit('updateXP', this.stats.xp, this.stats.reqXp);
     }
 
+    collectPowerup(powerup) {
+        const type = powerup.powerupType;
+        powerup.disableBody(true, true);
+
+        // Clear any existing powerup
+        if (this.activePowerupTimer) {
+            this.activePowerupTimer.remove();
+            this.clearPowerupEffect(this.activePowerupType);
+        }
+
+        // Apply new powerup
+        this.activePowerupType = type;
+        this.powerupManager.setActivePowerup(type);
+        this.applyPowerupEffect(type);
+
+        AudioEngine.play('xp'); // Reuse XP sound
+
+        // Notify UI
+        this.events.emit('powerupActivated', type);
+
+        // Set timer to clear after 15 seconds
+        this.activePowerupTimer = this.time.delayedCall(15000, () => {
+            this.clearPowerupEffect(type);
+            this.activePowerupType = null;
+            this.activePowerupTimer = null;
+            this.powerupManager.clearActivePowerup();
+            this.events.emit('powerupExpired');
+        });
+    }
+
+    applyPowerupEffect(type) {
+        switch(type) {
+            case 'spray':
+                this.player.sprayShot = true;
+                break;
+            case 'damage':
+                this.baseDamageMult = this.stats.damageMult;
+                this.stats.damageMult *= 2;
+                break;
+            case 'firerate':
+                this.baseFireRateMs = this.stats.fireRateMs;
+                this.stats.fireRateMs = Math.max(50, Math.floor(this.stats.fireRateMs / 2));
+                break;
+        }
+    }
+
+    clearPowerupEffect(type) {
+        switch(type) {
+            case 'spray':
+                this.player.sprayShot = false;
+                break;
+            case 'damage':
+                this.stats.damageMult = this.baseDamageMult;
+                break;
+            case 'firerate':
+                this.stats.fireRateMs = this.baseFireRateMs;
+                break;
+        }
+    }
+
     levelUp() {
         AudioEngine.play('levelup');
         this.stats.level++;
@@ -112,6 +184,10 @@ export default class GameScene extends Phaser.Scene {
             this.stats.fireRateMs - GameBalance.levelUp.fireRateDecrease
         );
         this.stats.damageMult += GameBalance.levelUp.damageIncrease;
+
+        // Update base values for powerup calculations
+        this.baseDamageMult = this.stats.damageMult;
+        this.baseFireRateMs = this.stats.fireRateMs;
 
         SaveSystem.save(this.stats); // Save progress immediately
 

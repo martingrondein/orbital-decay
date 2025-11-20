@@ -19,6 +19,11 @@ export default class TitleScene extends Phaser.Scene {
         make('enemy', 0xffffff, 20); // White texture, will be tinted red
         make('ebullet', 0xffaa00, 6);
         make('xp', 0x00ffff, 8);
+
+        // Powerup textures
+        make('powerup_spray', 0x00ff00, 12);      // Green - Spray shot
+        make('powerup_damage', 0xff0000, 12);     // Red - Double damage
+        make('powerup_firerate', 0xffff00, 12);   // Yellow - Double fire rate
     }
 
     create() {
@@ -53,7 +58,7 @@ export default class TitleScene extends Phaser.Scene {
 
         // START button
         const startBtn = this.add.rectangle(w/2, h/2 + 100, 200, 50, 0x00aaff).setInteractive();
-        const startTxt = this.add.text(w/2, h/2 + 100, 'START', { fontSize: '24px', color: 'black' }).setOrigin(0.5);
+        const startTxt = this.add.text(w/2, h/2 + 100, 'START AT LV 1', { fontSize: '24px', color: 'black' }).setOrigin(0.5);
 
         startBtn.on('pointerdown', () => {
             this.scene.start('UIScene');

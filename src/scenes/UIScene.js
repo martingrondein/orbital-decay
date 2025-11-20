@@ -11,6 +11,8 @@ export default class UIScene extends Phaser.Scene {
         game.events.on('updateHealth', this.updateHealth, this);
         game.events.on('updateXP', this.updateXP, this);
         game.events.on('updateScore', (s) => this.scoreText.setText(`Score: ${s}`), this);
+        game.events.on('powerupActivated', this.showPowerup, this);
+        game.events.on('powerupExpired', this.hidePowerup, this);
 
         this.createHUD();
     }
@@ -46,6 +48,17 @@ export default class UIScene extends Phaser.Scene {
 
         this.scoreText = this.add.text(10, 10, 'Score: 0', { fontSize: '20px' }).setDepth(100);
         this.lvlText = this.add.text(w-10, 10, 'Lvl: 1', { fontSize: '20px' }).setOrigin(1,0).setDepth(100);
+
+        // Powerup indicator
+        this.powerupText = this.add.text(w/2, 50, '', {
+            fontSize: '18px',
+            color: '#fff',
+            fontStyle: 'bold',
+            stroke: '#000',
+            strokeThickness: 4,
+            backgroundColor: '#000000aa',
+            padding: { x: 10, y: 5 }
+        }).setOrigin(0.5).setDepth(102).setVisible(false);
     }
 
     initUI(stats) {
@@ -62,6 +75,27 @@ export default class UIScene extends Phaser.Scene {
     updateXP(curr, req) {
         this.xpBar.width = (this.scale.width - 20) * Math.max(0, curr/req);
         this.xpText.setText(`XP: ${Math.floor(curr)}/${req}`);
+    }
+
+    showPowerup(type) {
+        const names = {
+            'spray': 'SPRAY SHOT',
+            'damage': 'DOUBLE DAMAGE',
+            'firerate': 'RAPID FIRE'
+        };
+        const colors = {
+            'spray': '#00ff00',
+            'damage': '#ff0000',
+            'firerate': '#ffff00'
+        };
+
+        this.powerupText.setText(names[type]);
+        this.powerupText.setColor(colors[type]);
+        this.powerupText.setVisible(true);
+    }
+
+    hidePowerup() {
+        this.powerupText.setVisible(false);
     }
 
     showLevelUp(stats, onResume) {
