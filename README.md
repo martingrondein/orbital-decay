@@ -28,6 +28,7 @@ A mobile-first vertical scrolling shoot 'em up where you fight to survive in dec
 orbital-decay/
 ├── index.html              # Entry point
 ├── package.json            # Dependencies and scripts
+├── vite.config.js          # Vite configuration (base path for deployment)
 ├── src/
 │   ├── main.js            # Game configuration and initialization
 │   ├── config/            # Game balance configuration
@@ -110,7 +111,9 @@ npm run build
 # The dist folder contains all the bundled files
 ```
 
-**Important:** Always deploy the `dist` folder contents, not the source files. The browser cannot resolve bare module imports like `import Phaser from 'phaser'` without bundling.
+**Important Notes:**
+- Always deploy the `dist` folder contents, not the source files. The browser cannot resolve bare module imports like `import Phaser from 'phaser'` without bundling.
+- The `vite.config.js` sets `base: '/orbital-decay/'` for GitHub Pages. If deploying to a different host or repository name, update this path accordingly.
 
 ## Controls
 
