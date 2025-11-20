@@ -14,7 +14,7 @@ export default class PowerupManager {
 
         // Spawn timer
         this.spawnTimer = scene.time.addEvent({
-            delay: 20000, // Spawn every 20 seconds
+            delay: 25000, // Spawn every 25 seconds
             callback: this.trySpawn,
             callbackScope: this,
             loop: true

@@ -14,16 +14,26 @@ export default class TitleScene extends Phaser.Scene {
             const g = this.make.graphics({ add: false });
             g.fillStyle(c, 1); g.fillCircle(r, r, r); g.generateTexture(k, r*2, r*2);
         };
+
+        // Box texture maker for powerups
+        const makeBox = (k, c, size) => {
+            if(this.textures.exists(k)) return;
+            const g = this.make.graphics({ add: false });
+            g.fillStyle(c, 1);
+            g.fillRect(0, 0, size, size);
+            g.generateTexture(k, size, size);
+        };
+
         make('player', 0x00ff00, 20);
         make('bullet', 0xffff00, 5);
         make('enemy', 0xffffff, 20); // White texture, will be tinted red
         make('ebullet', 0xffaa00, 6);
         make('xp', 0x00ffff, 8);
 
-        // Powerup textures
-        make('powerup_spray', 0x00ff00, 12);      // Green - Spray shot
-        make('powerup_damage', 0xff0000, 12);     // Red - Double damage
-        make('powerup_firerate', 0xffff00, 12);   // Yellow - Double fire rate
+        // Powerup textures - all pink boxes
+        makeBox('powerup_spray', 0xff69b4, 24);      // Pink box - Spray shot
+        makeBox('powerup_damage', 0xff69b4, 24);     // Pink box - Double damage
+        makeBox('powerup_firerate', 0xff69b4, 24);   // Pink box - Double fire rate
     }
 
     create() {
