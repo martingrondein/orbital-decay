@@ -21,36 +21,36 @@ export default class UIScene extends Phaser.Scene {
         const w = this.scale.width;
         const h = this.scale.height;
 
-        // Bar backgrounds for better visibility
-        this.hpBarBg = this.add.rectangle(10, h - 62, w-20, 15, 0x333333).setOrigin(0).setDepth(99);
-        this.xpBarBg = this.add.rectangle(10, h - 37, w-20, 15, 0x333333).setOrigin(0).setDepth(99);
-
-        // Bar foregrounds (start with small width instead of 0 for Safari compatibility)
-        this.hpBar = this.add.rectangle(10, h - 62, 1, 15, 0xff0000).setOrigin(0).setDepth(100);
-        this.xpBar = this.add.rectangle(10, h - 37, 1, 15, 0x00aaff).setOrigin(0).setDepth(100);
-
-        // Bar text labels
-        this.hpText = this.add.text(w/2, h - 54.5, '', {
-            fontSize: '12px',
-            color: '#fff',
-            fontStyle: 'bold',
-            stroke: '#000',
-            strokeThickness: 3
-        }).setOrigin(0.5).setDepth(101);
-
-        this.xpText = this.add.text(w/2, h - 29.5, '', {
-            fontSize: '12px',
-            color: '#fff',
-            fontStyle: 'bold',
-            stroke: '#000',
-            strokeThickness: 3
-        }).setOrigin(0.5).setDepth(101);
-
         this.scoreText = this.add.text(10, 10, 'Score: 0', { fontSize: '20px' }).setDepth(100);
         this.lvlText = this.add.text(w-10, 10, 'Lvl: 1', { fontSize: '20px' }).setOrigin(1,0).setDepth(100);
 
-        // Powerup indicator
-        this.powerupText = this.add.text(w/2, 50, '', {
+        // Bar backgrounds for better visibility (moved to top)
+        this.hpBarBg = this.add.rectangle(10, 40, w-20, 15, 0x333333).setOrigin(0).setDepth(99);
+        this.xpBarBg = this.add.rectangle(10, 65, w-20, 15, 0x333333).setOrigin(0).setDepth(99);
+
+        // Bar foregrounds (start with small width instead of 0 for Safari compatibility)
+        this.hpBar = this.add.rectangle(10, 40, 1, 15, 0xff0000).setOrigin(0).setDepth(100);
+        this.xpBar = this.add.rectangle(10, 65, 1, 15, 0x00aaff).setOrigin(0).setDepth(100);
+
+        // Bar text labels
+        this.hpText = this.add.text(w/2, 47.5, '', {
+            fontSize: '12px',
+            color: '#fff',
+            fontStyle: 'bold',
+            stroke: '#000',
+            strokeThickness: 3
+        }).setOrigin(0.5).setDepth(101);
+
+        this.xpText = this.add.text(w/2, 72.5, '', {
+            fontSize: '12px',
+            color: '#fff',
+            fontStyle: 'bold',
+            stroke: '#000',
+            strokeThickness: 3
+        }).setOrigin(0.5).setDepth(101);
+
+        // Powerup indicator (moved down to give space for bars)
+        this.powerupText = this.add.text(w/2, 95, '', {
             fontSize: '18px',
             color: '#fff',
             fontStyle: 'bold',
