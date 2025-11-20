@@ -15,8 +15,8 @@ export default class Joystick {
     }
 
     createVisuals() {
-        this.base = this.scene.add.circle(this.x, this.y, this.radius, 0x888888, 0.5).setDepth(100);
-        this.knob = this.scene.add.circle(this.x, this.y, this.radius * 0.5, 0xffffff, 0.8).setDepth(100);
+        this.base = this.scene.add.circle(this.x, this.y, this.radius, 0x888888, 0.25).setDepth(100);
+        this.knob = this.scene.add.circle(this.x, this.y, this.radius * 0.5, 0xffffff, 0.4).setDepth(100);
 
         // Hide joystick initially
         this.base.setVisible(false);
