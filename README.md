@@ -1,4 +1,4 @@
-# Neon Survivor
+# Orbital Decay
 
 A mobile-first vertical scrolling shoot 'em up built with **Phaser 3** and modern ES6 modules. Features procedurally generated assets, persistent progression, and a clean modular architecture.
 

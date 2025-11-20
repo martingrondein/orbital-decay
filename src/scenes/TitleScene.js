@@ -24,7 +24,7 @@ export default class TitleScene extends Phaser.Scene {
         // Load player stats
         const stats = SaveSystem.load();
 
-        this.add.text(w/2, h/2 - 150, 'NEON SURVIVOR', { fontSize: '40px', color: '#0f0' }).setOrigin(0.5);
+        this.add.text(w/2, h/2 - 150, 'ORBITAL DECAY', { fontSize: '40px', color: '#0f0' }).setOrigin(0.5);
 
         // Display player stats
         const statsText = [
