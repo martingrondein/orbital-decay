@@ -96,6 +96,11 @@ export default class GameScene extends Phaser.Scene {
             xp.enableBody(true, x, y, true, true);
             xp.setVelocityY(100);
         }
+
+        // Random powerup drop (10% chance if no powerup is active)
+        if (!this.activePowerupType && Math.random() < 0.1) {
+            this.powerupManager.spawnAtPosition(x, y);
+        }
     }
 
     collectXP(xpItem) {

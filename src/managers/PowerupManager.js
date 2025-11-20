@@ -9,27 +9,17 @@ export default class PowerupManager {
 
         // Pooled powerups
         this.powerups = scene.physics.add.group({
-            maxSize: 5
+            maxSize: 10 // Increased for enemy drops
         });
 
-        // Spawn timer
-        this.spawnTimer = scene.time.addEvent({
-            delay: 25000, // Spawn every 25 seconds
-            callback: this.trySpawn,
-            callbackScope: this,
-            loop: true
-        });
+        // Timed spawning disabled - powerups now drop from enemies
 
         this.activePowerup = null;
     }
 
-    trySpawn() {
-        // Don't spawn if game is over or a powerup is already active
-        if (this.scene.isGameOver || this.activePowerup) return;
-
+    spawnAtPosition(x, y) {
+        // Spawn a random powerup at the given position
         const type = Phaser.Utils.Array.GetRandom(this.types);
-        const x = Phaser.Math.Between(50, this.scene.scale.width - 50);
-        const y = -30;
 
         const powerup = this.powerups.get(x, y, `powerup_${type}`);
         if (powerup) {
