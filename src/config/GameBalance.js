@@ -28,7 +28,7 @@ export const GameBalance = {
     enemy: {
         spawnDelayMs: 800,
         fireDelayMs: 1500,
-        fireChance: 0.2, // 20% chance to fire each check
+        fireChance: 0.1, // 20% chance to fire each check
         maxPoolSize: 30,
 
         // Movement
@@ -39,7 +39,7 @@ export const GameBalance = {
         baseHealth: 2,
 
         // Bullets
-        bulletSpeed: 300,
+        bulletSpeed: 150,
         bulletPoolSize: 100
     },
 
