@@ -23,6 +23,8 @@ export default class GameScene extends Phaser.Scene {
         this.activePowerupTimer = null;
         this.baseDamageMult = this.stats.damageMult;
         this.baseFireRateMs = this.stats.fireRateMs;
+        this.baseXPMult = this.stats.xpMult;
+        this.scoreMultiplier = 1; // For triple score powerup
 
         // 2. Systems
         this.background = new Background(this);
@@ -90,7 +92,7 @@ export default class GameScene extends Phaser.Scene {
 
     onEnemyKilled(x, y) {
         this.enemiesDefeated++;
-        this.score += GameBalance.progression.scorePerKill;
+        this.score += GameBalance.progression.scorePerKill * this.scoreMultiplier;
         this.events.emit('updateScore', this.score);
 
         // Drop XP
@@ -160,6 +162,17 @@ export default class GameScene extends Phaser.Scene {
                 this.baseFireRateMs = this.stats.fireRateMs;
                 this.stats.fireRateMs = Math.max(50, Math.floor(this.stats.fireRateMs / 2));
                 break;
+            case 'doublexp':
+                this.baseXPMult = this.stats.xpMult;
+                this.stats.xpMult *= 2;
+                break;
+            case 'triplescore':
+                this.scoreMultiplier = 3;
+                break;
+            case 'shield':
+                this.player.isInvulnerable = true;
+                this.player.setAlpha(0.7); // Visual indicator
+                break;
         }
     }
 
@@ -173,6 +186,16 @@ export default class GameScene extends Phaser.Scene {
                 break;
             case 'firerate':
                 this.stats.fireRateMs = this.baseFireRateMs;
+                break;
+            case 'doublexp':
+                this.stats.xpMult = this.baseXPMult;
+                break;
+            case 'triplescore':
+                this.scoreMultiplier = 1;
+                break;
+            case 'shield':
+                this.player.isInvulnerable = false;
+                this.player.setAlpha(1); // Restore full opacity
                 break;
         }
     }

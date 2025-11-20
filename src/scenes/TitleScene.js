@@ -34,6 +34,9 @@ export default class TitleScene extends Phaser.Scene {
         makeBox('powerup_spray', 0xff69b4, 24);      // Pink box - Spray shot
         makeBox('powerup_damage', 0xff69b4, 24);     // Pink box - Double damage
         makeBox('powerup_firerate', 0xff69b4, 24);   // Pink box - Double fire rate
+        makeBox('powerup_doublexp', 0xff69b4, 24);   // Pink box - Double XP
+        makeBox('powerup_triplescore', 0xff69b4, 24); // Pink box - Triple score
+        makeBox('powerup_shield', 0xff69b4, 24);     // Pink box - Shield
     }
 
     create() {
@@ -86,26 +89,26 @@ export default class TitleScene extends Phaser.Scene {
         });
 
         // Start at Level 40 button
-        const lv40Btn = this.add.rectangle(w/2, h/2 + 165, 200, 50, 0xff9900).setInteractive();
-        const lv40Txt = this.add.text(w/2, h/2 + 165, 'START AT LV 40', { fontSize: '18px', color: 'black' }).setOrigin(0.5);
+        // const lv40Btn = this.add.rectangle(w/2, h/2 + 165, 200, 50, 0xff9900).setInteractive();
+        // const lv40Txt = this.add.text(w/2, h/2 + 165, 'START AT LV 40', { fontSize: '18px', color: 'black' }).setOrigin(0.5);
 
-        lv40Btn.on('pointerdown', () => {
-            const lv40Stats = SaveSystem.calculateStatsForLevel(40);
-            SaveSystem.save(lv40Stats);
-            this.scene.start('UIScene');
-            this.scene.start('GameScene');
-        });
+        // lv40Btn.on('pointerdown', () => {
+        //     const lv40Stats = SaveSystem.calculateStatsForLevel(40);
+        //     SaveSystem.save(lv40Stats);
+        //     this.scene.start('UIScene');
+        //     this.scene.start('GameScene');
+        // });
 
-        // Start at Level 80 button
-        const lv80Btn = this.add.rectangle(w/2, h/2 + 230, 200, 50, 0xaa00ff).setInteractive();
-        const lv80Txt = this.add.text(w/2, h/2 + 230, 'START AT LV 80', { fontSize: '18px', color: 'black' }).setOrigin(0.5);
+        // // Start at Level 80 button
+        // const lv80Btn = this.add.rectangle(w/2, h/2 + 230, 200, 50, 0xaa00ff).setInteractive();
+        // const lv80Txt = this.add.text(w/2, h/2 + 230, 'START AT LV 80', { fontSize: '18px', color: 'black' }).setOrigin(0.5);
 
-        lv80Btn.on('pointerdown', () => {
-            const lv80Stats = SaveSystem.calculateStatsForLevel(80);
-            SaveSystem.save(lv80Stats);
-            this.scene.start('UIScene');
-            this.scene.start('GameScene');
-        });
+        // lv80Btn.on('pointerdown', () => {
+        //     const lv80Stats = SaveSystem.calculateStatsForLevel(80);
+        //     SaveSystem.save(lv80Stats);
+        //     this.scene.start('UIScene');
+        //     this.scene.start('GameScene');
+        // });
 
         // Reset Stats button
         const resetBtn = this.add.rectangle(w/2, h/2 + 295, 200, 50, 0xff3333).setInteractive();

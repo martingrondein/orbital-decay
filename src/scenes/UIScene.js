@@ -81,12 +81,18 @@ export default class UIScene extends Phaser.Scene {
         const names = {
             'spray': 'SPRAY SHOT',
             'damage': 'DOUBLE DAMAGE',
-            'firerate': 'RAPID FIRE'
+            'firerate': 'RAPID FIRE',
+            'doublexp': 'DOUBLE XP',
+            'triplescore': 'TRIPLE SCORE',
+            'shield': 'SHIELD'
         };
         const colors = {
             'spray': '#00ff00',
             'damage': '#ff0000',
-            'firerate': '#ffff00'
+            'firerate': '#ffff00',
+            'doublexp': '#00ffff',
+            'triplescore': '#ff00ff',
+            'shield': '#ffffff'
         };
 
         this.powerupType = type;

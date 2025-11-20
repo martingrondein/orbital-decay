@@ -5,7 +5,7 @@ export default class PowerupManager {
         this.scene = scene;
 
         // Powerup types
-        this.types = ['spray', 'damage', 'firerate'];
+        this.types = ['spray', 'damage', 'firerate', 'doublexp', 'triplescore', 'shield'];
 
         // Pooled powerups
         this.powerups = scene.physics.add.group({
