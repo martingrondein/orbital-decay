@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+import { SaveSystem } from '../systems/SaveSystem.js';
 
 export default class TitleScene extends Phaser.Scene {
     constructor() { super({ key: 'TitleScene' }); }
@@ -21,10 +21,30 @@ export default class TitleScene extends Phaser.Scene {
         const w = this.scale.width;
         const h = this.scale.height;
 
-        this.add.text(w/2, h/2 - 50, 'NEON SURVIVOR', { fontSize: '40px', color: '#0f0' }).setOrigin(0.5);
+        // Load player stats
+        const stats = SaveSystem.load();
 
-        const btn = this.add.rectangle(w/2, h/2 + 50, 200, 60, 0x00aaff).setInteractive();
-        const txt = this.add.text(w/2, h/2 + 50, 'START', { fontSize: '24px', color: 'black' }).setOrigin(0.5);
+        this.add.text(w/2, h/2 - 150, 'NEON SURVIVOR', { fontSize: '40px', color: '#0f0' }).setOrigin(0.5);
+
+        // Display player stats
+        const statsText = [
+            `Level: ${stats.level}`,
+            `Health: ${stats.maxHealth}`,
+            `Speed: ${stats.moveSpeed}`,
+            `Fire Rate: ${stats.fireRateMs}ms`,
+            `Damage: x${stats.damageMult}`,
+            `XP Mult: x${stats.xpMult}`
+        ].join('\n');
+
+        this.add.text(w/2, h/2 - 40, statsText, {
+            fontSize: '20px',
+            color: '#fff',
+            align: 'center',
+            lineSpacing: 5
+        }).setOrigin(0.5);
+
+        const btn = this.add.rectangle(w/2, h/2 + 120, 200, 60, 0x00aaff).setInteractive();
+        const txt = this.add.text(w/2, h/2 + 120, 'START', { fontSize: '24px', color: 'black' }).setOrigin(0.5);
 
         btn.on('pointerdown', () => {
             this.scene.start('UIScene'); // Start UI first to set up event listeners

@@ -4,9 +4,9 @@ const defaultStats = {
     level: 1,
     xp: 0,
     reqXp: 50,
-    moveSpeed: 400,
-    fireRateMs: 200,
-    maxHealth: 100,
+    moveSpeed: 200,
+    fireRateMs: 1000,
+    maxHealth: 10,
     damageMult: 1,
     xpMult: 1
 };

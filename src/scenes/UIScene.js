@@ -1,5 +1,3 @@
-import Phaser from 'phaser';
-
 export default class UIScene extends Phaser.Scene {
     constructor() { super({ key: 'UIScene', active: false }); }
 
@@ -64,10 +62,22 @@ export default class UIScene extends Phaser.Scene {
         this.add.text(w/2, h/2-50, 'GAME OVER', { fontSize: '40px', color: 'red' }).setOrigin(0.5);
         this.add.text(w/2, h/2+20, `Score: ${finalScore}`, { fontSize: '24px' }).setOrigin(0.5);
 
-        const btn = this.add.rectangle(w/2, h/2+100, 200, 50, 0xffffff).setInteractive();
-        const txt = this.add.text(w/2, h/2+100, 'MAIN MENU', { color: 'black' }).setOrigin(0.5);
+        // Retry button
+        const retryBtn = this.add.rectangle(w/2, h/2+100, 200, 50, 0x00ff00).setInteractive();
+        const retryTxt = this.add.text(w/2, h/2+100, 'RETRY', { color: 'black', fontSize: '20px' }).setOrigin(0.5);
 
-        btn.on('pointerdown', () => {
+        retryBtn.on('pointerdown', () => {
+            this.scene.stop('UIScene');
+            this.scene.stop('GameScene');
+            this.scene.start('GameScene');
+            this.scene.start('UIScene');
+        });
+
+        // Main menu button
+        const menuBtn = this.add.rectangle(w/2, h/2+170, 200, 50, 0xffffff).setInteractive();
+        const menuTxt = this.add.text(w/2, h/2+170, 'MAIN MENU', { color: 'black', fontSize: '20px' }).setOrigin(0.5);
+
+        menuBtn.on('pointerdown', () => {
             // Full page reload to cleanly reset all scenes and managers
             window.location.reload();
         });

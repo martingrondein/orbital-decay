@@ -1,4 +1,3 @@
-import Phaser from 'phaser';
 import Player from '../entities/Player.js';
 import EnemyManager from '../managers/EnemyManager.js';
 import Background from '../systems/Background.js';
@@ -39,10 +38,10 @@ export default class GameScene extends Phaser.Scene {
             (p, xp) => this.collectXP(xp));
 
         this.physics.add.overlap(this.player, this.enemyManager.enemies,
-            (p, e) => { e.disableBody(true,true); this.handlePlayerHit(10); });
+            (p, e) => { e.disableBody(true,true); this.handlePlayerHit(5); });
 
         this.physics.add.overlap(this.player, this.enemyManager.enemyBullets,
-            (p, b) => { b.disableBody(true,true); this.handlePlayerHit(10); });
+            (p, b) => { b.disableBody(true,true); this.handlePlayerHit(5); });
     }
 
     update(time, delta) {
@@ -103,7 +102,7 @@ export default class GameScene extends Phaser.Scene {
         this.stats.reqXp = Math.floor(this.stats.reqXp * 1.5);
 
         // Persistent Upgrades
-        this.stats.maxHealth += 20;
+        this.stats.maxHealth += 10;
         this.player.currentHealth = this.stats.maxHealth;
         this.stats.moveSpeed += 10;
         this.stats.fireRateMs = Math.max(50, this.stats.fireRateMs - 10);
