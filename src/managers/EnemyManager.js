@@ -1,4 +1,3 @@
-import Phaser from 'phaser';
 import { AudioEngine } from '../systems/AudioEngine.js';
 
 export default class EnemyManager {
@@ -18,7 +17,7 @@ export default class EnemyManager {
         const e = this.enemies.get(x, -50);
         if (e) {
             e.enableBody(true, x, -50, true, true);
-            e.setVelocity(Phaser.Math.Between(-50, 50), Phaser.Math.Between(100, 200));
+            e.setVelocity(Phaser.Math.Between(-25, 25), Phaser.Math.Between(50, 100));
             e.hp = 2 + Math.floor(this.scene.stats.level * 0.5); // Scaling difficulty
         }
     }
