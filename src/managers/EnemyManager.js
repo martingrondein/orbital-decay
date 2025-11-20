@@ -1,14 +1,31 @@
 import { AudioEngine } from '../systems/AudioEngine.js';
+import { GameBalance } from '../config/GameBalance.js';
 
 export default class EnemyManager {
     constructor(scene) {
         this.scene = scene;
-        this.enemies = scene.physics.add.group({ defaultKey: 'enemy', maxSize: 30 });
-        this.enemyBullets = scene.physics.add.group({ defaultKey: 'ebullet', maxSize: 100 });
+        this.enemies = scene.physics.add.group({
+            defaultKey: 'enemy',
+            maxSize: GameBalance.enemy.maxPoolSize
+        });
+        this.enemyBullets = scene.physics.add.group({
+            defaultKey: 'ebullet',
+            maxSize: GameBalance.enemy.bulletPoolSize
+        });
 
         // Timers
-        scene.time.addEvent({ delay: 800, callback: this.spawn, callbackScope: this, loop: true });
-        scene.time.addEvent({ delay: 1500, callback: this.fireLogic, callbackScope: this, loop: true });
+        scene.time.addEvent({
+            delay: GameBalance.enemy.spawnDelayMs,
+            callback: this.spawn,
+            callbackScope: this,
+            loop: true
+        });
+        scene.time.addEvent({
+            delay: GameBalance.enemy.fireDelayMs,
+            callback: this.fireLogic,
+            callbackScope: this,
+            loop: true
+        });
     }
 
     spawn() {
@@ -17,19 +34,24 @@ export default class EnemyManager {
         const e = this.enemies.get(x, -50);
         if (e) {
             e.enableBody(true, x, -50, true, true);
-            e.setVelocity(Phaser.Math.Between(-25, 25), Phaser.Math.Between(50, 100));
-            e.hp = 2 + Math.floor(this.scene.stats.level * 0.5); // Scaling difficulty
+            e.setVelocity(
+                Phaser.Math.Between(GameBalance.enemy.velocityX.min, GameBalance.enemy.velocityX.max),
+                Phaser.Math.Between(GameBalance.enemy.velocityY.min, GameBalance.enemy.velocityY.max)
+            );
+            e.hp = GameBalance.enemy.baseHealth + Math.floor(
+                this.scene.stats.level * GameBalance.enemy.healthScalingPerLevel
+            );
         }
     }
 
     fireLogic() {
         if (this.scene.isGameOver) return;
         this.enemies.children.iterate(child => {
-            if (child.active && child.y > 0 && child.y < 600 && Phaser.Math.Between(0, 100) > 80) {
+            if (child.active && child.y > 0 && child.y < 600 && Math.random() < GameBalance.enemy.fireChance) {
                 const b = this.enemyBullets.get(child.x, child.y);
                 if (b) {
                     b.enableBody(true, child.x, child.y, true, true);
-                    this.scene.physics.moveToObject(b, this.scene.player, 300);
+                    this.scene.physics.moveToObject(b, this.scene.player, GameBalance.enemy.bulletSpeed);
                 }
             }
         });

@@ -1,14 +1,16 @@
+import { GameBalance } from '../config/GameBalance.js';
+
 const KEY = 'SHMUP_SAVE_V1';
 
 const defaultStats = {
-    level: 1,
-    xp: 0,
-    reqXp: 50,
-    moveSpeed: 200,
-    fireRateMs: 1000,
-    maxHealth: 10,
-    damageMult: 1,
-    xpMult: 1
+    level: GameBalance.player.startLevel,
+    xp: GameBalance.player.startXP,
+    reqXp: GameBalance.player.startReqXP,
+    moveSpeed: GameBalance.player.startMoveSpeed,
+    fireRateMs: GameBalance.player.startFireRateMs,
+    maxHealth: GameBalance.player.startMaxHealth,
+    damageMult: GameBalance.player.startDamageMult,
+    xpMult: GameBalance.player.startXPMult
 };
 
 export const SaveSystem = {

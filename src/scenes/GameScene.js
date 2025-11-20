@@ -4,6 +4,7 @@ import Background from '../systems/Background.js';
 import { SaveSystem } from '../systems/SaveSystem.js';
 import { AudioEngine } from '../systems/AudioEngine.js';
 import Joystick from '../utils/Joystick.js';
+import { GameBalance } from '../config/GameBalance.js';
 
 export default class GameScene extends Phaser.Scene {
     constructor() { super({ key: 'GameScene' }); }
@@ -73,7 +74,7 @@ export default class GameScene extends Phaser.Scene {
 
     onEnemyKilled(x, y) {
         this.enemiesDefeated++;
-        this.score += 100;
+        this.score += GameBalance.progression.scorePerKill;
         this.events.emit('updateScore', this.score);
 
         // Drop XP
@@ -86,7 +87,7 @@ export default class GameScene extends Phaser.Scene {
 
     collectXP(xpItem) {
         xpItem.disableBody(true, true);
-        this.stats.xp += (10 * this.stats.xpMult);
+        this.stats.xp += (GameBalance.progression.xpPerPickup * this.stats.xpMult);
         AudioEngine.play('xp');
 
         if (this.stats.xp >= this.stats.reqXp) {
@@ -99,14 +100,17 @@ export default class GameScene extends Phaser.Scene {
         AudioEngine.play('levelup');
         this.stats.level++;
         this.stats.xp = 0;
-        this.stats.reqXp = Math.floor(this.stats.reqXp * 1.5);
+        this.stats.reqXp = Math.floor(this.stats.reqXp * GameBalance.levelUp.xpRequirementMultiplier);
 
         // Persistent Upgrades
-        this.stats.maxHealth += 10;
+        this.stats.maxHealth += GameBalance.levelUp.healthIncrease;
         this.player.currentHealth = this.stats.maxHealth;
-        this.stats.moveSpeed += 10;
-        this.stats.fireRateMs = Math.max(50, this.stats.fireRateMs - 10);
-        this.stats.damageMult += 0.1;
+        this.stats.moveSpeed += GameBalance.levelUp.speedIncrease;
+        this.stats.fireRateMs = Math.max(
+            GameBalance.levelUp.fireRateMin,
+            this.stats.fireRateMs - GameBalance.levelUp.fireRateDecrease
+        );
+        this.stats.damageMult += GameBalance.levelUp.damageIncrease;
 
         SaveSystem.save(this.stats); // Save progress immediately
 
