@@ -4,15 +4,20 @@ import UIScene from './scenes/UIScene.js';
 
 const config = {
     type: Phaser.AUTO,
+    width: 375,
+    height: 812,
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        width: 450,
-        height: 800
     },
     physics: {
         default: 'arcade',
-        arcade: { debug: false }
+        arcade: { debug: false },
+        fps: 60,
+    },
+    fps: {
+        target: 60,
+        forceSetTimeOut: true,
     },
     scene: [TitleScene, GameScene, UIScene]
 };

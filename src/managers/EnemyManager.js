@@ -30,7 +30,7 @@ export default class EnemyManager {
 
     spawn() {
         if (this.scene.isGameOver) return;
-        const x = Phaser.Math.Between(30, 420);
+        const x = Phaser.Math.Between(30, this.scene.scale.width - 30);
         const e = this.enemies.get(x, -50);
         if (e) {
             e.enableBody(true, x, -50, true, true);
@@ -47,7 +47,7 @@ export default class EnemyManager {
     fireLogic() {
         if (this.scene.isGameOver) return;
         this.enemies.children.iterate(child => {
-            if (child.active && child.y > 0 && child.y < 600 && Math.random() < GameBalance.enemy.fireChance) {
+            if (child.active && child.y > 0 && child.y < this.scene.scale.height * 0.75 && Math.random() < GameBalance.enemy.fireChance) {
                 const b = this.enemyBullets.get(child.x, child.y);
                 if (b) {
                     b.enableBody(true, child.x, child.y, true, true);

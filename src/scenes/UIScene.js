@@ -16,8 +16,9 @@ export default class UIScene extends Phaser.Scene {
 
     createHUD() {
         const w = this.scale.width;
-        this.hpBar = this.add.rectangle(10, 750, w-20, 15, 0xff0000).setOrigin(0);
-        this.xpBar = this.add.rectangle(10, 775, 0, 15, 0x00aaff).setOrigin(0);
+        const h = this.scale.height;
+        this.hpBar = this.add.rectangle(10, h - 62, w-20, 15, 0xff0000).setOrigin(0);
+        this.xpBar = this.add.rectangle(10, h - 37, 0, 15, 0x00aaff).setOrigin(0);
         this.scoreText = this.add.text(10, 10, 'Score: 0', { fontSize: '20px' });
         this.lvlText = this.add.text(w-10, 10, 'Lvl: 1', { fontSize: '20px' }).setOrigin(1,0);
     }

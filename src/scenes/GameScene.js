@@ -25,11 +25,11 @@ export default class GameScene extends Phaser.Scene {
         this.xpItems = this.physics.add.group({ defaultKey: 'xp', maxSize: 50 });
 
         // 4. Entities
-        this.player = new Player(this, 225, 700, this.stats);
+        this.player = new Player(this, this.scale.width / 2, 710, this.stats);
         this.enemyManager = new EnemyManager(this);
 
         // 5. Inputs (Joystick)
-        this.joystick = new Joystick(this, 370, 700, 50);
+        this.joystick = new Joystick(this, this.scale.width - 70, 710, 50);
 
         // 6. Collisions
         this.physics.add.overlap(this.bullets, this.enemyManager.enemies,
@@ -55,7 +55,7 @@ export default class GameScene extends Phaser.Scene {
         // Cleanup bullets/XP
         [this.bullets, this.xpItems].forEach(g => {
             g.children.iterate(c => {
-                if(c.active && (c.y < -50 || c.y > 850)) c.disableBody(true,true);
+                if(c.active && (c.y < -50 || c.y > this.scale.height + 50)) c.disableBody(true,true);
             });
         });
     }

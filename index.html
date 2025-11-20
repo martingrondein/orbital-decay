@@ -2,11 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>Phaser 3 Modular Shmup</title>
     <style>
-        body { margin: 0; background: #111; overflow: hidden; }
-        canvas { display: block; margin: 0 auto; touch-action: none; }
+        body {
+            margin: 0;
+            background: #111;
+            overflow: hidden;
+            /* Support iPhone X notch */
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+        canvas {
+            display: block;
+            margin: 0 auto;
+            touch-action: none;
+        }
 
         /* Loading screen */
         #loader {
