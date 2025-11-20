@@ -81,7 +81,10 @@ export default class GameScene extends Phaser.Scene {
             this.isGameOver = true;
             this.physics.pause();
             SaveSystem.save(this.stats); // SAVE STATS ON DEATH
-            this.scene.get('UIScene').showGameOver(this.score);
+
+            // Check and save high score
+            const isNewHighScore = SaveSystem.saveHighScore(this.score);
+            this.scene.get('UIScene').showGameOver(this.score, isNewHighScore);
         }
     }
 

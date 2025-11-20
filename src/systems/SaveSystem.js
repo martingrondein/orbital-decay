@@ -1,6 +1,7 @@
 import { GameBalance } from '../config/GameBalance.js';
 
 const KEY = 'SHMUP_SAVE_V1';
+const HIGH_SCORE_KEY = 'SHMUP_HIGH_SCORE';
 
 const defaultStats = {
     level: GameBalance.player.startLevel,
@@ -37,6 +38,24 @@ export const SaveSystem = {
     reset() {
         localStorage.removeItem(KEY);
         return { ...defaultStats };
+    },
+
+    loadHighScore() {
+        const score = localStorage.getItem(HIGH_SCORE_KEY);
+        return score ? parseInt(score, 10) : 0;
+    },
+
+    saveHighScore(score) {
+        const currentHighScore = this.loadHighScore();
+        if (score > currentHighScore) {
+            localStorage.setItem(HIGH_SCORE_KEY, score.toString());
+            return true; // New high score!
+        }
+        return false;
+    },
+
+    resetHighScore() {
+        localStorage.removeItem(HIGH_SCORE_KEY);
     },
 
     // Calculate stats for a given level

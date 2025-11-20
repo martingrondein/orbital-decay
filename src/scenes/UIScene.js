@@ -163,10 +163,16 @@ export default class UIScene extends Phaser.Scene {
         con.add([bg, title, levelText, info, btn, btnTxt]);
     }
 
-    showGameOver(finalScore) {
+    showGameOver(finalScore, isNewHighScore = false) {
         const w = this.scale.width, h = this.scale.height;
         this.add.rectangle(w/2, h/2, w, h, 0x000000, 0.9);
-        this.add.text(w/2, h/2-50, 'GAME OVER', { fontSize: '40px', color: 'red' }).setOrigin(0.5);
+        this.add.text(w/2, h/2-80, 'GAME OVER', { fontSize: '40px', color: 'red' }).setOrigin(0.5);
+
+        // Show "NEW HIGH SCORE!" if applicable
+        if (isNewHighScore) {
+            this.add.text(w/2, h/2-30, 'NEW HIGH SCORE!', { fontSize: '28px', color: '#ffff00' }).setOrigin(0.5);
+        }
+
         this.add.text(w/2, h/2+20, `Score: ${finalScore}`, { fontSize: '24px' }).setOrigin(0.5);
 
         // Retry button

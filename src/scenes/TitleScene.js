@@ -49,6 +49,16 @@ export default class TitleScene extends Phaser.Scene {
         const logoScale = Math.min((w - 40) / logo.width, 150 / logo.height);
         logo.setScale(logoScale);
 
+        // Display high score
+        const highScore = SaveSystem.loadHighScore();
+        this.add.text(w/2, 190, `High Score: ${highScore}`, {
+            fontSize: '24px',
+            color: '#ffff00',
+            fontStyle: 'bold',
+            stroke: '#000',
+            strokeThickness: 3
+        }).setOrigin(0.5);
+
         // Display player stats
         const statsText = [
             `Level: ${stats.level}`,
@@ -68,7 +78,7 @@ export default class TitleScene extends Phaser.Scene {
 
         // START button
         const startBtn = this.add.rectangle(w/2, h/2 + 100, 200, 50, 0x00aaff).setInteractive();
-        const startTxt = this.add.text(w/2, h/2 + 100, 'START AT LV 1', { fontSize: '24px', color: 'black' }).setOrigin(0.5);
+        const startTxt = this.add.text(w/2, h/2 + 100, 'START', { fontSize: '24px', color: 'black' }).setOrigin(0.5);
 
         startBtn.on('pointerdown', () => {
             this.scene.start('UIScene');
