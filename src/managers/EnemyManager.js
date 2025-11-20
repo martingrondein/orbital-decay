@@ -40,6 +40,7 @@ export default class EnemyManager {
                 Phaser.Math.Between(GameBalance.enemy.velocityY.min, GameBalance.enemy.velocityY.max)
             );
             e.hp = GameBalance.enemy.baseHealth;
+            e.clearTint(); // Reset tint from previous use
         }
     }
 
@@ -58,6 +59,17 @@ export default class EnemyManager {
 
     handleHit(enemy, damage) {
         enemy.hp -= damage;
+
+        // Flash white on hit
+        enemy.setTint(0xffffff);
+
+        // Clear the flash after 100ms
+        this.scene.time.delayedCall(100, () => {
+            if (enemy.active) {
+                enemy.clearTint();
+            }
+        });
+
         if (enemy.hp <= 0) {
             this.scene.onEnemyKilled(enemy.x, enemy.y);
             enemy.disableBody(true, true);
