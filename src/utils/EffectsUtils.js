@@ -1,0 +1,184 @@
+/**
+ * Visual effects utilities
+ * Reusable functions for creating visual feedback effects
+ */
+
+/**
+ * Creates a radial particle burst effect
+ * @param {Phaser.Scene} scene - The scene to create effects in
+ * @param {number} x - X position
+ * @param {number} y - Y position
+ * @param {Object} config - Effect configuration
+ * @param {number} config.count - Number of particles (default: 8)
+ * @param {number} config.radius - Particle radius (default: 3)
+ * @param {number} config.color - Particle color hex (default: 0xffaa00)
+ * @param {number} config.alpha - Particle opacity (default: 1)
+ * @param {number} config.spread - Distance particles travel (default: 50)
+ * @param {number} config.duration - Animation duration in ms (default: 400)
+ * @param {number} config.depth - Z-depth for rendering (default: 50)
+ */
+export function createRadialParticleBurst(scene, x, y, config = {}) {
+    const {
+        count = 8,
+        radius = 3,
+        color = 0xffaa00,
+        alpha = 1,
+        spread = 50,
+        duration = 400,
+        depth = 50
+    } = config;
+
+    for (let i = 0; i < count; i++) {
+        const angle = (Math.PI * 2 / count) * i;
+        const particle = scene.add.circle(x, y, radius, color, alpha).setDepth(depth);
+
+        scene.tweens.add({
+            targets: particle,
+            x: x + Math.cos(angle) * spread,
+            y: y + Math.sin(angle) * spread,
+            alpha: 0,
+            duration: duration,
+            ease: 'Power2',
+            onComplete: () => particle.destroy()
+        });
+    }
+}
+
+/**
+ * Creates an expanding circle effect (single circle)
+ * @param {Phaser.Scene} scene - The scene to create effect in
+ * @param {number} x - X position
+ * @param {number} y - Y position
+ * @param {Object} config - Effect configuration
+ * @param {number} config.startRadius - Starting radius (default: 5)
+ * @param {number} config.endRadius - Ending radius (default: 40)
+ * @param {number} config.color - Circle color hex (default: 0xff0000)
+ * @param {number} config.alpha - Starting opacity (default: 0.8)
+ * @param {number} config.duration - Animation duration in ms (default: 300)
+ * @param {number} config.depth - Z-depth for rendering (default: 50)
+ */
+export function createExpandingCircle(scene, x, y, config = {}) {
+    const {
+        startRadius = 5,
+        endRadius = 40,
+        color = 0xff0000,
+        alpha = 0.8,
+        duration = 300,
+        depth = 50
+    } = config;
+
+    const circle = scene.add.circle(x, y, startRadius, color, alpha).setDepth(depth);
+
+    scene.tweens.add({
+        targets: circle,
+        radius: endRadius,
+        alpha: 0,
+        duration: duration,
+        ease: 'Power2',
+        onComplete: () => circle.destroy()
+    });
+}
+
+/**
+ * Creates multiple expanding circles for explosion effect
+ * @param {Phaser.Scene} scene - The scene to create effect in
+ * @param {number} x - X position
+ * @param {number} y - Y position
+ * @param {Object} config - Effect configuration
+ * @param {number} config.count - Number of circles (default: 3)
+ * @param {number} config.startRadius - Starting radius (default: 5)
+ * @param {number} config.baseEndRadius - Base ending radius (default: 40)
+ * @param {number} config.radiusIncrement - Additional radius per circle (default: 10)
+ * @param {number} config.color - Circle color hex (default: 0xff0000)
+ * @param {number} config.alpha - Starting opacity (default: 0.8)
+ * @param {number} config.baseDuration - Base duration in ms (default: 300)
+ * @param {number} config.durationIncrement - Additional duration per circle (default: 100)
+ * @param {number} config.depth - Z-depth for rendering (default: 50)
+ */
+export function createExplosionCircles(scene, x, y, config = {}) {
+    const {
+        count = 3,
+        startRadius = 5,
+        baseEndRadius = 40,
+        radiusIncrement = 10,
+        color = 0xff0000,
+        alpha = 0.8,
+        baseDuration = 300,
+        durationIncrement = 100,
+        depth = 50
+    } = config;
+
+    for (let i = 0; i < count; i++) {
+        createExpandingCircle(scene, x, y, {
+            startRadius,
+            endRadius: baseEndRadius + (i * radiusIncrement),
+            color,
+            alpha,
+            duration: baseDuration + (i * durationIncrement),
+            depth
+        });
+    }
+}
+
+/**
+ * Creates a collection effect with particles and expanding circle
+ * @param {Phaser.Scene} scene - The scene to create effect in
+ * @param {number} x - X position
+ * @param {number} y - Y position
+ * @param {number} color - Effect color hex (default: 0x00ffff)
+ * @param {Object} config - Optional effect configuration overrides
+ */
+export function createCollectionEffect(scene, x, y, color = 0x00ffff, config = {}) {
+    // Particle burst
+    createRadialParticleBurst(scene, x, y, {
+        count: 6,
+        radius: 4,
+        color: color,
+        alpha: 1,
+        spread: 30,
+        duration: 300,
+        depth: 50,
+        ...config.particles
+    });
+
+    // Expanding circle
+    createExpandingCircle(scene, x, y, {
+        startRadius: 8,
+        endRadius: 20,
+        color: color,
+        alpha: 0.6,
+        duration: 250,
+        depth: 50,
+        ...config.circle
+    });
+}
+
+/**
+ * Creates a full explosion effect with particles and circles
+ * @param {Phaser.Scene} scene - The scene to create effect in
+ * @param {number} x - X position
+ * @param {number} y - Y position
+ * @param {number} color - Explosion color hex (default: 0xff0000)
+ * @param {Object} config - Optional effect configuration overrides
+ */
+export function createExplosionEffect(scene, x, y, color = 0xff0000, config = {}) {
+    // Expanding circles
+    createExplosionCircles(scene, x, y, {
+        count: 3,
+        color: color,
+        ...config.circles
+    });
+
+    // Particle burst
+    const particleColor = color === 0x0000ff ? 0x00aaff : 0xffaa00;
+    createRadialParticleBurst(scene, x, y, {
+        count: 8,
+        radius: 3,
+        color: particleColor,
+        alpha: 1,
+        spread: 50,
+        duration: 400,
+        depth: 50,
+        ...config.particles
+    });
+}
