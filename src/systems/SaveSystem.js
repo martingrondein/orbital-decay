@@ -2,6 +2,7 @@ import { GameBalance } from '../config/GameBalance.js';
 
 const KEY = 'SHMUP_SAVE_V1';
 const HIGH_SCORE_KEY = 'SHMUP_HIGH_SCORE';
+const BEST_DISTANCE_KEY = 'SHMUP_BEST_DISTANCE';
 
 const defaultStats = {
     level: GameBalance.player.startLevel,
@@ -64,6 +65,24 @@ export const SaveSystem = {
 
     resetHighScore() {
         localStorage.removeItem(HIGH_SCORE_KEY);
+    },
+
+    loadBestDistance() {
+        const distance = localStorage.getItem(BEST_DISTANCE_KEY);
+        return distance ? parseInt(distance, 10) : 0;
+    },
+
+    saveBestDistance(distance) {
+        const currentBestDistance = this.loadBestDistance();
+        if (distance > currentBestDistance) {
+            localStorage.setItem(BEST_DISTANCE_KEY, distance.toString());
+            return true; // New best distance!
+        }
+        return false;
+    },
+
+    resetBestDistance() {
+        localStorage.removeItem(BEST_DISTANCE_KEY);
     },
 
     // Calculate stats for a given level

@@ -29,7 +29,7 @@ export const GameBalance = {
     enemy: {
         spawnDelayMs: 800,
         fireDelayMs: 1500,
-        fireChance: 0.1, // 20% chance to fire each check
+        fireChance: 0.1, // 10% chance to fire each check
         maxPoolSize: 30,
 
         // Movement
@@ -42,6 +42,25 @@ export const GameBalance = {
         // Bullets
         bulletSpeed: 150,
         bulletPoolSize: 100
+    },
+
+    // Blue enemy stats (harder variant introduced after 45 seconds)
+    blueEnemy: {
+        introductionTime: 45000, // 45 seconds in milliseconds
+        spawnChance: 0.3, // 30% chance to spawn blue instead of red
+        maxPoolSize: 20,
+
+        // Movement (faster and more aggressive)
+        velocityX: { min: -40, max: 40 },
+        velocityY: { min: 80, max: 120 },
+
+        // Health (requires more hits)
+        baseHealth: 5,
+
+        // Rewards (better drops)
+        xpMultiplier: 2,
+        goldMultiplier: 2,
+        scoreMultiplier: 2
     },
 
     // XP and scoring

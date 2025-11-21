@@ -86,6 +86,16 @@ export default class TitleScene extends Phaser.Scene {
             strokeThickness: 3
         }).setOrigin(0.5);
 
+        // Display best distance
+        const bestDistance = SaveSystem.loadBestDistance();
+        this.add.text(w/2, 220, `Best Distance: ${bestDistance}m`, {
+            fontSize: '24px',
+            color: '#00ffff',
+            fontStyle: 'bold',
+            stroke: '#000',
+            strokeThickness: 3
+        }).setOrigin(0.5);
+
         // Display player stats
         const statsText = [
             `Level: ${stats.level}`,
@@ -97,7 +107,7 @@ export default class TitleScene extends Phaser.Scene {
             `XP Mult: x${stats.xpMult}`
         ].join('\n');
 
-        this.add.text(w/2, h/2 - 60, statsText, {
+        this.add.text(w/2, h/2 - 50, statsText, {
             fontSize: '20px',
             color: '#fff',
             align: 'center',

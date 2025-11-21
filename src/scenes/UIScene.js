@@ -11,6 +11,7 @@ export default class UIScene extends Phaser.Scene {
         game.events.on('updateHealth', this.updateHealth, this);
         game.events.on('updateXP', this.updateXP, this);
         game.events.on('updateFuel', this.updateFuel, this);
+        game.events.on('updateDistance', (d) => this.distanceText.setText(`Distance: ${d}m`), this);
         game.events.on('updateScore', (s) => this.scoreText.setText(`Score: ${s}`), this);
         game.events.on('powerupActivated', this.showPowerup, this);
         game.events.on('powerupExpired', this.hidePowerup, this);
@@ -22,8 +23,9 @@ export default class UIScene extends Phaser.Scene {
         const w = this.scale.width;
         const h = this.scale.height;
 
-        this.scoreText = this.add.text(10, 10, 'Score: 0', { fontSize: '20px' }).setDepth(100);
-        this.lvlText = this.add.text(w-10, 10, 'Lvl: 1', { fontSize: '20px' }).setOrigin(1,0).setDepth(100);
+        this.scoreText = this.add.text(10, 10, 'Score: 0', { fontSize: '18px' }).setDepth(100);
+        this.distanceText = this.add.text(w/2, 10, 'Distance: 0m', { fontSize: '18px' }).setOrigin(0.5,0).setDepth(100);
+        this.lvlText = this.add.text(w-10, 10, 'Lvl: 1', { fontSize: '18px' }).setOrigin(1,0).setDepth(100);
 
         // Bar backgrounds for better visibility (moved to top)
         this.hpBarBg = this.add.rectangle(10, 40, w-20, 15, 0x333333).setOrigin(0).setDepth(99);

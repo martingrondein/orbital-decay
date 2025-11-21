@@ -18,6 +18,7 @@ export default class GameScene extends Phaser.Scene {
         this.score = 0;
         this.isGameOver = false;
         this.fuel = GameBalance.fuel.startFuel;
+        this.distance = 0; // Distance counter
 
         // Powerup tracking
         this.activePowerupType = null;
@@ -32,7 +33,7 @@ export default class GameScene extends Phaser.Scene {
         this.events.emit('startUI', this.stats); // Notify UIScene
         this.events.emit('updateFuel', this.fuel); // Notify UIScene of initial fuel
 
-        // Fuel depletion timer (1 per second)
+        // Fuel depletion and distance tracking timer (1 per second)
         this.time.addEvent({
             delay: 1000,
             callback: () => {
@@ -42,6 +43,10 @@ export default class GameScene extends Phaser.Scene {
                     if (this.fuel <= 0) {
                         this.handleOutOfFuel();
                     }
+
+                    // Increment distance
+                    this.distance++;
+                    this.events.emit('updateDistance', this.distance);
                 }
             },
             loop: true
@@ -66,6 +71,9 @@ export default class GameScene extends Phaser.Scene {
         this.physics.add.overlap(this.bullets, this.enemyManager.enemies,
             (b, e) => { b.disableBody(true,true); this.enemyManager.handleHit(e, this.stats.damageMult); });
 
+        this.physics.add.overlap(this.bullets, this.enemyManager.blueEnemies,
+            (b, e) => { b.disableBody(true,true); this.enemyManager.handleHit(e, this.stats.damageMult); });
+
         this.physics.add.overlap(this.player, this.xpItems,
             (p, xp) => this.collectXP(xp));
 
@@ -76,6 +84,9 @@ export default class GameScene extends Phaser.Scene {
             (p, fuel) => this.collectFuel(fuel));
 
         this.physics.add.overlap(this.player, this.enemyManager.enemies,
+            (p, e) => { e.disableBody(true,true); this.handlePlayerHit(5); });
+
+        this.physics.add.overlap(this.player, this.enemyManager.blueEnemies,
             (p, e) => { e.disableBody(true,true); this.handlePlayerHit(5); });
 
         this.physics.add.overlap(this.player, this.enemyManager.enemyBullets,
@@ -92,6 +103,11 @@ export default class GameScene extends Phaser.Scene {
         this.player.update(time, this.joystick.getData());
         this.enemyManager.cleanup();
         this.powerupManager.cleanup();
+
+        // Update shield bubble position
+        if (this.shieldBubble) {
+            this.shieldBubble.setPosition(this.player.x, this.player.y);
+        }
 
         // Cleanup bullets/XP/Gold/Fuel
         [this.bullets, this.xpItems, this.goldItems, this.fuelItems].forEach(g => {
@@ -114,8 +130,9 @@ export default class GameScene extends Phaser.Scene {
                 this.physics.pause();
                 SaveSystem.save(this.stats); // SAVE STATS ON DEATH
 
-                // Check and save high score
+                // Check and save high score and best distance
                 const isNewHighScore = SaveSystem.saveHighScore(this.score);
+                SaveSystem.saveBestDistance(this.distance);
                 this.scene.get('UIScene').showGameOver(this.score, isNewHighScore);
             }
         }
@@ -126,8 +143,9 @@ export default class GameScene extends Phaser.Scene {
         this.physics.pause();
         SaveSystem.save(this.stats);
 
-        // Check and save high score
+        // Check and save high score and best distance
         const isNewHighScore = SaveSystem.saveHighScore(this.score);
+        SaveSystem.saveBestDistance(this.distance);
         this.scene.get('UIScene').showGameOver(this.score, isNewHighScore);
     }
 
@@ -170,24 +188,33 @@ export default class GameScene extends Phaser.Scene {
         });
     }
 
-    onEnemyKilled(x, y, dropGold = false) {
+    onEnemyKilled(x, y, dropGold = false, enemyType = 'red') {
         this.enemiesDefeated++;
-        this.score += GameBalance.progression.scorePerKill * this.scoreMultiplier;
+
+        // Apply score multiplier for blue enemies
+        const scoreMultiplier = enemyType === 'blue' ? GameBalance.blueEnemy.scoreMultiplier : 1;
+        this.score += GameBalance.progression.scorePerKill * this.scoreMultiplier * scoreMultiplier;
         this.events.emit('updateScore', this.score);
 
-        // Drop XP
-        const xp = this.xpItems.get(x, y);
-        if (xp) {
-            xp.enableBody(true, x, y, true, true);
-            xp.setVelocityY(100);
+        // Drop XP (more for blue enemies)
+        const xpMultiplier = enemyType === 'blue' ? GameBalance.blueEnemy.xpMultiplier : 1;
+        for (let i = 0; i < xpMultiplier; i++) {
+            const xp = this.xpItems.get(x + (i * 5), y);
+            if (xp) {
+                xp.enableBody(true, x + (i * 5), y, true, true);
+                xp.setVelocityY(100);
+            }
         }
 
-        // Drop gold if applicable
+        // Drop gold if applicable (more for blue enemies)
         if (dropGold) {
-            const gold = this.goldItems.get(x, y);
-            if (gold) {
-                gold.enableBody(true, x, y, true, true);
-                gold.setVelocityY(100);
+            const goldMultiplier = enemyType === 'blue' ? GameBalance.blueEnemy.goldMultiplier : 1;
+            for (let i = 0; i < goldMultiplier; i++) {
+                const gold = this.goldItems.get(x + (i * 5), y);
+                if (gold) {
+                    gold.enableBody(true, x + (i * 5), y, true, true);
+                    gold.setVelocityY(100);
+                }
             }
         }
 
@@ -322,6 +349,8 @@ export default class GameScene extends Phaser.Scene {
             case 'shield':
                 this.player.isInvulnerable = true;
                 this.player.setAlpha(0.7); // Visual indicator
+                // Create shield bubble
+                this.shieldBubble = this.add.circle(this.player.x, this.player.y, 30, 0x00aaff, 0.4).setDepth(2);
                 break;
         }
     }
@@ -346,6 +375,11 @@ export default class GameScene extends Phaser.Scene {
             case 'shield':
                 this.player.isInvulnerable = false;
                 this.player.setAlpha(1); // Restore full opacity
+                // Destroy shield bubble
+                if (this.shieldBubble) {
+                    this.shieldBubble.destroy();
+                    this.shieldBubble = null;
+                }
                 break;
         }
     }
