@@ -50,6 +50,7 @@ const defaultStats = {
     xpMult: GameBalance.player.startXPMult,
     gold: 0,
     goldMultiplier: 1,
+    maxFuel: GameBalance.fuel.startFuel,
     hasExtraShooter: false,
     hasRevive: false
 };
@@ -90,6 +91,7 @@ export const SaveSystem = {
             xpMult: stats.xpMult,
             gold: stats.gold,
             goldMultiplier: stats.goldMultiplier,
+            maxFuel: stats.maxFuel,
             hasExtraShooter: stats.hasExtraShooter,
             hasRevive: stats.hasRevive
         };

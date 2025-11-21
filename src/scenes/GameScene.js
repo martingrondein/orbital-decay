@@ -261,7 +261,10 @@ export default class GameScene extends Phaser.Scene {
         createCollectionEffect(this, fuelItem.x, fuelItem.y, 0x9932cc);
 
         fuelItem.disableBody(true, true);
-        this.fuel += GameBalance.progression.fuelPerPickup;
+        this.fuel = Math.min(
+            this.fuel + GameBalance.progression.fuelPerPickup,
+            this.stats.maxFuel
+        );
         this.events.emit('updateFuel', this.fuel);
         AudioEngine.play('xp'); // Reuse XP sound
     }
@@ -313,7 +316,10 @@ export default class GameScene extends Phaser.Scene {
         this.stats.damageMult += GameBalance.levelUp.damageIncrease;
 
         // Fuel bonus
-        this.fuel += GameBalance.levelUp.fuelBonus;
+        this.fuel = Math.min(
+            this.fuel + GameBalance.levelUp.fuelBonus,
+            this.stats.maxFuel
+        );
         this.events.emit('updateFuel', this.fuel);
 
         // Update base values for powerup calculations

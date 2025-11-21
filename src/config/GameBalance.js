@@ -82,12 +82,14 @@ export const GameBalance = {
 
     // Shop prices
     shop: {
-        goldValueUpgrade: 250,
-        healthUpgrade: 250,
-        fireRateUpgrade: 250,
-        extraShooter: 2000,
-        revive: 10000,
+        goldValueUpgrade: 50,
+        healthUpgrade: 50,
+        fireRateUpgrade: 50,
+        fuelUpgrade: 50,
+        extraShooter: 400,
+        revive: 2000,
         healthUpgradeAmount: 10,
-        fireRateUpgradeAmount: 10
+        fireRateUpgradeAmount: 10,
+        fuelUpgradeAmount: 100
     }
 };

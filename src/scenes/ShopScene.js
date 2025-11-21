@@ -56,9 +56,17 @@ export default class ShopScene extends Phaser.Scene {
             () => this.purchaseFireRate()
         );
 
-        // 4. Extra Shooter
-        const extraShooterStatus = this.stats.hasExtraShooter ? 'OWNED' : 'Not owned';
+        // 4. Fuel Upgrade
         this.createShopItem(w/2, startY + itemSpacing * 3,
+            `+${GameBalance.shop.fuelUpgradeAmount} Max Fuel`,
+            `Cost: ${GameBalance.shop.fuelUpgrade}g`,
+            `Current: ${this.stats.maxFuel}`,
+            () => this.purchaseFuel()
+        );
+
+        // 5. Extra Shooter
+        const extraShooterStatus = this.stats.hasExtraShooter ? 'OWNED' : 'Not owned';
+        this.createShopItem(w/2, startY + itemSpacing * 4,
             'Extra Shooter',
             `Cost: ${GameBalance.shop.extraShooter}g`,
             extraShooterStatus,
@@ -66,9 +74,9 @@ export default class ShopScene extends Phaser.Scene {
             this.stats.hasExtraShooter
         );
 
-        // 5. Revive
+        // 6. Revive
         const reviveStatus = this.stats.hasRevive ? 'OWNED' : 'Not owned';
-        this.createShopItem(w/2, startY + itemSpacing * 4,
+        this.createShopItem(w/2, startY + itemSpacing * 5,
             'Revive (Once per run)',
             `Cost: ${GameBalance.shop.revive}g`,
             reviveStatus,
@@ -156,6 +164,17 @@ export default class ShopScene extends Phaser.Scene {
                 GameBalance.levelUp.fireRateMin,
                 this.stats.fireRateMs - GameBalance.shop.fireRateUpgradeAmount
             );
+            SaveSystem.save(this.stats);
+            this.scene.restart();
+        } else {
+            this.showInsufficientFunds();
+        }
+    }
+
+    purchaseFuel() {
+        if (this.stats.gold >= GameBalance.shop.fuelUpgrade) {
+            this.stats.gold -= GameBalance.shop.fuelUpgrade;
+            this.stats.maxFuel += GameBalance.shop.fuelUpgradeAmount;
             SaveSystem.save(this.stats);
             this.scene.restart();
         } else {
