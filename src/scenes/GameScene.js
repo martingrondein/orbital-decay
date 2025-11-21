@@ -58,9 +58,27 @@ export default class GameScene extends Phaser.Scene {
 
         // 3. Groups
         this.bullets = this.physics.add.group({ defaultKey: 'bullet', maxSize: 50 });
-        this.xpItems = this.physics.add.group({ defaultKey: 'xp', maxSize: 50 });
-        this.goldItems = this.physics.add.group({ defaultKey: 'gold', maxSize: 30 });
-        this.fuelItems = this.physics.add.group({ defaultKey: 'fuel', maxSize: 30 });
+        this.xpItems = this.physics.add.group({
+            defaultKey: 'xp',
+            maxSize: 50,
+            bounceX: 1,
+            bounceY: 0.8,
+            collideWorldBounds: false
+        });
+        this.goldItems = this.physics.add.group({
+            defaultKey: 'gold',
+            maxSize: 30,
+            bounceX: 1,
+            bounceY: 0.8,
+            collideWorldBounds: false
+        });
+        this.fuelItems = this.physics.add.group({
+            defaultKey: 'fuel',
+            maxSize: 30,
+            bounceX: 1,
+            bounceY: 0.8,
+            collideWorldBounds: false
+        });
 
         // 4. Entities - position based on screen height
         const playerY = Math.min(
@@ -101,6 +119,14 @@ export default class GameScene extends Phaser.Scene {
 
         this.physics.add.overlap(this.player, this.powerupManager.powerups,
             (p, powerup) => this.collectPowerup(powerup));
+
+        // Item-to-item collisions (bounce off each other)
+        this.physics.add.collider(this.xpItems, this.goldItems);
+        this.physics.add.collider(this.xpItems, this.fuelItems);
+        this.physics.add.collider(this.goldItems, this.fuelItems);
+        this.physics.add.collider(this.xpItems, this.xpItems);
+        this.physics.add.collider(this.goldItems, this.goldItems);
+        this.physics.add.collider(this.fuelItems, this.fuelItems);
     }
 
     update(time, delta) {
@@ -202,6 +228,7 @@ export default class GameScene extends Phaser.Scene {
             if (xp) {
                 xp.enableBody(true, x + (i * GameConstants.drops.horizontalSpacing), y, true, true);
                 xp.setVelocityY(GameConstants.drops.velocityY);
+                xp.setVelocityX(Phaser.Math.Between(-50, 50));
             }
         }
 
@@ -213,6 +240,7 @@ export default class GameScene extends Phaser.Scene {
                 if (gold) {
                     gold.enableBody(true, x + (i * GameConstants.drops.horizontalSpacing), y, true, true);
                     gold.setVelocityY(GameConstants.drops.velocityY);
+                    gold.setVelocityX(Phaser.Math.Between(-50, 50));
                 }
             }
         }
@@ -223,6 +251,7 @@ export default class GameScene extends Phaser.Scene {
             if (fuel) {
                 fuel.enableBody(true, x, y, true, true);
                 fuel.setVelocityY(GameConstants.drops.velocityY);
+                fuel.setVelocityX(Phaser.Math.Between(-50, 50));
             }
         }
 
