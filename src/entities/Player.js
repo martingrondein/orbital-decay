@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { AudioEngine } from '../systems/AudioEngine.js';
+import { GameBalance } from '../config/GameBalance.js';
 
 export default class Player extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, stats) {
@@ -25,6 +26,15 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
                 joystickData.x * this.stats.moveSpeed,
                 joystickData.y * this.stats.moveSpeed
             );
+
+            // Deplete fuel on movement
+            if (this.scene.fuel > 0) {
+                this.scene.fuel = Math.max(0, this.scene.fuel - GameBalance.fuel.depletionPerMovement);
+                this.scene.events.emit('updateFuel', this.scene.fuel);
+                if (this.scene.fuel <= 0) {
+                    this.scene.handleOutOfFuel();
+                }
+            }
         } else {
             this.setVelocity(0);
         }

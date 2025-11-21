@@ -10,6 +10,7 @@ export default class UIScene extends Phaser.Scene {
         game.events.on('startUI', this.initUI, this);
         game.events.on('updateHealth', this.updateHealth, this);
         game.events.on('updateXP', this.updateXP, this);
+        game.events.on('updateFuel', this.updateFuel, this);
         game.events.on('updateScore', (s) => this.scoreText.setText(`Score: ${s}`), this);
         game.events.on('powerupActivated', this.showPowerup, this);
         game.events.on('powerupExpired', this.hidePowerup, this);
@@ -27,10 +28,12 @@ export default class UIScene extends Phaser.Scene {
         // Bar backgrounds for better visibility (moved to top)
         this.hpBarBg = this.add.rectangle(10, 40, w-20, 15, 0x333333).setOrigin(0).setDepth(99);
         this.xpBarBg = this.add.rectangle(10, 65, w-20, 15, 0x333333).setOrigin(0).setDepth(99);
+        this.fuelBarBg = this.add.rectangle(10, 90, w-20, 15, 0x333333).setOrigin(0).setDepth(99);
 
         // Bar foregrounds (start with small width instead of 0 for Safari compatibility)
         this.hpBar = this.add.rectangle(10, 40, 1, 15, 0xff0000).setOrigin(0).setDepth(100);
         this.xpBar = this.add.rectangle(10, 65, 1, 15, 0x00aaff).setOrigin(0).setDepth(100);
+        this.fuelBar = this.add.rectangle(10, 90, 1, 15, 0x9932cc).setOrigin(0).setDepth(100);
 
         // Bar text labels
         this.hpText = this.add.text(w/2, 47.5, '', {
@@ -49,8 +52,16 @@ export default class UIScene extends Phaser.Scene {
             strokeThickness: 3
         }).setOrigin(0.5).setDepth(101);
 
+        this.fuelText = this.add.text(w/2, 97.5, '', {
+            fontSize: '12px',
+            color: '#fff',
+            fontStyle: 'bold',
+            stroke: '#000',
+            strokeThickness: 3
+        }).setOrigin(0.5).setDepth(101);
+
         // Powerup indicator (moved down to give space for bars)
-        this.powerupText = this.add.text(w/2, 95, '', {
+        this.powerupText = this.add.text(w/2, 120, '', {
             fontSize: '18px',
             color: '#fff',
             fontStyle: 'bold',
@@ -75,6 +86,12 @@ export default class UIScene extends Phaser.Scene {
     updateXP(curr, req) {
         this.xpBar.width = (this.scale.width - 20) * Math.max(0, curr/req);
         this.xpText.setText(`XP: ${Math.floor(curr)}/${req}`);
+    }
+
+    updateFuel(fuel) {
+        const maxFuel = GameBalance.fuel.startFuel;
+        this.fuelBar.width = (this.scale.width - 20) * Math.max(0, fuel/maxFuel);
+        this.fuelText.setText(`Fuel: ${Math.floor(fuel)}`);
     }
 
     showPowerup(type) {

@@ -21,7 +21,8 @@ export const GameBalance = {
         fireRateDecrease: 10,
         fireRateMin: 50,
         damageIncrease: 0.1,
-        xpRequirementMultiplier: 1.5
+        xpRequirementMultiplier: 1.5,
+        fuelBonus: 100
     },
 
     // Enemy stats
@@ -48,7 +49,16 @@ export const GameBalance = {
         xpPerPickup: 10,
         scorePerKill: 100,
         goldDropChance: 0.5, // 50% chance to drop gold on enemy death
-        goldPerDrop: 1
+        goldPerDrop: 1,
+        fuelDropChance: 0.3, // 30% chance to drop fuel on enemy death
+        fuelPerPickup: 100
+    },
+
+    // Fuel system
+    fuel: {
+        startFuel: 1000,
+        depletionPerSecond: 1,
+        depletionPerMovement: 2
     },
 
     // Shop prices

@@ -17,6 +17,7 @@ export default class GameScene extends Phaser.Scene {
         this.enemiesDefeated = 0;
         this.score = 0;
         this.isGameOver = false;
+        this.fuel = GameBalance.fuel.startFuel;
 
         // Powerup tracking
         this.activePowerupType = null;
@@ -29,11 +30,28 @@ export default class GameScene extends Phaser.Scene {
         // 2. Systems
         this.background = new Background(this);
         this.events.emit('startUI', this.stats); // Notify UIScene
+        this.events.emit('updateFuel', this.fuel); // Notify UIScene of initial fuel
+
+        // Fuel depletion timer (1 per second)
+        this.time.addEvent({
+            delay: 1000,
+            callback: () => {
+                if (!this.isGameOver) {
+                    this.fuel = Math.max(0, this.fuel - GameBalance.fuel.depletionPerSecond);
+                    this.events.emit('updateFuel', this.fuel);
+                    if (this.fuel <= 0) {
+                        this.handleOutOfFuel();
+                    }
+                }
+            },
+            loop: true
+        });
 
         // 3. Groups
         this.bullets = this.physics.add.group({ defaultKey: 'bullet', maxSize: 50 });
         this.xpItems = this.physics.add.group({ defaultKey: 'xp', maxSize: 50 });
         this.goldItems = this.physics.add.group({ defaultKey: 'gold', maxSize: 30 });
+        this.fuelItems = this.physics.add.group({ defaultKey: 'fuel', maxSize: 30 });
 
         // 4. Entities - position based on screen height
         const playerY = Math.min(this.scale.height - 90, 710); // 90px from bottom or max 710
@@ -54,6 +72,9 @@ export default class GameScene extends Phaser.Scene {
         this.physics.add.overlap(this.player, this.goldItems,
             (p, gold) => this.collectGold(gold));
 
+        this.physics.add.overlap(this.player, this.fuelItems,
+            (p, fuel) => this.collectFuel(fuel));
+
         this.physics.add.overlap(this.player, this.enemyManager.enemies,
             (p, e) => { e.disableBody(true,true); this.handlePlayerHit(5); });
 
@@ -72,8 +93,8 @@ export default class GameScene extends Phaser.Scene {
         this.enemyManager.cleanup();
         this.powerupManager.cleanup();
 
-        // Cleanup bullets/XP/Gold
-        [this.bullets, this.xpItems, this.goldItems].forEach(g => {
+        // Cleanup bullets/XP/Gold/Fuel
+        [this.bullets, this.xpItems, this.goldItems, this.fuelItems].forEach(g => {
             g.children.iterate(c => {
                 if(c.active && (c.y < -50 || c.y > this.scale.height + 50)) c.disableBody(true,true);
             });
@@ -98,6 +119,16 @@ export default class GameScene extends Phaser.Scene {
                 this.scene.get('UIScene').showGameOver(this.score, isNewHighScore);
             }
         }
+    }
+
+    handleOutOfFuel() {
+        this.isGameOver = true;
+        this.physics.pause();
+        SaveSystem.save(this.stats);
+
+        // Check and save high score
+        const isNewHighScore = SaveSystem.saveHighScore(this.score);
+        this.scene.get('UIScene').showGameOver(this.score, isNewHighScore);
     }
 
     revivePlayer() {
@@ -160,6 +191,15 @@ export default class GameScene extends Phaser.Scene {
             }
         }
 
+        // Random fuel drop
+        if (Math.random() < GameBalance.progression.fuelDropChance) {
+            const fuel = this.fuelItems.get(x, y);
+            if (fuel) {
+                fuel.enableBody(true, x, y, true, true);
+                fuel.setVelocityY(100);
+            }
+        }
+
         // Random powerup drop (10% chance if no powerup is active)
         if (!this.activePowerupType && Math.random() < 0.1) {
             this.powerupManager.spawnAtPosition(x, y);
@@ -186,6 +226,16 @@ export default class GameScene extends Phaser.Scene {
 
         goldItem.disableBody(true, true);
         this.stats.gold += (GameBalance.progression.goldPerDrop * this.stats.goldMultiplier);
+        AudioEngine.play('xp'); // Reuse XP sound
+    }
+
+    collectFuel(fuelItem) {
+        // Create collection effect before disabling
+        this.createCollectionEffect(fuelItem.x, fuelItem.y, 0x9932cc);
+
+        fuelItem.disableBody(true, true);
+        this.fuel += GameBalance.progression.fuelPerPickup;
+        this.events.emit('updateFuel', this.fuel);
         AudioEngine.play('xp'); // Reuse XP sound
     }
 
@@ -315,6 +365,10 @@ export default class GameScene extends Phaser.Scene {
             this.stats.fireRateMs - GameBalance.levelUp.fireRateDecrease
         );
         this.stats.damageMult += GameBalance.levelUp.damageIncrease;
+
+        // Fuel bonus
+        this.fuel += GameBalance.levelUp.fuelBonus;
+        this.events.emit('updateFuel', this.fuel);
 
         // Update base values for powerup calculations
         this.baseDamageMult = this.stats.damageMult;

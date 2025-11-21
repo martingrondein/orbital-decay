@@ -24,12 +24,29 @@ export default class TitleScene extends Phaser.Scene {
             g.generateTexture(k, size, size);
         };
 
+        // Diamond texture maker for fuel
+        const makeDiamond = (k, c, size) => {
+            if(this.textures.exists(k)) return;
+            const g = this.make.graphics({ add: false });
+            g.fillStyle(c, 1);
+            const halfSize = size / 2;
+            g.beginPath();
+            g.moveTo(halfSize, 0);           // Top point
+            g.lineTo(size, halfSize);        // Right point
+            g.lineTo(halfSize, size);        // Bottom point
+            g.lineTo(0, halfSize);           // Left point
+            g.closePath();
+            g.fillPath();
+            g.generateTexture(k, size, size);
+        };
+
         make('player', 0x00ff00, 20);
         make('bullet', 0xffff00, 5);
         make('enemy', 0xffffff, 20); // White texture, will be tinted red
         make('ebullet', 0xffaa00, 6);
         make('xp', 0x00ffff, 8);
         make('gold', 0xffd700, 10); // Golden coin
+        makeDiamond('fuel', 0x9932cc, 16); // Purple diamond
 
         // Powerup textures - all pink boxes
         makeBox('powerup_spray', 0xff69b4, 24);      // Pink box - Spray shot
