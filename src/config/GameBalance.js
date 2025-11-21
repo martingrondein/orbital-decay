@@ -75,7 +75,7 @@ export const GameBalance = {
 
     // Fuel system
     fuel: {
-        startFuel: 1000,
+        startFuel: 10000,
         depletionPerSecond: 1,
         depletionPerMovement: 2
     },

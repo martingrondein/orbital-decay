@@ -20,8 +20,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     update(time, joystickData) {
-        // Movement
-        if (joystickData.active) {
+        // Movement - only if canMove flag is true
+        if (joystickData.active && this.scene.canMove) {
             this.setVelocity(
                 joystickData.x * this.stats.moveSpeed,
                 joystickData.y * this.stats.moveSpeed
@@ -32,7 +32,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
                 this.scene.fuel = Math.max(0, this.scene.fuel - GameBalance.fuel.depletionPerMovement);
                 this.scene.events.emit('updateFuel', this.scene.fuel);
                 if (this.scene.fuel <= 0) {
-                    this.scene.handleOutOfFuel();
+                    this.scene.canMove = false; // Stop player movement when out of fuel
                 }
             }
         } else {

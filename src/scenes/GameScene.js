@@ -7,6 +7,9 @@ import { SaveSystem } from '../systems/SaveSystem.js';
 import { AudioEngine } from '../systems/AudioEngine.js';
 import Joystick from '../utils/Joystick.js';
 import { GameBalance } from '../config/GameBalance.js';
+import { GameConstants } from '../config/GameConstants.js';
+import { applyPowerup, clearPowerup } from '../config/PowerupConfig.js';
+import { createCollectionEffect, createExplosionEffect } from '../utils/EffectsUtils.js';
 
 export default class GameScene extends Phaser.Scene {
     constructor() { super({ key: 'GameScene' }); }
@@ -17,6 +20,7 @@ export default class GameScene extends Phaser.Scene {
         this.enemiesDefeated = 0;
         this.score = 0;
         this.isGameOver = false;
+        this.canMove = true; // Track if player can move
         this.fuel = GameBalance.fuel.startFuel;
         this.distance = 0; // Distance counter
 
@@ -35,13 +39,13 @@ export default class GameScene extends Phaser.Scene {
 
         // Fuel depletion and distance tracking timer (1 per second)
         this.time.addEvent({
-            delay: 1000,
+            delay: GameConstants.timing.gameTickInterval,
             callback: () => {
                 if (!this.isGameOver) {
                     this.fuel = Math.max(0, this.fuel - GameBalance.fuel.depletionPerSecond);
                     this.events.emit('updateFuel', this.fuel);
                     if (this.fuel <= 0) {
-                        this.handleOutOfFuel();
+                        this.canMove = false; // Stop player movement when out of fuel
                     }
 
                     // Increment distance
@@ -59,7 +63,10 @@ export default class GameScene extends Phaser.Scene {
         this.fuelItems = this.physics.add.group({ defaultKey: 'fuel', maxSize: 30 });
 
         // 4. Entities - position based on screen height
-        const playerY = Math.min(this.scale.height - 90, 710); // 90px from bottom or max 710
+        const playerY = Math.min(
+            this.scale.height - GameConstants.player.paddingFromBottom,
+            GameConstants.player.maxStartY
+        );
         this.player = new Player(this, this.scale.width / 2, playerY, this.stats);
         this.enemyManager = new EnemyManager(this);
         this.powerupManager = new PowerupManager(this);
@@ -84,13 +91,13 @@ export default class GameScene extends Phaser.Scene {
             (p, fuel) => this.collectFuel(fuel));
 
         this.physics.add.overlap(this.player, this.enemyManager.enemies,
-            (p, e) => { e.disableBody(true,true); this.handlePlayerHit(5); });
+            (p, e) => { e.disableBody(true,true); this.handlePlayerHit(GameConstants.damage.collision); });
 
         this.physics.add.overlap(this.player, this.enemyManager.blueEnemies,
-            (p, e) => { e.disableBody(true,true); this.handlePlayerHit(5); });
+            (p, e) => { e.disableBody(true,true); this.handlePlayerHit(GameConstants.damage.collision); });
 
         this.physics.add.overlap(this.player, this.enemyManager.enemyBullets,
-            (p, b) => { b.disableBody(true,true); this.handlePlayerHit(5); });
+            (p, b) => { b.disableBody(true,true); this.handlePlayerHit(GameConstants.damage.collision); });
 
         this.physics.add.overlap(this.player, this.powerupManager.powerups,
             (p, powerup) => this.collectPowerup(powerup));
@@ -112,7 +119,10 @@ export default class GameScene extends Phaser.Scene {
         // Cleanup bullets/XP/Gold/Fuel
         [this.bullets, this.xpItems, this.goldItems, this.fuelItems].forEach(g => {
             g.children.iterate(c => {
-                if(c.active && (c.y < -50 || c.y > this.scale.height + 50)) c.disableBody(true,true);
+                const boundary = GameConstants.spawn.cleanupBoundary;
+                if(c.active && (c.y < -boundary || c.y > this.scale.height + boundary)) {
+                    c.disableBody(true,true);
+                }
             });
         });
     }
@@ -138,17 +148,6 @@ export default class GameScene extends Phaser.Scene {
         }
     }
 
-    handleOutOfFuel() {
-        this.isGameOver = true;
-        this.physics.pause();
-        SaveSystem.save(this.stats);
-
-        // Check and save high score and best distance
-        const isNewHighScore = SaveSystem.saveHighScore(this.score);
-        SaveSystem.saveBestDistance(this.distance);
-        this.scene.get('UIScene').showGameOver(this.score, isNewHighScore);
-    }
-
     revivePlayer() {
         // Restore health to 50%
         this.player.currentHealth = Math.floor(this.stats.maxHealth * 0.5);
@@ -162,19 +161,19 @@ export default class GameScene extends Phaser.Scene {
         const w = this.scale.width;
         const h = this.scale.height;
         const reviveText = this.add.text(w/2, h/2, 'REVIVED!', {
-            fontSize: '48px',
+            fontSize: GameConstants.revive.fontSize,
             color: '#00ff00',
             fontStyle: 'bold',
             stroke: '#000',
-            strokeThickness: 6
+            strokeThickness: GameConstants.revive.strokeThickness
         }).setOrigin(0.5).setDepth(100);
 
         // Fade out and destroy
         this.tweens.add({
             targets: reviveText,
             alpha: 0,
-            y: h/2 - 50,
-            duration: 2000,
+            y: h/2 - GameConstants.revive.textOffset,
+            duration: GameConstants.revive.duration,
             ease: 'Power2',
             onComplete: () => reviveText.destroy()
         });
@@ -182,7 +181,7 @@ export default class GameScene extends Phaser.Scene {
         // Brief invulnerability
         this.player.isInvulnerable = true;
         this.player.setAlpha(0.5);
-        this.time.delayedCall(3000, () => {
+        this.time.delayedCall(GameConstants.timing.invulnerabilityDuration, () => {
             this.player.isInvulnerable = false;
             this.player.setAlpha(1);
         });
@@ -199,10 +198,10 @@ export default class GameScene extends Phaser.Scene {
         // Drop XP (more for blue enemies)
         const xpMultiplier = enemyType === 'blue' ? GameBalance.blueEnemy.xpMultiplier : 1;
         for (let i = 0; i < xpMultiplier; i++) {
-            const xp = this.xpItems.get(x + (i * 5), y);
+            const xp = this.xpItems.get(x + (i * GameConstants.drops.horizontalSpacing), y);
             if (xp) {
-                xp.enableBody(true, x + (i * 5), y, true, true);
-                xp.setVelocityY(100);
+                xp.enableBody(true, x + (i * GameConstants.drops.horizontalSpacing), y, true, true);
+                xp.setVelocityY(GameConstants.drops.velocityY);
             }
         }
 
@@ -210,10 +209,10 @@ export default class GameScene extends Phaser.Scene {
         if (dropGold) {
             const goldMultiplier = enemyType === 'blue' ? GameBalance.blueEnemy.goldMultiplier : 1;
             for (let i = 0; i < goldMultiplier; i++) {
-                const gold = this.goldItems.get(x + (i * 5), y);
+                const gold = this.goldItems.get(x + (i * GameConstants.drops.horizontalSpacing), y);
                 if (gold) {
-                    gold.enableBody(true, x + (i * 5), y, true, true);
-                    gold.setVelocityY(100);
+                    gold.enableBody(true, x + (i * GameConstants.drops.horizontalSpacing), y, true, true);
+                    gold.setVelocityY(GameConstants.drops.velocityY);
                 }
             }
         }
@@ -223,19 +222,19 @@ export default class GameScene extends Phaser.Scene {
             const fuel = this.fuelItems.get(x, y);
             if (fuel) {
                 fuel.enableBody(true, x, y, true, true);
-                fuel.setVelocityY(100);
+                fuel.setVelocityY(GameConstants.drops.velocityY);
             }
         }
 
-        // Random powerup drop (10% chance if no powerup is active)
-        if (!this.activePowerupType && Math.random() < 0.1) {
+        // Random powerup drop if no powerup is active
+        if (!this.activePowerupType && Math.random() < GameConstants.spawn.powerupSpawnChance) {
             this.powerupManager.spawnAtPosition(x, y);
         }
     }
 
     collectXP(xpItem) {
         // Create collection effect before disabling
-        this.createCollectionEffect(xpItem.x, xpItem.y, 0x00ffff);
+        createCollectionEffect(this, xpItem.x, xpItem.y, 0x00ffff);
 
         xpItem.disableBody(true, true);
         this.stats.xp += (GameBalance.progression.xpPerPickup * this.stats.xpMult);
@@ -249,7 +248,7 @@ export default class GameScene extends Phaser.Scene {
 
     collectGold(goldItem) {
         // Create collection effect before disabling
-        this.createCollectionEffect(goldItem.x, goldItem.y, 0xffd700);
+        createCollectionEffect(this, goldItem.x, goldItem.y, 0xffd700);
 
         goldItem.disableBody(true, true);
         this.stats.gold += (GameBalance.progression.goldPerDrop * this.stats.goldMultiplier);
@@ -258,42 +257,12 @@ export default class GameScene extends Phaser.Scene {
 
     collectFuel(fuelItem) {
         // Create collection effect before disabling
-        this.createCollectionEffect(fuelItem.x, fuelItem.y, 0x9932cc);
+        createCollectionEffect(this, fuelItem.x, fuelItem.y, 0x9932cc);
 
         fuelItem.disableBody(true, true);
         this.fuel += GameBalance.progression.fuelPerPickup;
         this.events.emit('updateFuel', this.fuel);
         AudioEngine.play('xp'); // Reuse XP sound
-    }
-
-    createCollectionEffect(x, y, color = 0x00ffff) {
-        // Create a burst of small particles
-        for (let i = 0; i < 6; i++) {
-            const angle = (Math.PI * 2 / 6) * i;
-            const particle = this.add.circle(x, y, 4, color, 1).setDepth(50);
-
-            this.tweens.add({
-                targets: particle,
-                x: x + Math.cos(angle) * 30,
-                y: y + Math.sin(angle) * 30,
-                scale: 0,
-                alpha: 0,
-                duration: 300,
-                ease: 'Power2',
-                onComplete: () => particle.destroy()
-            });
-        }
-
-        // Create a scaling/fading circle
-        const circle = this.add.circle(x, y, 8, color, 0.6).setDepth(50);
-        this.tweens.add({
-            targets: circle,
-            scale: 2.5,
-            alpha: 0,
-            duration: 250,
-            ease: 'Power2',
-            onComplete: () => circle.destroy()
-        });
     }
 
     collectPowerup(powerup) {
@@ -303,85 +272,27 @@ export default class GameScene extends Phaser.Scene {
         // Clear any existing powerup
         if (this.activePowerupTimer) {
             this.activePowerupTimer.remove();
-            this.clearPowerupEffect(this.activePowerupType);
+            clearPowerup(this.activePowerupType, this);
         }
 
         // Apply new powerup
         this.activePowerupType = type;
         this.powerupManager.setActivePowerup(type);
-        this.applyPowerupEffect(type);
+        applyPowerup(type, this);
 
         AudioEngine.play('xp'); // Reuse XP sound
 
         // Notify UI
         this.events.emit('powerupActivated', type);
 
-        // Set timer to clear after 15 seconds
-        this.activePowerupTimer = this.time.delayedCall(15000, () => {
-            this.clearPowerupEffect(type);
+        // Set timer to clear after powerup duration
+        this.activePowerupTimer = this.time.delayedCall(GameConstants.timing.powerupDuration, () => {
+            clearPowerup(type, this);
             this.activePowerupType = null;
             this.activePowerupTimer = null;
             this.powerupManager.clearActivePowerup();
             this.events.emit('powerupExpired');
         });
-    }
-
-    applyPowerupEffect(type) {
-        switch(type) {
-            case 'spray':
-                this.player.sprayShot = true;
-                break;
-            case 'damage':
-                this.baseDamageMult = this.stats.damageMult;
-                this.stats.damageMult *= 2;
-                break;
-            case 'firerate':
-                this.baseFireRateMs = this.stats.fireRateMs;
-                this.stats.fireRateMs = Math.max(50, Math.floor(this.stats.fireRateMs / 2));
-                break;
-            case 'doublexp':
-                this.baseXPMult = this.stats.xpMult;
-                this.stats.xpMult *= 2;
-                break;
-            case 'triplescore':
-                this.scoreMultiplier = 3;
-                break;
-            case 'shield':
-                this.player.isInvulnerable = true;
-                this.player.setAlpha(0.7); // Visual indicator
-                // Create shield bubble
-                this.shieldBubble = this.add.circle(this.player.x, this.player.y, 30, 0x00aaff, 0.4).setDepth(2);
-                break;
-        }
-    }
-
-    clearPowerupEffect(type) {
-        switch(type) {
-            case 'spray':
-                this.player.sprayShot = false;
-                break;
-            case 'damage':
-                this.stats.damageMult = this.baseDamageMult;
-                break;
-            case 'firerate':
-                this.stats.fireRateMs = this.baseFireRateMs;
-                break;
-            case 'doublexp':
-                this.stats.xpMult = this.baseXPMult;
-                break;
-            case 'triplescore':
-                this.scoreMultiplier = 1;
-                break;
-            case 'shield':
-                this.player.isInvulnerable = false;
-                this.player.setAlpha(1); // Restore full opacity
-                // Destroy shield bubble
-                if (this.shieldBubble) {
-                    this.shieldBubble.destroy();
-                    this.shieldBubble = null;
-                }
-                break;
-        }
     }
 
     levelUp() {
