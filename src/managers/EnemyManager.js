@@ -55,7 +55,7 @@ export default class EnemyManager {
                 );
                 e.hp = GameBalance.blueEnemy.baseHealth;
                 e.setTint(0x0000ff); // Blue tint
-                e.setScale(0.5); // Half size
+                e.setScale(0.625); // 25% larger than standard 0.5
                 e.enemyType = 'blue';
             }
         } else {
