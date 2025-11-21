@@ -158,7 +158,7 @@ export default class GameScene extends Phaser.Scene {
 
     applyMagneticAttraction() {
         const magneticRange = this.stats.magneticRange;
-        const attractionStrength = 150; // Pixels per second
+        const attractionStrength = 500; // Pixels per second - strong enough to override gravity and bounce
 
         // Apply to all collectible groups
         [this.xpItems, this.goldItems, this.fuelItems].forEach(group => {
@@ -170,9 +170,18 @@ export default class GameScene extends Phaser.Scene {
                     item.x, item.y
                 );
 
-                // If within magnetic range, pull towards player
+                // If within magnetic range, pull towards player persistently
                 if (distance <= magneticRange && distance > 0) {
+                    // Mark item as magnetized for stronger tracking
+                    if (!item.magnetized) {
+                        item.magnetized = true;
+                    }
+
+                    // Apply strong attraction to ensure items follow player
                     this.physics.moveToObject(item, this.player, attractionStrength);
+                } else if (item.magnetized) {
+                    // Item left magnetic range, reset flag
+                    item.magnetized = false;
                 }
             });
         });
