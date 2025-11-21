@@ -12,7 +12,7 @@ export const GameBalance = {
         startMaxHealth: 10,
         startDamageMult: 1,
         startXPMult: 1,
-        startMagneticRange: 10
+        startMagneticRange: 80
     },
 
     // Level up increments
