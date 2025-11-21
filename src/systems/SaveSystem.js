@@ -4,6 +4,41 @@ const KEY = 'SHMUP_SAVE_V1';
 const HIGH_SCORE_KEY = 'SHMUP_HIGH_SCORE';
 const BEST_DISTANCE_KEY = 'SHMUP_BEST_DISTANCE';
 
+// Secret salt for checksum (obfuscated - will be in compiled code but harder to find)
+const SALT = 'OrbitalDecay_8f3a9c2e1b4d7f6a';
+
+// Simple hash function for data integrity verification
+function computeHash(data) {
+    const str = JSON.stringify(data) + SALT;
+    let hash = 5381;
+    for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) + hash) + str.charCodeAt(i);
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash.toString(36); // Base36 encoding for shorter string
+}
+
+// Verify data integrity
+function verifyData(stored) {
+    if (!stored || typeof stored !== 'object' || !stored.data || !stored.checksum) {
+        return null; // Invalid format
+    }
+    const expectedHash = computeHash(stored.data);
+    if (expectedHash !== stored.checksum) {
+        console.warn('Data integrity check failed - data may have been tampered with');
+        return null; // Checksum mismatch - data was tampered
+    }
+    return stored.data;
+}
+
+// Wrap data with checksum
+function wrapData(data) {
+    return {
+        data: data,
+        checksum: computeHash(data)
+    };
+}
+
 const defaultStats = {
     level: GameBalance.player.startLevel,
     xp: GameBalance.player.startXP,
@@ -21,8 +56,25 @@ const defaultStats = {
 
 export const SaveSystem = {
     load() {
-        const data = localStorage.getItem(KEY);
-        return data ? JSON.parse(data) : { ...defaultStats };
+        try {
+            const stored = localStorage.getItem(KEY);
+            if (!stored) return { ...defaultStats };
+
+            const parsed = JSON.parse(stored);
+            const verified = verifyData(parsed);
+
+            if (verified === null) {
+                // Data was tampered with - reset to defaults
+                console.warn('Save data corrupted or tampered - resetting to defaults');
+                this.reset();
+                return { ...defaultStats };
+            }
+
+            return verified;
+        } catch (e) {
+            console.error('Failed to load save data:', e);
+            return { ...defaultStats };
+        }
     },
 
     save(stats) {
@@ -41,7 +93,10 @@ export const SaveSystem = {
             hasExtraShooter: stats.hasExtraShooter,
             hasRevive: stats.hasRevive
         };
-        localStorage.setItem(KEY, JSON.stringify(toSave));
+
+        // Wrap with checksum
+        const wrapped = wrapData(toSave);
+        localStorage.setItem(KEY, JSON.stringify(wrapped));
     },
 
     reset() {
@@ -50,14 +105,30 @@ export const SaveSystem = {
     },
 
     loadHighScore() {
-        const score = localStorage.getItem(HIGH_SCORE_KEY);
-        return score ? parseInt(score, 10) : 0;
+        try {
+            const stored = localStorage.getItem(HIGH_SCORE_KEY);
+            if (!stored) return 0;
+
+            const parsed = JSON.parse(stored);
+            const verified = verifyData(parsed);
+
+            if (verified === null) {
+                console.warn('High score data tampered - resetting');
+                this.resetHighScore();
+                return 0;
+            }
+
+            return verified;
+        } catch (e) {
+            return 0;
+        }
     },
 
     saveHighScore(score) {
         const currentHighScore = this.loadHighScore();
         if (score > currentHighScore) {
-            localStorage.setItem(HIGH_SCORE_KEY, score.toString());
+            const wrapped = wrapData(score);
+            localStorage.setItem(HIGH_SCORE_KEY, JSON.stringify(wrapped));
             return true; // New high score!
         }
         return false;
@@ -68,14 +139,30 @@ export const SaveSystem = {
     },
 
     loadBestDistance() {
-        const distance = localStorage.getItem(BEST_DISTANCE_KEY);
-        return distance ? parseInt(distance, 10) : 0;
+        try {
+            const stored = localStorage.getItem(BEST_DISTANCE_KEY);
+            if (!stored) return 0;
+
+            const parsed = JSON.parse(stored);
+            const verified = verifyData(parsed);
+
+            if (verified === null) {
+                console.warn('Best distance data tampered - resetting');
+                this.resetBestDistance();
+                return 0;
+            }
+
+            return verified;
+        } catch (e) {
+            return 0;
+        }
     },
 
     saveBestDistance(distance) {
         const currentBestDistance = this.loadBestDistance();
         if (distance > currentBestDistance) {
-            localStorage.setItem(BEST_DISTANCE_KEY, distance.toString());
+            const wrapped = wrapData(distance);
+            localStorage.setItem(BEST_DISTANCE_KEY, JSON.stringify(wrapped));
             return true; // New best distance!
         }
         return false;
