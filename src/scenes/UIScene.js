@@ -13,6 +13,7 @@ export default class UIScene extends Phaser.Scene {
         game.events.on('updateFuel', this.updateFuel, this);
         game.events.on('updateDistance', (d) => this.distanceText.setText(`Distance: ${d}m`), this);
         game.events.on('updateScore', (s) => this.scoreText.setText(`Score: ${s}`), this);
+        game.events.on('updateGold', (g) => this.goldText.setText(`Gold: ${g}`), this);
         game.events.on('powerupActivated', this.showPowerup, this);
         game.events.on('powerupExpired', this.hidePowerup, this);
 
@@ -24,8 +25,9 @@ export default class UIScene extends Phaser.Scene {
         const h = this.scale.height;
 
         this.scoreText = this.add.text(10, 10, 'Score: 0', { fontSize: '18px' }).setDepth(100);
+        this.goldText = this.add.text(w-10, 10, 'Gold: 0', { fontSize: '18px', color: '#ffd700' }).setOrigin(1,0).setDepth(100);
         this.distanceText = this.add.text(w/2, 10, 'Distance: 0m', { fontSize: '18px' }).setOrigin(0.5,0).setDepth(100);
-        this.lvlText = this.add.text(w-10, 10, 'Lvl: 1', { fontSize: '18px' }).setOrigin(1,0).setDepth(100);
+        this.lvlText = this.add.text(10, h-30, 'Lvl: 1', { fontSize: '18px' }).setOrigin(0,1).setDepth(100);
 
         // Bar backgrounds for better visibility (moved to top)
         this.hpBarBg = this.add.rectangle(10, 40, w-20, 15, 0x333333).setOrigin(0).setDepth(99);
@@ -76,6 +78,7 @@ export default class UIScene extends Phaser.Scene {
 
     initUI(stats) {
         this.lvlText.setText(`Lvl: ${stats.level}`);
+        this.goldText.setText(`Gold: ${stats.gold}`);
         this.updateHealth(stats.maxHealth, stats.maxHealth);
         this.updateXP(stats.xp, stats.reqXp);
     }

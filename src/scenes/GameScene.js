@@ -252,6 +252,7 @@ export default class GameScene extends Phaser.Scene {
 
         goldItem.disableBody(true, true);
         this.stats.gold += (GameBalance.progression.goldPerDrop * this.stats.goldMultiplier);
+        this.events.emit('updateGold', this.stats.gold);
         AudioEngine.play('xp'); // Reuse XP sound
     }
 
