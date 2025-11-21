@@ -46,6 +46,19 @@ export const GameBalance = {
     // XP and scoring
     progression: {
         xpPerPickup: 10,
-        scorePerKill: 100
+        scorePerKill: 100,
+        goldDropChance: 0.5, // 50% chance to drop gold on enemy death
+        goldPerDrop: 1
+    },
+
+    // Shop prices
+    shop: {
+        goldValueUpgrade: 250,
+        healthUpgrade: 250,
+        fireRateUpgrade: 250,
+        extraShooter: 2000,
+        revive: 10000,
+        healthUpgradeAmount: 10,
+        fireRateUpgradeAmount: 10
     }
 };

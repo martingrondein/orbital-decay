@@ -29,6 +29,7 @@ export default class TitleScene extends Phaser.Scene {
         make('enemy', 0xffffff, 20); // White texture, will be tinted red
         make('ebullet', 0xffaa00, 6);
         make('xp', 0x00ffff, 8);
+        make('gold', 0xffd700, 10); // Golden coin
 
         // Powerup textures - all pink boxes
         makeBox('powerup_spray', 0xff69b4, 24);      // Pink box - Spray shot
@@ -71,6 +72,7 @@ export default class TitleScene extends Phaser.Scene {
         // Display player stats
         const statsText = [
             `Level: ${stats.level}`,
+            `Gold: ${stats.gold}`,
             `Health: ${stats.maxHealth}`,
             `Speed: ${stats.moveSpeed}`,
             `Fire Rate: ${stats.fireRateMs}ms`,
@@ -78,7 +80,7 @@ export default class TitleScene extends Phaser.Scene {
             `XP Mult: x${stats.xpMult}`
         ].join('\n');
 
-        this.add.text(w/2, h/2 - 40, statsText, {
+        this.add.text(w/2, h/2 - 60, statsText, {
             fontSize: '20px',
             color: '#fff',
             align: 'center',
@@ -86,12 +88,20 @@ export default class TitleScene extends Phaser.Scene {
         }).setOrigin(0.5);
 
         // START button
-        const startBtn = this.add.rectangle(w/2, h/2 + 100, 200, 50, 0x00aaff).setInteractive();
-        const startTxt = this.add.text(w/2, h/2 + 100, 'START', { fontSize: '24px', color: 'black' }).setOrigin(0.5);
+        const startBtn = this.add.rectangle(w/2, h/2 + 120, 200, 50, 0x00aaff).setInteractive();
+        const startTxt = this.add.text(w/2, h/2 + 120, 'START', { fontSize: '24px', color: 'black' }).setOrigin(0.5);
 
         startBtn.on('pointerdown', () => {
             this.scene.start('UIScene');
             this.scene.start('GameScene');
+        });
+
+        // SHOP button
+        const shopBtn = this.add.rectangle(w/2, h/2 + 185, 200, 50, 0xffd700).setInteractive();
+        const shopTxt = this.add.text(w/2, h/2 + 185, 'SHOP', { fontSize: '24px', color: 'black' }).setOrigin(0.5);
+
+        shopBtn.on('pointerdown', () => {
+            this.scene.start('ShopScene');
         });
 
         // Start at Level 40 button
@@ -117,8 +127,8 @@ export default class TitleScene extends Phaser.Scene {
         // });
 
         // Reset Stats button
-        const resetBtn = this.add.rectangle(w/2, h/2 + 295, 200, 50, 0xff3333).setInteractive();
-        const resetTxt = this.add.text(w/2, h/2 + 295, 'RESET STATS', { fontSize: '18px', color: 'black' }).setOrigin(0.5);
+        const resetBtn = this.add.rectangle(w/2, h/2 + 250, 200, 50, 0xff3333).setInteractive();
+        const resetTxt = this.add.text(w/2, h/2 + 250, 'RESET STATS', { fontSize: '18px', color: 'black' }).setOrigin(0.5);
 
         resetBtn.on('pointerdown', () => {
             SaveSystem.reset();

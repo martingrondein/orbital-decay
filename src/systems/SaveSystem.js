@@ -11,7 +11,11 @@ const defaultStats = {
     fireRateMs: GameBalance.player.startFireRateMs,
     maxHealth: GameBalance.player.startMaxHealth,
     damageMult: GameBalance.player.startDamageMult,
-    xpMult: GameBalance.player.startXPMult
+    xpMult: GameBalance.player.startXPMult,
+    gold: 0,
+    goldMultiplier: 1,
+    hasExtraShooter: false,
+    hasRevive: false
 };
 
 export const SaveSystem = {
@@ -30,7 +34,11 @@ export const SaveSystem = {
             fireRateMs: stats.fireRateMs,
             maxHealth: stats.maxHealth,
             damageMult: stats.damageMult,
-            xpMult: stats.xpMult
+            xpMult: stats.xpMult,
+            gold: stats.gold,
+            goldMultiplier: stats.goldMultiplier,
+            hasExtraShooter: stats.hasExtraShooter,
+            hasRevive: stats.hasRevive
         };
         localStorage.setItem(KEY, JSON.stringify(toSave));
     },

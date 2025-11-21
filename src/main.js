@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import TitleScene from './scenes/TitleScene.js';
 import GameScene from './scenes/GameScene.js';
 import UIScene from './scenes/UIScene.js';
+import ShopScene from './scenes/ShopScene.js';
 
 const config = {
     type: Phaser.AUTO,
@@ -20,7 +21,7 @@ const config = {
         target: 60,
         forceSetTimeOut: true,
     },
-    scene: [TitleScene, GameScene, UIScene]
+    scene: [TitleScene, GameScene, UIScene, ShopScene]
 };
 
 const game = new Phaser.Game(config);

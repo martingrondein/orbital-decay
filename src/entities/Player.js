@@ -45,32 +45,49 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     fireSingle() {
-        const bullet = this.scene.bullets.get(this.x, this.y - 20);
-        if (bullet) {
-            bullet.enableBody(true, this.x, this.y - 20, true, true);
-            bullet.setVelocityY(-600);
-            bullet.setTint(this.stats.damageMult > 1 ? 0xff0000 : 0xffff00);
-            AudioEngine.play('shoot');
-        }
-    }
-
-    fireSpray() {
-        // Fire 5 bullets in a spread pattern
-        const angles = [-30, -15, 0, 15, 30];
-        const speed = 600;
-
-        angles.forEach(angle => {
+        if (this.stats.hasExtraShooter) {
+            // Fire 2 bullets (left and right)
+            const offsets = [-10, 10];
+            offsets.forEach(offset => {
+                const bullet = this.scene.bullets.get(this.x + offset, this.y - 20);
+                if (bullet) {
+                    bullet.enableBody(true, this.x + offset, this.y - 20, true, true);
+                    bullet.setVelocityY(-600);
+                    bullet.setTint(this.stats.damageMult > 1 ? 0xff0000 : 0xffff00);
+                }
+            });
+        } else {
+            // Fire single bullet
             const bullet = this.scene.bullets.get(this.x, this.y - 20);
             if (bullet) {
                 bullet.enableBody(true, this.x, this.y - 20, true, true);
-
-                const angleRad = Phaser.Math.DegToRad(angle - 90); // -90 because 0 is right
-                const vx = Math.cos(angleRad) * speed;
-                const vy = Math.sin(angleRad) * speed;
-
-                bullet.setVelocity(vx, vy);
-                bullet.setTint(0x00ff00); // Green for spray shot
+                bullet.setVelocityY(-600);
+                bullet.setTint(this.stats.damageMult > 1 ? 0xff0000 : 0xffff00);
             }
+        }
+        AudioEngine.play('shoot');
+    }
+
+    fireSpray() {
+        // Fire 5 bullets in a spread pattern (10 with extra shooter)
+        const angles = [-30, -15, 0, 15, 30];
+        const speed = 600;
+        const positions = this.stats.hasExtraShooter ? [-10, 10] : [0];
+
+        positions.forEach(xOffset => {
+            angles.forEach(angle => {
+                const bullet = this.scene.bullets.get(this.x + xOffset, this.y - 20);
+                if (bullet) {
+                    bullet.enableBody(true, this.x + xOffset, this.y - 20, true, true);
+
+                    const angleRad = Phaser.Math.DegToRad(angle - 90); // -90 because 0 is right
+                    const vx = Math.cos(angleRad) * speed;
+                    const vy = Math.sin(angleRad) * speed;
+
+                    bullet.setVelocity(vx, vy);
+                    bullet.setTint(0x00ff00); // Green for spray shot
+                }
+            });
         });
 
         AudioEngine.play('shoot');

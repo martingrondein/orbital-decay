@@ -74,7 +74,9 @@ export default class EnemyManager {
             // Create explosion effect
             this.createExplosion(enemy.x, enemy.y);
 
-            this.scene.onEnemyKilled(enemy.x, enemy.y);
+            // Random gold drop
+            const dropGold = Math.random() < GameBalance.progression.goldDropChance;
+            this.scene.onEnemyKilled(enemy.x, enemy.y, dropGold);
             enemy.disableBody(true, true);
             AudioEngine.play('explode');
         }

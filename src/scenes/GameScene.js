@@ -33,6 +33,7 @@ export default class GameScene extends Phaser.Scene {
         // 3. Groups
         this.bullets = this.physics.add.group({ defaultKey: 'bullet', maxSize: 50 });
         this.xpItems = this.physics.add.group({ defaultKey: 'xp', maxSize: 50 });
+        this.goldItems = this.physics.add.group({ defaultKey: 'gold', maxSize: 30 });
 
         // 4. Entities - position based on screen height
         const playerY = Math.min(this.scale.height - 90, 710); // 90px from bottom or max 710
@@ -49,6 +50,9 @@ export default class GameScene extends Phaser.Scene {
 
         this.physics.add.overlap(this.player, this.xpItems,
             (p, xp) => this.collectXP(xp));
+
+        this.physics.add.overlap(this.player, this.goldItems,
+            (p, gold) => this.collectGold(gold));
 
         this.physics.add.overlap(this.player, this.enemyManager.enemies,
             (p, e) => { e.disableBody(true,true); this.handlePlayerHit(5); });
@@ -68,8 +72,8 @@ export default class GameScene extends Phaser.Scene {
         this.enemyManager.cleanup();
         this.powerupManager.cleanup();
 
-        // Cleanup bullets/XP
-        [this.bullets, this.xpItems].forEach(g => {
+        // Cleanup bullets/XP/Gold
+        [this.bullets, this.xpItems, this.goldItems].forEach(g => {
             g.children.iterate(c => {
                 if(c.active && (c.y < -50 || c.y > this.scale.height + 50)) c.disableBody(true,true);
             });
@@ -81,17 +85,61 @@ export default class GameScene extends Phaser.Scene {
         this.events.emit('updateHealth', this.player.currentHealth, this.stats.maxHealth);
 
         if (this.player.currentHealth <= 0) {
-            this.isGameOver = true;
-            this.physics.pause();
-            SaveSystem.save(this.stats); // SAVE STATS ON DEATH
+            // Check for revive
+            if (this.stats.hasRevive) {
+                this.revivePlayer();
+            } else {
+                this.isGameOver = true;
+                this.physics.pause();
+                SaveSystem.save(this.stats); // SAVE STATS ON DEATH
 
-            // Check and save high score
-            const isNewHighScore = SaveSystem.saveHighScore(this.score);
-            this.scene.get('UIScene').showGameOver(this.score, isNewHighScore);
+                // Check and save high score
+                const isNewHighScore = SaveSystem.saveHighScore(this.score);
+                this.scene.get('UIScene').showGameOver(this.score, isNewHighScore);
+            }
         }
     }
 
-    onEnemyKilled(x, y) {
+    revivePlayer() {
+        // Restore health to 50%
+        this.player.currentHealth = Math.floor(this.stats.maxHealth * 0.5);
+        this.events.emit('updateHealth', this.player.currentHealth, this.stats.maxHealth);
+
+        // Consume revive
+        this.stats.hasRevive = false;
+        SaveSystem.save(this.stats);
+
+        // Show revive message
+        const w = this.scale.width;
+        const h = this.scale.height;
+        const reviveText = this.add.text(w/2, h/2, 'REVIVED!', {
+            fontSize: '48px',
+            color: '#00ff00',
+            fontStyle: 'bold',
+            stroke: '#000',
+            strokeThickness: 6
+        }).setOrigin(0.5).setDepth(100);
+
+        // Fade out and destroy
+        this.tweens.add({
+            targets: reviveText,
+            alpha: 0,
+            y: h/2 - 50,
+            duration: 2000,
+            ease: 'Power2',
+            onComplete: () => reviveText.destroy()
+        });
+
+        // Brief invulnerability
+        this.player.isInvulnerable = true;
+        this.player.setAlpha(0.5);
+        this.time.delayedCall(3000, () => {
+            this.player.isInvulnerable = false;
+            this.player.setAlpha(1);
+        });
+    }
+
+    onEnemyKilled(x, y, dropGold = false) {
         this.enemiesDefeated++;
         this.score += GameBalance.progression.scorePerKill * this.scoreMultiplier;
         this.events.emit('updateScore', this.score);
@@ -103,6 +151,15 @@ export default class GameScene extends Phaser.Scene {
             xp.setVelocityY(100);
         }
 
+        // Drop gold if applicable
+        if (dropGold) {
+            const gold = this.goldItems.get(x, y);
+            if (gold) {
+                gold.enableBody(true, x, y, true, true);
+                gold.setVelocityY(100);
+            }
+        }
+
         // Random powerup drop (10% chance if no powerup is active)
         if (!this.activePowerupType && Math.random() < 0.1) {
             this.powerupManager.spawnAtPosition(x, y);
@@ -111,7 +168,7 @@ export default class GameScene extends Phaser.Scene {
 
     collectXP(xpItem) {
         // Create collection effect before disabling
-        this.createCollectionEffect(xpItem.x, xpItem.y);
+        this.createCollectionEffect(xpItem.x, xpItem.y, 0x00ffff);
 
         xpItem.disableBody(true, true);
         this.stats.xp += (GameBalance.progression.xpPerPickup * this.stats.xpMult);
@@ -123,11 +180,20 @@ export default class GameScene extends Phaser.Scene {
         this.events.emit('updateXP', this.stats.xp, this.stats.reqXp);
     }
 
-    createCollectionEffect(x, y) {
+    collectGold(goldItem) {
+        // Create collection effect before disabling
+        this.createCollectionEffect(goldItem.x, goldItem.y, 0xffd700);
+
+        goldItem.disableBody(true, true);
+        this.stats.gold += (GameBalance.progression.goldPerDrop * this.stats.goldMultiplier);
+        AudioEngine.play('xp'); // Reuse XP sound
+    }
+
+    createCollectionEffect(x, y, color = 0x00ffff) {
         // Create a burst of small particles
         for (let i = 0; i < 6; i++) {
             const angle = (Math.PI * 2 / 6) * i;
-            const particle = this.add.circle(x, y, 4, 0x00ffff, 1).setDepth(50);
+            const particle = this.add.circle(x, y, 4, color, 1).setDepth(50);
 
             this.tweens.add({
                 targets: particle,
@@ -142,7 +208,7 @@ export default class GameScene extends Phaser.Scene {
         }
 
         // Create a scaling/fading circle
-        const circle = this.add.circle(x, y, 8, 0x00ffff, 0.6).setDepth(50);
+        const circle = this.add.circle(x, y, 8, color, 0.6).setDepth(50);
         this.tweens.add({
             targets: circle,
             scale: 2.5,
