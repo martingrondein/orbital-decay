@@ -142,12 +142,37 @@ export default class GameScene extends Phaser.Scene {
             this.shieldBubble.setPosition(this.player.x, this.player.y);
         }
 
+        // Magnetic attraction for collectibles
+        this.applyMagneticAttraction();
+
         // Cleanup bullets/XP/Gold/Fuel
         [this.bullets, this.xpItems, this.goldItems, this.fuelItems].forEach(g => {
             g.children.iterate(c => {
                 const boundary = GameConstants.spawn.cleanupBoundary;
                 if(c.active && (c.y < -boundary || c.y > this.scale.height + boundary)) {
                     c.disableBody(true,true);
+                }
+            });
+        });
+    }
+
+    applyMagneticAttraction() {
+        const magneticRange = this.stats.magneticRange;
+        const attractionStrength = 150; // Pixels per second
+
+        // Apply to all collectible groups
+        [this.xpItems, this.goldItems, this.fuelItems].forEach(group => {
+            group.children.iterate(item => {
+                if (!item.active) return;
+
+                const distance = Phaser.Math.Distance.Between(
+                    this.player.x, this.player.y,
+                    item.x, item.y
+                );
+
+                // If within magnetic range, pull towards player
+                if (distance <= magneticRange && distance > 0) {
+                    this.physics.moveToObject(item, this.player, attractionStrength);
                 }
             });
         });

@@ -51,6 +51,7 @@ const defaultStats = {
     gold: 0,
     goldMultiplier: 1,
     maxFuel: GameBalance.fuel.startFuel,
+    magneticRange: GameBalance.player.startMagneticRange,
     hasExtraShooter: false,
     hasRevive: false
 };
@@ -92,6 +93,7 @@ export const SaveSystem = {
             gold: stats.gold,
             goldMultiplier: stats.goldMultiplier,
             maxFuel: stats.maxFuel,
+            magneticRange: stats.magneticRange,
             hasExtraShooter: stats.hasExtraShooter,
             hasRevive: stats.hasRevive
         };

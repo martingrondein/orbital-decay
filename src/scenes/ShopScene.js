@@ -64,9 +64,17 @@ export default class ShopScene extends Phaser.Scene {
             () => this.purchaseFuel()
         );
 
-        // 5. Extra Shooter
-        const extraShooterStatus = this.stats.hasExtraShooter ? 'OWNED' : 'Not owned';
+        // 5. Magnetic Range Upgrade
         this.createShopItem(w/2, startY + itemSpacing * 4,
+            `+${GameBalance.shop.magneticUpgradeAmount} Magnetic Range`,
+            `Cost: ${GameBalance.shop.magneticUpgrade}g`,
+            `Current: ${this.stats.magneticRange}`,
+            () => this.purchaseMagnetic()
+        );
+
+        // 6. Extra Shooter
+        const extraShooterStatus = this.stats.hasExtraShooter ? 'OWNED' : 'Not owned';
+        this.createShopItem(w/2, startY + itemSpacing * 5,
             'Extra Shooter',
             `Cost: ${GameBalance.shop.extraShooter}g`,
             extraShooterStatus,
@@ -74,9 +82,9 @@ export default class ShopScene extends Phaser.Scene {
             this.stats.hasExtraShooter
         );
 
-        // 6. Revive
+        // 7. Revive
         const reviveStatus = this.stats.hasRevive ? 'OWNED' : 'Not owned';
-        this.createShopItem(w/2, startY + itemSpacing * 5,
+        this.createShopItem(w/2, startY + itemSpacing * 6,
             'Revive (Once per run)',
             `Cost: ${GameBalance.shop.revive}g`,
             reviveStatus,
@@ -175,6 +183,17 @@ export default class ShopScene extends Phaser.Scene {
         if (this.stats.gold >= GameBalance.shop.fuelUpgrade) {
             this.stats.gold -= GameBalance.shop.fuelUpgrade;
             this.stats.maxFuel += GameBalance.shop.fuelUpgradeAmount;
+            SaveSystem.save(this.stats);
+            this.scene.restart();
+        } else {
+            this.showInsufficientFunds();
+        }
+    }
+
+    purchaseMagnetic() {
+        if (this.stats.gold >= GameBalance.shop.magneticUpgrade) {
+            this.stats.gold -= GameBalance.shop.magneticUpgrade;
+            this.stats.magneticRange += GameBalance.shop.magneticUpgradeAmount;
             SaveSystem.save(this.stats);
             this.scene.restart();
         } else {

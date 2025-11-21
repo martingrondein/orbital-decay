@@ -11,7 +11,8 @@ export const GameBalance = {
         startFireRateMs: 1000,
         startMaxHealth: 10,
         startDamageMult: 1,
-        startXPMult: 1
+        startXPMult: 1,
+        startMagneticRange: 10
     },
 
     // Level up increments
@@ -86,10 +87,12 @@ export const GameBalance = {
         healthUpgrade: 50,
         fireRateUpgrade: 50,
         fuelUpgrade: 50,
+        magneticUpgrade: 100,
         extraShooter: 400,
         revive: 2000,
         healthUpgradeAmount: 10,
         fireRateUpgradeAmount: 10,
-        fuelUpgradeAmount: 100
+        fuelUpgradeAmount: 100,
+        magneticUpgradeAmount: 10
     }
 };
