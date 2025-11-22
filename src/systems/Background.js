@@ -3,23 +3,35 @@ import Phaser from 'phaser';
 export default class Background {
     constructor(scene) {
         this.scene = scene;
-        this.tile = null;
+        this.layers = [];
         this.init();
     }
 
     init() {
-        // Create tiled background using bg.png
+        // Create parallax background layers using 3 images
         const w = this.scene.scale.width;
         const h = this.scene.scale.height;
 
-        this.tile = this.scene.add.tileSprite(w / 2, h / 2, w, h, 'bg');
-        this.tile.setDepth(-10); // Behind everything
+        // Layer 1: Nebulae (furthest back, slowest)
+        const nebulae = this.scene.add.tileSprite(w / 2, h / 2, w, h, 'bg3-nebulae');
+        nebulae.setDepth(-30);
+        this.layers.push({ sprite: nebulae, speed: 0.3 });
+
+        // Layer 2: Dust (middle, medium speed)
+        const dust = this.scene.add.tileSprite(w / 2, h / 2, w, h, 'bg2-dust');
+        dust.setDepth(-20);
+        this.layers.push({ sprite: dust, speed: 0.6 });
+
+        // Layer 3: Stars (closest, fastest)
+        const stars = this.scene.add.tileSprite(w / 2, h / 2, w, h, 'bg1-stars');
+        stars.setDepth(-10);
+        this.layers.push({ sprite: stars, speed: 1.0 });
     }
 
     update() {
-        // Scroll background downward for vertical movement effect
-        if (this.tile) {
-            this.tile.tilePositionY -= 1;
-        }
+        // Scroll each layer at different speeds for parallax effect
+        this.layers.forEach(layer => {
+            layer.sprite.tilePositionY -= layer.speed;
+        });
     }
 }
