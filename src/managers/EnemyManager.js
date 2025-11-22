@@ -99,14 +99,18 @@ export default class EnemyManager {
     handleHit(enemy, damage) {
         enemy.hp -= damage;
 
-        // Flash white by clearing tint (shows white texture)
+        // Flash white when hit
         const originalTint = enemy.enemyType === 'blue' ? 0x0000ff : null;
-        enemy.clearTint();
+        enemy.setTint(0xffffff); // Set white tint
 
-        // Restore original tint after 100ms (if applicable)
+        // Restore original tint after 100ms
         this.scene.time.delayedCall(100, () => {
-            if (enemy.active && originalTint) {
-                enemy.setTint(originalTint);
+            if (enemy.active) {
+                if (originalTint) {
+                    enemy.setTint(originalTint); // Restore blue tint for blue enemies
+                } else {
+                    enemy.clearTint(); // Clear tint for red enemies (show original sprite)
+                }
             }
         });
 
