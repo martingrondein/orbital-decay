@@ -99,6 +99,12 @@ export default class GameScene extends Phaser.Scene {
         this.physics.add.overlap(this.bullets, this.enemyManager.blueEnemies,
             (b, e) => { b.disableBody(true,true); this.enemyManager.handleHit(e, this.stats.damageMult); });
 
+        this.physics.add.overlap(this.bullets, this.enemyManager.greenEnemies,
+            (b, e) => { b.disableBody(true,true); this.enemyManager.handleHit(e, this.stats.damageMult); });
+
+        this.physics.add.overlap(this.bullets, this.enemyManager.yellowEnemies,
+            (b, e) => { b.disableBody(true,true); this.enemyManager.handleHit(e, this.stats.damageMult); });
+
         this.physics.add.overlap(this.player, this.xpItems,
             (p, xp) => this.collectXP(xp));
 
@@ -112,6 +118,12 @@ export default class GameScene extends Phaser.Scene {
             (p, e) => { e.disableBody(true,true); this.handlePlayerHit(GameConstants.damage.collision); });
 
         this.physics.add.overlap(this.player, this.enemyManager.blueEnemies,
+            (p, e) => { e.disableBody(true,true); this.handlePlayerHit(GameConstants.damage.collision); });
+
+        this.physics.add.overlap(this.player, this.enemyManager.greenEnemies,
+            (p, e) => { e.disableBody(true,true); this.handlePlayerHit(GameConstants.damage.collision); });
+
+        this.physics.add.overlap(this.player, this.enemyManager.yellowEnemies,
             (p, e) => { e.disableBody(true,true); this.handlePlayerHit(GameConstants.damage.collision); });
 
         this.physics.add.overlap(this.player, this.enemyManager.enemyBullets,
@@ -250,14 +262,21 @@ export default class GameScene extends Phaser.Scene {
     onEnemyKilled(x, y, dropGold = false, enemyType = 'red') {
         this.enemiesDefeated++;
 
-        // Apply score multiplier for blue enemies
-        const scoreMultiplier = enemyType === 'blue' ? GameBalance.blueEnemy.scoreMultiplier : 1;
-        this.score += GameBalance.progression.scorePerKill * this.scoreMultiplier * scoreMultiplier;
+        // Get multipliers based on enemy type
+        const multipliers = {
+            'red': { score: 1, xp: 1, gold: 1 },
+            'blue': { score: GameBalance.blueEnemy.scoreMultiplier, xp: GameBalance.blueEnemy.xpMultiplier, gold: GameBalance.blueEnemy.goldMultiplier },
+            'green': { score: GameBalance.greenEnemy.scoreMultiplier, xp: GameBalance.greenEnemy.xpMultiplier, gold: GameBalance.greenEnemy.goldMultiplier },
+            'yellow': { score: GameBalance.yellowEnemy.scoreMultiplier, xp: GameBalance.yellowEnemy.xpMultiplier, gold: GameBalance.yellowEnemy.goldMultiplier }
+        };
+        const mult = multipliers[enemyType] || multipliers['red'];
+
+        // Apply score multiplier
+        this.score += GameBalance.progression.scorePerKill * this.scoreMultiplier * mult.score;
         this.events.emit('updateScore', this.score);
 
-        // Drop XP (more for blue enemies)
-        const xpMultiplier = enemyType === 'blue' ? GameBalance.blueEnemy.xpMultiplier : 1;
-        for (let i = 0; i < xpMultiplier; i++) {
+        // Drop XP
+        for (let i = 0; i < mult.xp; i++) {
             const xp = this.xpItems.get(x + (i * GameConstants.drops.horizontalSpacing), y);
             if (xp) {
                 xp.enableBody(true, x + (i * GameConstants.drops.horizontalSpacing), y, true, true);
@@ -268,10 +287,9 @@ export default class GameScene extends Phaser.Scene {
             }
         }
 
-        // Drop gold if applicable (more for blue enemies)
+        // Drop gold if applicable
         if (dropGold) {
-            const goldMultiplier = enemyType === 'blue' ? GameBalance.blueEnemy.goldMultiplier : 1;
-            for (let i = 0; i < goldMultiplier; i++) {
+            for (let i = 0; i < mult.gold; i++) {
                 const gold = this.goldItems.get(x + (i * GameConstants.drops.horizontalSpacing), y);
                 if (gold) {
                     gold.enableBody(true, x + (i * GameConstants.drops.horizontalSpacing), y, true, true);

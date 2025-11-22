@@ -13,6 +13,14 @@ export default class EnemyManager {
             defaultKey: 'enemy',
             maxSize: GameBalance.blueEnemy.maxPoolSize
         });
+        this.greenEnemies = scene.physics.add.group({
+            defaultKey: 'enemy',
+            maxSize: GameBalance.greenEnemy.maxPoolSize
+        });
+        this.yellowEnemies = scene.physics.add.group({
+            defaultKey: 'enemy',
+            maxSize: GameBalance.yellowEnemy.maxPoolSize
+        });
         this.enemyBullets = scene.physics.add.group({
             defaultKey: 'ebullet',
             maxSize: GameBalance.enemy.bulletPoolSize
@@ -39,41 +47,103 @@ export default class EnemyManager {
         if (this.scene.isGameOver) return;
 
         const elapsedTime = Date.now() - this.gameStartTime;
-        const blueEnemiesUnlocked = elapsedTime >= GameBalance.blueEnemy.introductionTime;
-        const spawnBlue = blueEnemiesUnlocked && Math.random() < GameBalance.blueEnemy.spawnChance;
-
         const x = Phaser.Math.Between(30, this.scene.scale.width - 30);
 
-        if (spawnBlue) {
-            // Spawn blue enemy
-            const e = this.blueEnemies.get(x, -50);
-            if (e) {
-                e.enableBody(true, x, -50, true, true);
-                e.setVelocity(
-                    Phaser.Math.Between(GameBalance.blueEnemy.velocityX.min, GameBalance.blueEnemy.velocityX.max),
-                    Phaser.Math.Between(GameBalance.blueEnemy.velocityY.min, GameBalance.blueEnemy.velocityY.max)
-                );
-                e.hp = GameBalance.blueEnemy.baseHealth;
-                e.setTint(0x0000ff); // Blue tint
-                e.setScale(0.78125); // Scale 32x32 sprite to 25x25 (original blue size)
-                e.body.setCircle(10); // Circular hitbox with 10px radius (ignores transparent edges)
-                e.enemyType = 'blue';
-            }
-        } else {
-            // Spawn regular red enemy
-            const e = this.enemies.get(x, -50);
-            if (e) {
-                e.enableBody(true, x, -50, true, true);
-                e.setVelocity(
-                    Phaser.Math.Between(GameBalance.enemy.velocityX.min, GameBalance.enemy.velocityX.max),
-                    Phaser.Math.Between(GameBalance.enemy.velocityY.min, GameBalance.enemy.velocityY.max)
-                );
-                e.hp = GameBalance.enemy.baseHealth;
-                e.clearTint(); // No tint, use original sprite colors
-                e.setScale(1.25); // Scale 32x32 sprite to 40x40 for original size
-                e.body.setCircle(12); // Circular hitbox with 12px radius (ignores transparent edges)
-                e.enemyType = 'red';
-            }
+        // Check which enemy types are unlocked
+        const yellowUnlocked = elapsedTime >= GameBalance.yellowEnemy.introductionTime;
+        const greenUnlocked = elapsedTime >= GameBalance.greenEnemy.introductionTime;
+        const blueUnlocked = elapsedTime >= GameBalance.blueEnemy.introductionTime;
+
+        // Determine which enemy to spawn (prioritize harder enemies)
+        let enemyType = 'red'; // Default
+        const roll = Math.random();
+
+        if (yellowUnlocked && roll < GameBalance.yellowEnemy.spawnChance) {
+            enemyType = 'yellow';
+        } else if (greenUnlocked && roll < (GameBalance.yellowEnemy.spawnChance + GameBalance.greenEnemy.spawnChance)) {
+            enemyType = 'green';
+        } else if (blueUnlocked && roll < (GameBalance.yellowEnemy.spawnChance + GameBalance.greenEnemy.spawnChance + GameBalance.blueEnemy.spawnChance)) {
+            enemyType = 'blue';
+        }
+
+        // Spawn the selected enemy type
+        switch (enemyType) {
+            case 'yellow':
+                this.spawnYellowEnemy(x);
+                break;
+            case 'green':
+                this.spawnGreenEnemy(x);
+                break;
+            case 'blue':
+                this.spawnBlueEnemy(x);
+                break;
+            default:
+                this.spawnRedEnemy(x);
+                break;
+        }
+    }
+
+    spawnRedEnemy(x) {
+        const e = this.enemies.get(x, -50);
+        if (e) {
+            e.enableBody(true, x, -50, true, true);
+            e.setVelocity(
+                Phaser.Math.Between(GameBalance.enemy.velocityX.min, GameBalance.enemy.velocityX.max),
+                Phaser.Math.Between(GameBalance.enemy.velocityY.min, GameBalance.enemy.velocityY.max)
+            );
+            e.hp = GameBalance.enemy.baseHealth;
+            e.clearTint();
+            e.setScale(1.25);
+            e.body.setCircle(12);
+            e.enemyType = 'red';
+        }
+    }
+
+    spawnBlueEnemy(x) {
+        const e = this.blueEnemies.get(x, -50);
+        if (e) {
+            e.enableBody(true, x, -50, true, true);
+            e.setVelocity(
+                Phaser.Math.Between(GameBalance.blueEnemy.velocityX.min, GameBalance.blueEnemy.velocityX.max),
+                Phaser.Math.Between(GameBalance.blueEnemy.velocityY.min, GameBalance.blueEnemy.velocityY.max)
+            );
+            e.hp = GameBalance.blueEnemy.baseHealth;
+            e.setTint(0x0000ff);
+            e.setScale(1.25);
+            e.body.setCircle(12);
+            e.enemyType = 'blue';
+        }
+    }
+
+    spawnGreenEnemy(x) {
+        const e = this.greenEnemies.get(x, -50);
+        if (e) {
+            e.enableBody(true, x, -50, true, true);
+            e.setVelocity(
+                Phaser.Math.Between(GameBalance.greenEnemy.velocityX.min, GameBalance.greenEnemy.velocityX.max),
+                Phaser.Math.Between(GameBalance.greenEnemy.velocityY.min, GameBalance.greenEnemy.velocityY.max)
+            );
+            e.hp = GameBalance.greenEnemy.baseHealth;
+            e.setTint(0x00ff00);
+            e.setScale(1.25);
+            e.body.setCircle(12);
+            e.enemyType = 'green';
+        }
+    }
+
+    spawnYellowEnemy(x) {
+        const e = this.yellowEnemies.get(x, -50);
+        if (e) {
+            e.enableBody(true, x, -50, true, true);
+            e.setVelocity(
+                Phaser.Math.Between(GameBalance.yellowEnemy.velocityX.min, GameBalance.yellowEnemy.velocityX.max),
+                Phaser.Math.Between(GameBalance.yellowEnemy.velocityY.min, GameBalance.yellowEnemy.velocityY.max)
+            );
+            e.hp = GameBalance.yellowEnemy.baseHealth;
+            e.setTint(0xffff00);
+            e.setScale(1.25);
+            e.body.setCircle(12);
+            e.enemyType = 'yellow';
         }
     }
 
@@ -94,6 +164,8 @@ export default class EnemyManager {
         };
         fireFromGroup(this.enemies);
         fireFromGroup(this.blueEnemies);
+        fireFromGroup(this.greenEnemies);
+        fireFromGroup(this.yellowEnemies);
     }
 
     handleHit(enemy, damage) {
@@ -105,7 +177,13 @@ export default class EnemyManager {
         }
 
         // Flash white when hit using tintFill for more visible flash
-        const originalTint = enemy.enemyType === 'blue' ? 0x0000ff : null;
+        const originalTints = {
+            'blue': 0x0000ff,
+            'green': 0x00ff00,
+            'yellow': 0xffff00,
+            'red': null
+        };
+        const originalTint = originalTints[enemy.enemyType];
         enemy.clearTint();
         enemy.setTintFill(0xffffff); // Fill with white for strong flash effect
 
@@ -114,7 +192,7 @@ export default class EnemyManager {
             if (enemy.active) {
                 enemy.clearTint();
                 if (originalTint) {
-                    enemy.setTint(originalTint); // Restore blue tint for blue enemies
+                    enemy.setTint(originalTint);
                 }
                 // Red enemies stay with no tint (original sprite colors)
             }
@@ -129,7 +207,13 @@ export default class EnemyManager {
             }
 
             // Create explosion effect
-            const explosionColor = enemy.enemyType === 'blue' ? 0x0000ff : 0xff0000;
+            const explosionColors = {
+                'red': 0xff0000,
+                'blue': 0x0000ff,
+                'green': 0x00ff00,
+                'yellow': 0xffff00
+            };
+            const explosionColor = explosionColors[enemy.enemyType] || 0xff0000;
             this.createExplosion(enemy.x, enemy.y, explosionColor);
 
             // Random gold drop
@@ -187,6 +271,8 @@ export default class EnemyManager {
         });
         clean(this.enemies);
         clean(this.blueEnemies);
+        clean(this.greenEnemies);
+        clean(this.yellowEnemies);
         clean(this.enemyBullets);
     }
 }
