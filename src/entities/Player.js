@@ -64,7 +64,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
                 if (bullet) {
                     bullet.enableBody(true, this.x + offset, this.y - 20, true, true);
                     bullet.setVelocityY(-600);
-                    bullet.setScale(1.25); // Scale 8x8 sprite to 10x10 for original size
+                    bullet.setScale(1); // 8x8 sprite, no scaling needed
                     bullet.setTint(this.stats.damageMult > 1 ? 0xff0000 : 0xffff00);
                 }
             });
@@ -74,7 +74,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
             if (bullet) {
                 bullet.enableBody(true, this.x, this.y - 20, true, true);
                 bullet.setVelocityY(-600);
-                bullet.setScale(1.25); // Scale 8x8 sprite to 10x10 for original size
+                bullet.setScale(1); // 8x8 sprite, no scaling needed
                 bullet.setTint(this.stats.damageMult > 1 ? 0xff0000 : 0xffff00);
             }
         }
@@ -98,7 +98,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
                     const vy = Math.sin(angleRad) * speed;
 
                     bullet.setVelocity(vx, vy);
-                    bullet.setScale(1.25); // Scale 8x8 sprite to 10x10 for original size
+                    bullet.setScale(1); // 8x8 sprite, no scaling needed
                     bullet.setTint(0x00ff00); // Green for spray shot
                 }
             });
