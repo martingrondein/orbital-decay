@@ -31,6 +31,16 @@ export default class UIScene extends Phaser.Scene {
     }
 
     shutdown() {
+        // Clean up timers
+        if (this.powerupCountdownTimer) {
+            this.powerupCountdownTimer.remove();
+            this.powerupCountdownTimer = null;
+        }
+        if (this.powerupRainbowTimer) {
+            this.powerupRainbowTimer.remove();
+            this.powerupRainbowTimer = null;
+        }
+
         // Clean up event listeners when scene shuts down
         const game = this.scene.get('GameScene');
         if (game) {
@@ -134,28 +144,21 @@ export default class UIScene extends Phaser.Scene {
             'triplescore': 'TRIPLE SCORE',
             'shield': 'SHIELD'
         };
-        const colors = {
-            'spray': '#00ff00',
-            'damage': '#ff0000',
-            'firerate': '#ffff00',
-            'doublexp': '#00ffff',
-            'triplescore': '#ff00ff',
-            'shield': '#ffffff'
-        };
 
         this.powerupType = type;
         this.powerupName = names[type];
-        this.powerupColor = colors[type];
         this.powerupTimeLeft = 15;
 
         // Update text with countdown
         this.powerupText.setText(`${this.powerupName} (${this.powerupTimeLeft}s)`);
-        this.powerupText.setColor(this.powerupColor);
         this.powerupText.setVisible(true);
 
-        // Clear any existing countdown timer
+        // Clear any existing timers
         if (this.powerupCountdownTimer) {
             this.powerupCountdownTimer.remove();
+        }
+        if (this.powerupRainbowTimer) {
+            this.powerupRainbowTimer.remove();
         }
 
         // Start countdown timer (updates every second)
@@ -165,6 +168,33 @@ export default class UIScene extends Phaser.Scene {
             callbackScope: this,
             loop: true
         });
+
+        // Start rainbow color effect (changes every 100ms)
+        this.powerupRainbowTimer = this.time.addEvent({
+            delay: 100,
+            callback: this.updateRainbowColor,
+            callbackScope: this,
+            loop: true
+        });
+    }
+
+    updateRainbowColor() {
+        // Generate random rainbow color
+        const rainbowColors = [
+            '#ff0000', // Red
+            '#ff7f00', // Orange
+            '#ffff00', // Yellow
+            '#00ff00', // Green
+            '#0000ff', // Blue
+            '#4b0082', // Indigo
+            '#9400d3', // Violet
+            '#ff1493', // Pink
+            '#00ffff', // Cyan
+            '#ff00ff'  // Magenta
+        ];
+
+        const randomColor = Phaser.Utils.Array.GetRandom(rainbowColors);
+        this.powerupText.setColor(randomColor);
     }
 
     updatePowerupCountdown() {
@@ -183,6 +213,12 @@ export default class UIScene extends Phaser.Scene {
         if (this.powerupCountdownTimer) {
             this.powerupCountdownTimer.remove();
             this.powerupCountdownTimer = null;
+        }
+
+        // Stop rainbow timer
+        if (this.powerupRainbowTimer) {
+            this.powerupRainbowTimer.remove();
+            this.powerupRainbowTimer = null;
         }
 
         this.powerupText.setVisible(false);
