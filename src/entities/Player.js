@@ -65,7 +65,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
                     bullet.enableBody(true, this.x + offset, this.y - 20, true, true);
                     bullet.setVelocityY(-600);
                     bullet.setScale(1); // 8x8 sprite, no scaling needed
-                    bullet.setTint(this.stats.damageMult > 1 ? 0xff0000 : 0xffff00);
+                    bullet.clearTint(); // No tint, use original sprite colors
                 }
             });
         } else {
@@ -75,7 +75,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
                 bullet.enableBody(true, this.x, this.y - 20, true, true);
                 bullet.setVelocityY(-600);
                 bullet.setScale(1); // 8x8 sprite, no scaling needed
-                bullet.setTint(this.stats.damageMult > 1 ? 0xff0000 : 0xffff00);
+                bullet.clearTint(); // No tint, use original sprite colors
             }
         }
         AudioEngine.play('shoot');
@@ -99,7 +99,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
                     bullet.setVelocity(vx, vy);
                     bullet.setScale(1); // 8x8 sprite, no scaling needed
-                    bullet.setTint(0x00ff00); // Green for spray shot
+                    bullet.clearTint(); // No tint, use original sprite colors
                 }
             });
         });
