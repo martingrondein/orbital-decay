@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { SaveSystem } from '../systems/SaveSystem.js';
 import { GameBalance } from '../config/GameBalance.js';
+import { AudioEngine } from '../systems/AudioEngine.js';
 
 export default class ShopScene extends Phaser.Scene {
     constructor() { super({ key: 'ShopScene' }); }
@@ -8,6 +9,9 @@ export default class ShopScene extends Phaser.Scene {
     create() {
         const w = this.scale.width;
         const h = this.scale.height;
+
+        // Initialize audio
+        AudioEngine.init(this);
 
         // Load player stats
         this.stats = SaveSystem.load();
@@ -251,6 +255,7 @@ export default class ShopScene extends Phaser.Scene {
 
     purchaseGoldValue() {
         if (this.stats.gold >= GameBalance.shop.goldValueUpgrade) {
+            AudioEngine.play('spend');
             this.stats.gold -= GameBalance.shop.goldValueUpgrade;
             this.stats.goldMultiplier += 1;
             SaveSystem.save(this.stats);
@@ -262,6 +267,7 @@ export default class ShopScene extends Phaser.Scene {
 
     purchaseHealth() {
         if (this.stats.gold >= GameBalance.shop.healthUpgrade) {
+            AudioEngine.play('spend');
             this.stats.gold -= GameBalance.shop.healthUpgrade;
             this.stats.maxHealth += GameBalance.shop.healthUpgradeAmount;
             SaveSystem.save(this.stats);
@@ -277,6 +283,7 @@ export default class ShopScene extends Phaser.Scene {
                 this.showMessage('Fire rate already at minimum!');
                 return;
             }
+            AudioEngine.play('spend');
             this.stats.gold -= GameBalance.shop.fireRateUpgrade;
             this.stats.fireRateMs = Math.max(
                 GameBalance.levelUp.fireRateMin,
@@ -291,6 +298,7 @@ export default class ShopScene extends Phaser.Scene {
 
     purchaseFuel() {
         if (this.stats.gold >= GameBalance.shop.fuelUpgrade) {
+            AudioEngine.play('spend');
             this.stats.gold -= GameBalance.shop.fuelUpgrade;
             this.stats.maxFuel += GameBalance.shop.fuelUpgradeAmount;
             SaveSystem.save(this.stats);
@@ -302,6 +310,7 @@ export default class ShopScene extends Phaser.Scene {
 
     purchaseMagnetic() {
         if (this.stats.gold >= GameBalance.shop.magneticUpgrade) {
+            AudioEngine.play('spend');
             this.stats.gold -= GameBalance.shop.magneticUpgrade;
             this.stats.magneticRange += GameBalance.shop.magneticUpgradeAmount;
             SaveSystem.save(this.stats);
@@ -313,6 +322,7 @@ export default class ShopScene extends Phaser.Scene {
 
     purchaseXPGain() {
         if (this.stats.gold >= GameBalance.shop.xpGainUpgrade) {
+            AudioEngine.play('spend');
             this.stats.gold -= GameBalance.shop.xpGainUpgrade;
             this.stats.xpGain = (this.stats.xpGain || GameBalance.progression.xpPerPickup) + GameBalance.shop.xpGainUpgradeAmount;
             SaveSystem.save(this.stats);
@@ -324,6 +334,7 @@ export default class ShopScene extends Phaser.Scene {
 
     purchaseDamage() {
         if (this.stats.gold >= GameBalance.shop.damageUpgrade) {
+            AudioEngine.play('spend');
             this.stats.gold -= GameBalance.shop.damageUpgrade;
             this.stats.damageMult += GameBalance.shop.damageUpgradeAmount;
             SaveSystem.save(this.stats);
@@ -339,6 +350,7 @@ export default class ShopScene extends Phaser.Scene {
             return;
         }
         if (this.stats.gold >= GameBalance.shop.extraShooter) {
+            AudioEngine.play('spend');
             this.stats.gold -= GameBalance.shop.extraShooter;
             this.stats.hasExtraShooter = true;
             SaveSystem.save(this.stats);
@@ -354,6 +366,7 @@ export default class ShopScene extends Phaser.Scene {
             return;
         }
         if (this.stats.gold >= GameBalance.shop.revive) {
+            AudioEngine.play('spend');
             this.stats.gold -= GameBalance.shop.revive;
             this.stats.hasRevive = true;
             SaveSystem.save(this.stats);

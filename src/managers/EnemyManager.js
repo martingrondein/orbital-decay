@@ -158,6 +158,7 @@ export default class EnemyManager {
                         b.setScale(1); // 8x8 sprite, no scaling needed
                         b.body.setCircle(3); // Circular hitbox with 3px radius (ignores transparent edges)
                         this.scene.physics.moveToObject(b, this.scene.player, GameBalance.enemy.bulletSpeed);
+                        AudioEngine.play('enemyshoot', 0.3);
                     }
                 }
             });

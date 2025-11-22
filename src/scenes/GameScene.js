@@ -33,6 +33,7 @@ export default class GameScene extends Phaser.Scene {
         this.scoreMultiplier = 1; // For triple score powerup
 
         // 2. Systems
+        AudioEngine.init(this);
         this.background = new Background(this);
         this.events.emit('startUI', this.stats); // Notify UIScene
         this.events.emit('updateFuel', this.fuel); // Notify UIScene of initial fuel
@@ -201,6 +202,7 @@ export default class GameScene extends Phaser.Scene {
 
     handlePlayerHit(dmg) {
         this.player.takeDamage(dmg);
+        AudioEngine.play('hit');
         this.events.emit('updateHealth', this.player.currentHealth, this.stats.maxHealth);
 
         if (this.player.currentHealth <= 0) {
@@ -210,6 +212,7 @@ export default class GameScene extends Phaser.Scene {
             } else {
                 this.isGameOver = true;
                 this.physics.pause();
+                AudioEngine.play('gameover', 0.7);
                 SaveSystem.save(this.stats); // SAVE STATS ON DEATH
 
                 // Check and save high score and best distance
@@ -261,6 +264,7 @@ export default class GameScene extends Phaser.Scene {
 
     onEnemyKilled(x, y, dropGold = false, enemyType = 'red') {
         this.enemiesDefeated++;
+        AudioEngine.play('drop', 0.4);
 
         // Get multipliers based on enemy type
         const multipliers = {
@@ -341,7 +345,7 @@ export default class GameScene extends Phaser.Scene {
         goldItem.disableBody(true, true);
         this.stats.gold += (GameBalance.progression.goldPerDrop * this.stats.goldMultiplier);
         this.events.emit('updateGold', this.stats.gold);
-        AudioEngine.play('xp'); // Reuse XP sound
+        AudioEngine.play('gold');
     }
 
     collectFuel(fuelItem) {
@@ -354,7 +358,7 @@ export default class GameScene extends Phaser.Scene {
             this.stats.maxFuel
         );
         this.events.emit('updateFuel', this.fuel);
-        AudioEngine.play('xp'); // Reuse XP sound
+        AudioEngine.play('drop');
     }
 
     collectPowerup(powerup) {
@@ -372,7 +376,7 @@ export default class GameScene extends Phaser.Scene {
         this.powerupManager.setActivePowerup(type);
         applyPowerup(type, this);
 
-        AudioEngine.play('xp'); // Reuse XP sound
+        AudioEngine.play('drop');
 
         // Notify UI
         this.events.emit('powerupActivated', type);

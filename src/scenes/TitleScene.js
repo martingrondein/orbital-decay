@@ -32,6 +32,17 @@ export default class TitleScene extends Phaser.Scene {
         this.load.image('powerup_doublexp', 'assets/powerup.png');
         this.load.image('powerup_triplescore', 'assets/powerup.png');
         this.load.image('powerup_shield', 'assets/powerup.png');
+
+        // Load audio files
+        this.load.audio('collect-coin', 'sounds/collect-coin.wav');
+        this.load.audio('collect-xp', 'sounds/collect-xp.wav');
+        this.load.audio('collectible-drop', 'sounds/collectible-drop.wav');
+        this.load.audio('enemy-explode', 'sounds/enemy-explode.wav');
+        this.load.audio('enemy-shoot', 'sounds/enemy-shoot.wav');
+        this.load.audio('game-over', 'sounds/game-over.wav');
+        this.load.audio('level-up', 'sounds/level-up.wav');
+        this.load.audio('player-hit', 'sounds/player-hit.wav');
+        this.load.audio('spend-gold', 'sounds/spend-gold.wav');
     }
 
     create() {
