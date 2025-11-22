@@ -14,6 +14,7 @@ export const AudioEngine = {
             'coin': 'collect-coin',
             'gold': 'collect-coin',
             'explode': 'enemy-explode',
+            'enemyhit': 'enemy-hit',
             'levelup': 'level-up',
             'gameover': 'game-over',
             'hit': 'player-hit',

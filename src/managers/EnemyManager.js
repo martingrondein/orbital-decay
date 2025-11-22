@@ -172,6 +172,9 @@ export default class EnemyManager {
     handleHit(enemy, damage) {
         enemy.hp -= damage;
 
+        // Play hit sound
+        AudioEngine.play('enemyhit', 0.3);
+
         // Cancel any existing flash timer to ensure new flash is visible
         if (enemy.flashTimer) {
             enemy.flashTimer.remove();
