@@ -303,19 +303,19 @@ export default class UIScene extends Phaser.Scene {
         statItems.forEach((stat, index) => {
             const yPos = h/2 - 50 + (index * 38);
 
-            const statText = this.add.text(w/2 - 160, yPos, stat.label, {
+            const statText = this.add.text(w/2 - 170, yPos, stat.label, {
                 fontFamily: 'Silkscreen',
                 fontSize: '16px',
                 color: '#aaaaaa'
             }).setOrigin(0, 0.5).setAlpha(0);
 
-            const valueText = this.add.text(w/2 + 50, yPos, `${stat.value}`, {
+            const valueText = this.add.text(w/2 + 20, yPos, `${stat.value}`, {
                 fontFamily: 'Silkscreen',
                 fontSize: '18px',
                 color: stat.color
             }).setOrigin(0, 0.5).setAlpha(0);
 
-            const increaseText = this.add.text(w/2 + 135, yPos, `(${stat.icon}${stat.increase})`, {
+            const increaseText = this.add.text(w/2 + 100, yPos, `(${stat.icon}${stat.increase})`, {
                 fontFamily: 'Silkscreen',
                 fontSize: '14px',
                 color: '#00ff00'
