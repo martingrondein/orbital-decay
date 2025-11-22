@@ -8,6 +8,9 @@ export default class TitleScene extends Phaser.Scene {
         // Load logo (from public folder, respects base path in production)
         this.load.image('logo', 'assets/od-logo.png');
 
+        // Load background
+        this.load.image('bg', 'assets/bg.png');
+
         // Load game assets
         this.load.image('player', 'assets/player.png');
         this.load.image('enemy', 'assets/enemy1.png');
