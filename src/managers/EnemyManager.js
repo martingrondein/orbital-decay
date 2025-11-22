@@ -99,12 +99,17 @@ export default class EnemyManager {
     handleHit(enemy, damage) {
         enemy.hp -= damage;
 
+        // Cancel any existing flash timer to ensure new flash is visible
+        if (enemy.flashTimer) {
+            enemy.flashTimer.remove();
+        }
+
         // Flash white when hit
         const originalTint = enemy.enemyType === 'blue' ? 0x0000ff : null;
         enemy.setTint(0xffffff); // Set white tint
 
         // Restore original tint after 100ms
-        this.scene.time.delayedCall(100, () => {
+        enemy.flashTimer = this.scene.time.delayedCall(100, () => {
             if (enemy.active) {
                 if (originalTint) {
                     enemy.setTint(originalTint); // Restore blue tint for blue enemies
@@ -112,9 +117,16 @@ export default class EnemyManager {
                     enemy.clearTint(); // Clear tint for red enemies (show original sprite)
                 }
             }
+            enemy.flashTimer = null;
         });
 
         if (enemy.hp <= 0) {
+            // Clean up flash timer
+            if (enemy.flashTimer) {
+                enemy.flashTimer.remove();
+                enemy.flashTimer = null;
+            }
+
             // Create explosion effect
             const explosionColor = enemy.enemyType === 'blue' ? 0x0000ff : 0xff0000;
             this.createExplosion(enemy.x, enemy.y, explosionColor);
@@ -163,7 +175,14 @@ export default class EnemyManager {
     cleanup() {
         const h = this.scene.scale.height;
         const clean = (g) => g.children.iterate(c => {
-            if(c.active && (c.y < -60 || c.y > h + 60)) c.disableBody(true,true);
+            if(c.active && (c.y < -60 || c.y > h + 60)) {
+                // Clean up flash timer if it exists
+                if (c.flashTimer) {
+                    c.flashTimer.remove();
+                    c.flashTimer = null;
+                }
+                c.disableBody(true,true);
+            }
         });
         clean(this.enemies);
         clean(this.blueEnemies);
