@@ -133,5 +133,34 @@ export default class TitleScene extends Phaser.Scene {
             SaveSystem.reset();
             this.scene.restart();
         });
+
+        // Debug buttons
+        const debugY = h - 70;
+
+        // +1000 Gold button
+        const goldBtn = this.add.rectangle(w/2 - 110, debugY, 180, 40, 0xffd700).setInteractive();
+        const goldTxt = this.add.text(w/2 - 110, debugY, '+1000 GOLD', { fontSize: '16px', color: 'black' }).setOrigin(0.5);
+
+        goldBtn.on('pointerdown', () => {
+            const currentStats = SaveSystem.load();
+            currentStats.gold += 1000;
+            SaveSystem.save(currentStats);
+            this.scene.restart();
+        });
+
+        // +1 Level button
+        const lvlBtn = this.add.rectangle(w/2 + 110, debugY, 180, 40, 0x00aaff).setInteractive();
+        const lvlTxt = this.add.text(w/2 + 110, debugY, '+1 LEVEL', { fontSize: '16px', color: 'black' }).setOrigin(0.5);
+
+        lvlBtn.on('pointerdown', () => {
+            const currentStats = SaveSystem.load();
+            currentStats.level += 1;
+            // Recalculate stats for new level
+            const newStats = SaveSystem.calculateStatsForLevel(currentStats.level);
+            // Keep existing gold
+            newStats.gold = currentStats.gold;
+            SaveSystem.save(newStats);
+            this.scene.restart();
+        });
     }
 }
