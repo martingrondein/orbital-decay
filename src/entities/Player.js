@@ -14,6 +14,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
         this.setCollideWorldBounds(true);
         this.setDepth(1);
+        this.setScale(1.25); // Scale 32x32 sprite to 40x40 for original size
         this.lastFired = 0;
         this.isInvulnerable = false;
         this.sprayShot = false; // Powerup flag

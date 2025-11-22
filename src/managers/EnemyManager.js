@@ -55,7 +55,7 @@ export default class EnemyManager {
                 );
                 e.hp = GameBalance.blueEnemy.baseHealth;
                 e.setTint(0x0000ff); // Blue tint
-                e.setScale(0.625); // 25% larger than standard 0.5
+                e.setScale(0.78125); // Scale 32x32 sprite to 25x25 (original blue size)
                 e.enemyType = 'blue';
             }
         } else {
@@ -69,7 +69,7 @@ export default class EnemyManager {
                 );
                 e.hp = GameBalance.enemy.baseHealth;
                 e.setTint(0xff0000); // Red tint
-                e.setScale(1); // Normal size
+                e.setScale(1.25); // Scale 32x32 sprite to 40x40 for original size
                 e.enemyType = 'red';
             }
         }
