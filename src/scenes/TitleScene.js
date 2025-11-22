@@ -12,7 +12,7 @@ export default class TitleScene extends Phaser.Scene {
         this.load.image('bg', 'assets/bg.png');
 
         // Load custom font
-        this.load.font('PixelifySans', 'assets/PixelifySans-Regular.ttf');
+        this.load.font('PixelifySans', 'fonts/PixelifySans-Regular.ttf');
 
         // Load game assets
         this.load.image('player', 'assets/player.png');
