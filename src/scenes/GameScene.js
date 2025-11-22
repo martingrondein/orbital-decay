@@ -264,6 +264,7 @@ export default class GameScene extends Phaser.Scene {
                 xp.setVelocityY(GameConstants.drops.velocityY);
                 xp.setVelocityX(Phaser.Math.Between(-50, 50));
                 xp.setScale(1); // 16x16 sprite, no scaling needed
+                xp.body.setCircle(6); // Circular hitbox with 6px radius (ignores transparent edges)
             }
         }
 
@@ -277,6 +278,7 @@ export default class GameScene extends Phaser.Scene {
                     gold.setVelocityY(GameConstants.drops.velocityY);
                     gold.setVelocityX(Phaser.Math.Between(-50, 50));
                     gold.setScale(1); // 16x16 sprite, no scaling needed
+                    gold.body.setCircle(6); // Circular hitbox with 6px radius (ignores transparent edges)
                 }
             }
         }
@@ -289,6 +291,7 @@ export default class GameScene extends Phaser.Scene {
                 fuel.setVelocityY(GameConstants.drops.velocityY);
                 fuel.setVelocityX(Phaser.Math.Between(-50, 50));
                 fuel.setScale(1); // 16x16 sprite, no scaling needed
+                fuel.body.setCircle(6); // Circular hitbox with 6px radius (ignores transparent edges)
             }
         }
 

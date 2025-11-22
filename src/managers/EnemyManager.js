@@ -56,6 +56,7 @@ export default class EnemyManager {
                 e.hp = GameBalance.blueEnemy.baseHealth;
                 e.setTint(0x0000ff); // Blue tint
                 e.setScale(0.78125); // Scale 32x32 sprite to 25x25 (original blue size)
+                e.body.setCircle(10); // Circular hitbox with 10px radius (ignores transparent edges)
                 e.enemyType = 'blue';
             }
         } else {
@@ -70,6 +71,7 @@ export default class EnemyManager {
                 e.hp = GameBalance.enemy.baseHealth;
                 e.clearTint(); // No tint, use original sprite colors
                 e.setScale(1.25); // Scale 32x32 sprite to 40x40 for original size
+                e.body.setCircle(12); // Circular hitbox with 12px radius (ignores transparent edges)
                 e.enemyType = 'red';
             }
         }
@@ -84,6 +86,7 @@ export default class EnemyManager {
                     if (b) {
                         b.enableBody(true, child.x, child.y, true, true);
                         b.setScale(1); // 8x8 sprite, no scaling needed
+                        b.body.setCircle(3); // Circular hitbox with 3px radius (ignores transparent edges)
                         this.scene.physics.moveToObject(b, this.scene.player, GameBalance.enemy.bulletSpeed);
                     }
                 }

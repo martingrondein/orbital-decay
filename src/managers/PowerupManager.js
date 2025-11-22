@@ -26,6 +26,7 @@ export default class PowerupManager {
             powerup.enableBody(true, x, y, true, true);
             powerup.setVelocityY(100);
             powerup.setScale(1.5); // Scale 16x16 sprite to 24x24 for original size
+            powerup.body.setCircle(10); // Circular hitbox with 10px radius (ignores transparent edges)
             powerup.powerupType = type;
         }
     }

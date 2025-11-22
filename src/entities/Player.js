@@ -15,6 +15,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.setCollideWorldBounds(true);
         this.setDepth(1);
         this.setScale(1.25); // Scale 32x32 sprite to 40x40 for original size
+        this.body.setCircle(12); // Circular hitbox with 12px radius (ignores transparent edges)
         this.lastFired = 0;
         this.isInvulnerable = false;
         this.sprayShot = false; // Powerup flag
@@ -65,6 +66,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
                     bullet.enableBody(true, this.x + offset, this.y - 20, true, true);
                     bullet.setVelocityY(-600);
                     bullet.setScale(1); // 8x8 sprite, no scaling needed
+                    bullet.body.setCircle(3); // Circular hitbox with 3px radius (ignores transparent edges)
                     bullet.clearTint(); // No tint, use original sprite colors
                 }
             });
@@ -75,6 +77,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
                 bullet.enableBody(true, this.x, this.y - 20, true, true);
                 bullet.setVelocityY(-600);
                 bullet.setScale(1); // 8x8 sprite, no scaling needed
+                bullet.body.setCircle(3); // Circular hitbox with 3px radius (ignores transparent edges)
                 bullet.clearTint(); // No tint, use original sprite colors
             }
         }
@@ -99,6 +102,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
                     bullet.setVelocity(vx, vy);
                     bullet.setScale(1); // 8x8 sprite, no scaling needed
+                    bullet.body.setCircle(3); // Circular hitbox with 3px radius (ignores transparent edges)
                     bullet.clearTint(); // No tint, use original sprite colors
                 }
             });
