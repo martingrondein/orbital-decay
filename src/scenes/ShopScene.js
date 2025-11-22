@@ -14,18 +14,18 @@ export default class ShopScene extends Phaser.Scene {
 
         // Title
         this.add.text(w/2, 40, 'SHOP', {
+            fontFamily: 'PixelifySans',
             fontSize: '36px',
             color: '#ffd700',
-            fontStyle: 'bold',
             stroke: '#000',
             strokeThickness: 4
         }).setOrigin(0.5);
 
         // Display current gold
         this.goldText = this.add.text(w/2, 90, `Gold: ${this.stats.gold}`, {
+            fontFamily: 'PixelifySans',
             fontSize: '24px',
-            color: '#ffd700',
-            fontStyle: 'bold'
+            color: '#ffd700'
         }).setOrigin(0.5);
 
         // Create shop items
@@ -94,7 +94,11 @@ export default class ShopScene extends Phaser.Scene {
 
         // Back button
         const backBtn = this.add.rectangle(w/2, h - 60, 200, 50, 0xff3333).setInteractive();
-        const backTxt = this.add.text(w/2, h - 60, 'BACK', { fontSize: '24px', color: 'black' }).setOrigin(0.5);
+        const backTxt = this.add.text(w/2, h - 60, 'BACK', {
+            fontFamily: 'PixelifySans',
+            fontSize: '24px',
+            color: 'black'
+        }).setOrigin(0.5);
 
         backBtn.on('pointerdown', () => {
             this.scene.start('TitleScene');
@@ -107,19 +111,21 @@ export default class ShopScene extends Phaser.Scene {
 
         // Item name
         this.add.text(x - 165, y - 25, name, {
+            fontFamily: 'PixelifySans',
             fontSize: '18px',
-            color: '#ffffff',
-            fontStyle: 'bold'
+            color: '#ffffff'
         });
 
         // Cost
         this.add.text(x - 165, y, cost, {
+            fontFamily: 'PixelifySans',
             fontSize: '16px',
             color: '#ffd700'
         });
 
         // Status/Current value
         this.add.text(x - 165, y + 22, status, {
+            fontFamily: 'PixelifySans',
             fontSize: '14px',
             color: '#aaaaaa'
         });
@@ -127,7 +133,11 @@ export default class ShopScene extends Phaser.Scene {
         // Buy button
         if (!isOwned) {
             const buyBtn = this.add.rectangle(x + 130, y, 70, 50, 0x00ff00).setInteractive();
-            const buyTxt = this.add.text(x + 130, y, 'BUY', { fontSize: '18px', color: 'black', fontStyle: 'bold' }).setOrigin(0.5);
+            const buyTxt = this.add.text(x + 130, y, 'BUY', {
+                fontFamily: 'PixelifySans',
+                fontSize: '18px',
+                color: 'black'
+            }).setOrigin(0.5);
 
             buyBtn.on('pointerdown', () => {
                 onPurchase();
@@ -135,7 +145,11 @@ export default class ShopScene extends Phaser.Scene {
         } else {
             // Show owned badge
             this.add.rectangle(x + 130, y, 70, 50, 0x666666);
-            this.add.text(x + 130, y, 'OWNED', { fontSize: '14px', color: 'white', fontStyle: 'bold' }).setOrigin(0.5);
+            this.add.text(x + 130, y, 'OWNED', {
+                fontFamily: 'PixelifySans',
+                fontSize: '14px',
+                color: 'white'
+            }).setOrigin(0.5);
         }
     }
 
@@ -238,9 +252,9 @@ export default class ShopScene extends Phaser.Scene {
     showMessage(text) {
         const w = this.scale.width;
         const msg = this.add.text(w/2, 100, text, {
+            fontFamily: 'PixelifySans',
             fontSize: '20px',
             color: '#ff0000',
-            fontStyle: 'bold',
             backgroundColor: '#000000',
             padding: { x: 10, y: 5 }
         }).setOrigin(0.5);

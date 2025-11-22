@@ -221,9 +221,9 @@ export default class GameScene extends Phaser.Scene {
         const w = this.scale.width;
         const h = this.scale.height;
         const reviveText = this.add.text(w/2, h/2, 'REVIVED!', {
+            fontFamily: 'PixelifySans',
             fontSize: GameConstants.revive.fontSize,
             color: '#00ff00',
-            fontStyle: 'bold',
             stroke: '#000',
             strokeThickness: GameConstants.revive.strokeThickness
         }).setOrigin(0.5).setDepth(100);
