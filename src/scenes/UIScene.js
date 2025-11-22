@@ -226,43 +226,214 @@ export default class UIScene extends Phaser.Scene {
 
     showLevelUp(stats, onResume) {
         const w = this.scale.width, h = this.scale.height;
-        const con = this.add.container(0,0);
+        const con = this.add.container(0, 0).setDepth(200);
 
-        const bg = this.add.rectangle(w/2, h/2, w, h, 0x000000, 0.9);
-        const title = this.add.text(w/2, h/2-150, 'LEVEL UP!', { fontFamily: 'Silkscreen', fontSize: '40px', color: '#ff0' }).setOrigin(0.5);
+        // Background with fade-in effect
+        const bg = this.add.rectangle(w/2, h/2, w, h, 0x000000, 0);
+        con.add(bg);
+        this.tweens.add({
+            targets: bg,
+            alpha: 0.95,
+            duration: 300,
+            ease: 'Power2'
+        });
 
-        const levelText = this.add.text(w/2, h/2-90, `Level ${stats.level}`, { fontFamily: 'Silkscreen', fontSize: '24px', color: '#0ff' }).setOrigin(0.5);
+        // Animated particle burst
+        this.createLevelUpParticles(w/2, h/2 - 150);
 
-        const info = this.add.text(w/2, h/2-20,
-            `Stats Increased:\n` +
-            `Health: ${stats.maxHealth} (+${GameBalance.levelUp.healthIncrease})\n` +
-            `Speed: ${stats.moveSpeed} (+${GameBalance.levelUp.speedIncrease})\n` +
-            `Fire Rate: ${stats.fireRateMs}ms (-${GameBalance.levelUp.fireRateDecrease}ms)\n` +
-            `Damage: x${stats.damageMult.toFixed(2)} (+${GameBalance.levelUp.damageIncrease})`,
-            { fontFamily: 'Silkscreen', fontSize: '20px', align: 'center', lineSpacing: 5, color: '#0f0' }
-        ).setOrigin(0.5);
+        // Title with scale animation
+        const title = this.add.text(w/2, h/2-150, 'LEVEL UP!', {
+            fontFamily: 'Silkscreen',
+            fontSize: '48px',
+            color: '#ffff00',
+            stroke: '#ff8800',
+            strokeThickness: 4
+        }).setOrigin(0.5).setScale(0);
+        con.add(title);
 
-        const btn = this.add.rectangle(w/2, h/2+130, 200, 50, 0x00ff00).setInteractive();
-        const btnTxt = this.add.text(w/2, h/2+130, 'CONTINUE', { fontFamily: 'Silkscreen', color: 'black', fontSize: '20px' }).setOrigin(0.5);
+        this.tweens.add({
+            targets: title,
+            scale: 1,
+            duration: 400,
+            ease: 'Back.easeOut',
+            delay: 100
+        });
+
+        // Pulsing glow effect on title
+        this.tweens.add({
+            targets: title,
+            scale: 1.1,
+            duration: 800,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+            delay: 500
+        });
+
+        // Level number with glow box
+        const levelBox = this.add.rectangle(w/2, h/2-90, 200, 45, 0x1a1a3e).setStrokeStyle(3, 0x00ffff);
+        const levelText = this.add.text(w/2, h/2-90, `LEVEL ${stats.level}`, {
+            fontFamily: 'Silkscreen',
+            fontSize: '28px',
+            color: '#00ffff',
+            stroke: '#003366',
+            strokeThickness: 3
+        }).setOrigin(0.5).setAlpha(0);
+        con.add([levelBox, levelText]);
+
+        this.tweens.add({
+            targets: [levelBox, levelText],
+            alpha: 1,
+            duration: 300,
+            delay: 300
+        });
+
+        // Stats container with border
+        const statsBoxBg = this.add.rectangle(w/2, h/2+10, 360, 170, 0x0a0a1a).setStrokeStyle(2, 0x00ff88);
+        con.add(statsBoxBg);
+
+        // Stat increase items with staggered animation
+        const statItems = [
+            { label: 'HEALTH', value: stats.maxHealth, increase: GameBalance.levelUp.healthIncrease, color: '#ff4444', icon: '+' },
+            { label: 'SPEED', value: stats.moveSpeed, increase: GameBalance.levelUp.speedIncrease, color: '#44ff44', icon: '+' },
+            { label: 'FIRE RATE', value: `${stats.fireRateMs}ms`, increase: `-${GameBalance.levelUp.fireRateDecrease}ms`, color: '#ffaa00', icon: '' },
+            { label: 'DAMAGE', value: `x${stats.damageMult.toFixed(2)}`, increase: `+${GameBalance.levelUp.damageIncrease}`, color: '#ff00ff', icon: '+' }
+        ];
+
+        statItems.forEach((stat, index) => {
+            const yPos = h/2 - 50 + (index * 38);
+
+            const statText = this.add.text(w/2 - 160, yPos, stat.label, {
+                fontFamily: 'Silkscreen',
+                fontSize: '16px',
+                color: '#aaaaaa'
+            }).setOrigin(0, 0.5).setAlpha(0);
+
+            const valueText = this.add.text(w/2 + 50, yPos, `${stat.value}`, {
+                fontFamily: 'Silkscreen',
+                fontSize: '18px',
+                color: stat.color
+            }).setOrigin(0, 0.5).setAlpha(0);
+
+            const increaseText = this.add.text(w/2 + 135, yPos, `(${stat.icon}${stat.increase})`, {
+                fontFamily: 'Silkscreen',
+                fontSize: '14px',
+                color: '#00ff00'
+            }).setOrigin(0, 0.5).setAlpha(0);
+
+            con.add([statText, valueText, increaseText]);
+
+            // Staggered fade-in
+            this.tweens.add({
+                targets: [statText, valueText, increaseText],
+                alpha: 1,
+                x: '+=10',
+                duration: 300,
+                delay: 500 + (index * 100),
+                ease: 'Power2'
+            });
+        });
+
+        // Continue button with hover effect
+        const btn = this.add.rectangle(w/2, h/2+130, 220, 55, 0x00ff00).setInteractive().setAlpha(0);
+        const btnTxt = this.add.text(w/2, h/2+130, 'CONTINUE', {
+            fontFamily: 'Silkscreen',
+            color: '#000000',
+            fontSize: '22px'
+        }).setOrigin(0.5).setAlpha(0);
+        con.add([btn, btnTxt]);
+
+        this.tweens.add({
+            targets: [btn, btnTxt],
+            alpha: 1,
+            duration: 300,
+            delay: 900
+        });
+
+        btn.on('pointerover', () => {
+            this.tweens.add({ targets: btn, scaleX: 1.1, scaleY: 1.1, duration: 100 });
+            btn.setFillStyle(0x00ff88);
+        });
+
+        btn.on('pointerout', () => {
+            this.tweens.add({ targets: btn, scaleX: 1, scaleY: 1, duration: 100 });
+            btn.setFillStyle(0x00ff00);
+        });
 
         btn.on('pointerdown', () => {
-            con.destroy();
-            onResume();
+            // Fade out animation
+            this.tweens.add({
+                targets: con,
+                alpha: 0,
+                duration: 200,
+                onComplete: () => {
+                    con.destroy();
+                    onResume();
+                }
+            });
         });
 
         // Save & Exit button
-        const exitBtn = this.add.rectangle(w/2, h/2+200, 200, 50, 0xff9900).setInteractive();
-        const exitTxt = this.add.text(w/2, h/2+200, 'SAVE & EXIT RUN', { fontFamily: 'Silkscreen', color: 'black', fontSize: '18px' }).setOrigin(0.5);
+        const exitBtn = this.add.rectangle(w/2, h/2+200, 220, 55, 0xff9900).setInteractive().setAlpha(0);
+        const exitTxt = this.add.text(w/2, h/2+200, 'SAVE & EXIT', {
+            fontFamily: 'Silkscreen',
+            color: '#000000',
+            fontSize: '18px'
+        }).setOrigin(0.5).setAlpha(0);
+        con.add([exitBtn, exitTxt]);
 
-        exitBtn.on('pointerdown', () => {
-            con.destroy();
-            // Stats already saved in levelUp(), just exit to title
-            this.scene.stop('UIScene');
-            this.scene.stop('GameScene');
-            this.scene.start('TitleScene');
+        this.tweens.add({
+            targets: [exitBtn, exitTxt],
+            alpha: 1,
+            duration: 300,
+            delay: 1000
         });
 
-        con.add([bg, title, levelText, info, btn, btnTxt, exitBtn, exitTxt]);
+        exitBtn.on('pointerover', () => {
+            this.tweens.add({ targets: exitBtn, scaleX: 1.1, scaleY: 1.1, duration: 100 });
+            exitBtn.setFillStyle(0xffaa00);
+        });
+
+        exitBtn.on('pointerout', () => {
+            this.tweens.add({ targets: exitBtn, scaleX: 1, scaleY: 1, duration: 100 });
+            exitBtn.setFillStyle(0xff9900);
+        });
+
+        exitBtn.on('pointerdown', () => {
+            this.tweens.add({
+                targets: con,
+                alpha: 0,
+                duration: 200,
+                onComplete: () => {
+                    con.destroy();
+                    this.scene.stop('UIScene');
+                    this.scene.stop('GameScene');
+                    this.scene.start('TitleScene');
+                }
+            });
+        });
+    }
+
+    createLevelUpParticles(x, y) {
+        // Create particle burst effect
+        const colors = [0xffff00, 0xff8800, 0xff00ff, 0x00ffff, 0x00ff00];
+
+        for (let i = 0; i < 20; i++) {
+            const angle = (Math.PI * 2 / 20) * i;
+            const distance = 80;
+            const particle = this.add.circle(x, y, 4, Phaser.Utils.Array.GetRandom(colors), 1).setDepth(201);
+
+            this.tweens.add({
+                targets: particle,
+                x: x + Math.cos(angle) * distance,
+                y: y + Math.sin(angle) * distance,
+                alpha: 0,
+                scale: 0,
+                duration: 600,
+                ease: 'Power2',
+                onComplete: () => particle.destroy()
+            });
+        }
     }
 
     showGameOver(finalScore, isNewHighScore = false) {
