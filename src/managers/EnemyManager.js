@@ -104,18 +104,19 @@ export default class EnemyManager {
             enemy.flashTimer.remove();
         }
 
-        // Flash white when hit
+        // Flash white when hit using tintFill for more visible flash
         const originalTint = enemy.enemyType === 'blue' ? 0x0000ff : null;
-        enemy.setTint(0xffffff); // Set white tint
+        enemy.clearTint();
+        enemy.setTintFill(0xffffff); // Fill with white for strong flash effect
 
-        // Restore original tint after 100ms
-        enemy.flashTimer = this.scene.time.delayedCall(100, () => {
+        // Restore original tint after 150ms
+        enemy.flashTimer = this.scene.time.delayedCall(150, () => {
             if (enemy.active) {
+                enemy.clearTint();
                 if (originalTint) {
                     enemy.setTint(originalTint); // Restore blue tint for blue enemies
-                } else {
-                    enemy.clearTint(); // Clear tint for red enemies (show original sprite)
                 }
+                // Red enemies stay with no tint (original sprite colors)
             }
             enemy.flashTimer = null;
         });
