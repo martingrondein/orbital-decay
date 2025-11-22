@@ -5,8 +5,20 @@ export default class UIScene extends Phaser.Scene {
     constructor() { super({ key: 'UIScene', active: false }); }
 
     create() {
+        this.createHUD();
+
         // Listen to GameScene events
         const game = this.scene.get('GameScene');
+
+        // Remove any existing listeners to prevent duplicates
+        game.events.off('startUI', this.initUI, this);
+        game.events.off('updateHealth', this.updateHealth, this);
+        game.events.off('updateXP', this.updateXP, this);
+        game.events.off('updateFuel', this.updateFuel, this);
+        game.events.off('powerupActivated', this.showPowerup, this);
+        game.events.off('powerupExpired', this.hidePowerup, this);
+
+        // Add event listeners
         game.events.on('startUI', this.initUI, this);
         game.events.on('updateHealth', this.updateHealth, this);
         game.events.on('updateXP', this.updateXP, this);
@@ -16,8 +28,19 @@ export default class UIScene extends Phaser.Scene {
         game.events.on('updateGold', (g) => this.goldText.setText(`G: ${g}`), this);
         game.events.on('powerupActivated', this.showPowerup, this);
         game.events.on('powerupExpired', this.hidePowerup, this);
+    }
 
-        this.createHUD();
+    shutdown() {
+        // Clean up event listeners when scene shuts down
+        const game = this.scene.get('GameScene');
+        if (game) {
+            game.events.off('startUI', this.initUI, this);
+            game.events.off('updateHealth', this.updateHealth, this);
+            game.events.off('updateXP', this.updateXP, this);
+            game.events.off('updateFuel', this.updateFuel, this);
+            game.events.off('powerupActivated', this.showPowerup, this);
+            game.events.off('powerupExpired', this.hidePowerup, this);
+        }
     }
 
     createHUD() {
@@ -81,6 +104,9 @@ export default class UIScene extends Phaser.Scene {
         this.goldText.setText(`G: ${stats.gold}`);
         this.updateHealth(stats.maxHealth, stats.maxHealth);
         this.updateXP(stats.xp, stats.reqXp);
+        // Initialize fuel bar (GameScene emits updateFuel separately but we need initial state)
+        const maxFuel = GameBalance.fuel.startFuel;
+        this.updateFuel(maxFuel);
     }
 
     updateHealth(curr, max) {
