@@ -8,7 +8,13 @@ export default class TitleScene extends Phaser.Scene {
         // Load logo (from public folder, respects base path in production)
         this.load.image('logo', 'assets/od-logo.png');
 
-        // Generate textures once globally here
+        // Load game assets
+        this.load.image('player', 'assets/player.png');
+        this.load.image('enemy', 'assets/enemy1.png');
+        this.load.image('xp', 'assets/xp.png');
+        this.load.image('gold', 'assets/gold.png');
+
+        // Generate textures for remaining elements
         const make = (k, c, r) => {
             if(this.textures.exists(k)) return;
             const g = this.make.graphics({ add: false });
@@ -40,12 +46,8 @@ export default class TitleScene extends Phaser.Scene {
             g.generateTexture(k, size, size);
         };
 
-        make('player', 0x00ff00, 20);
         make('bullet', 0xffff00, 5);
-        make('enemy', 0xffffff, 20); // White texture, will be tinted red
         make('ebullet', 0xffaa00, 6);
-        make('xp', 0x00ffff, 8);
-        make('gold', 0xffd700, 10); // Golden coin
         makeDiamond('fuel', 0x9932cc, 16); // Purple diamond
 
         // Powerup textures - all pink boxes
