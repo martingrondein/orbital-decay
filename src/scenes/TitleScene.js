@@ -13,50 +13,17 @@ export default class TitleScene extends Phaser.Scene {
         this.load.image('enemy', 'assets/enemy1.png');
         this.load.image('xp', 'assets/xp.png');
         this.load.image('gold', 'assets/gold.png');
+        this.load.image('bullet', 'assets/bullet.png');
+        this.load.image('ebullet', 'assets/enemy-bullet.png');
+        this.load.image('fuel', 'assets/fuel.png');
 
-        // Generate textures for remaining elements
-        const make = (k, c, r) => {
-            if(this.textures.exists(k)) return;
-            const g = this.make.graphics({ add: false });
-            g.fillStyle(c, 1); g.fillCircle(r, r, r); g.generateTexture(k, r*2, r*2);
-        };
-
-        // Box texture maker for powerups
-        const makeBox = (k, c, size) => {
-            if(this.textures.exists(k)) return;
-            const g = this.make.graphics({ add: false });
-            g.fillStyle(c, 1);
-            g.fillRect(0, 0, size, size);
-            g.generateTexture(k, size, size);
-        };
-
-        // Diamond texture maker for fuel
-        const makeDiamond = (k, c, size) => {
-            if(this.textures.exists(k)) return;
-            const g = this.make.graphics({ add: false });
-            g.fillStyle(c, 1);
-            const halfSize = size / 2;
-            g.beginPath();
-            g.moveTo(halfSize, 0);           // Top point
-            g.lineTo(size, halfSize);        // Right point
-            g.lineTo(halfSize, size);        // Bottom point
-            g.lineTo(0, halfSize);           // Left point
-            g.closePath();
-            g.fillPath();
-            g.generateTexture(k, size, size);
-        };
-
-        make('bullet', 0xffff00, 5);
-        make('ebullet', 0xffaa00, 6);
-        makeDiamond('fuel', 0x9932cc, 16); // Purple diamond
-
-        // Powerup textures - all pink boxes
-        makeBox('powerup_spray', 0xff69b4, 24);      // Pink box - Spray shot
-        makeBox('powerup_damage', 0xff69b4, 24);     // Pink box - Double damage
-        makeBox('powerup_firerate', 0xff69b4, 24);   // Pink box - Double fire rate
-        makeBox('powerup_doublexp', 0xff69b4, 24);   // Pink box - Double XP
-        makeBox('powerup_triplescore', 0xff69b4, 24); // Pink box - Triple score
-        makeBox('powerup_shield', 0xff69b4, 24);     // Pink box - Shield
+        // Load powerup textures - all use the same sprite
+        this.load.image('powerup_spray', 'assets/powerup.png');
+        this.load.image('powerup_damage', 'assets/powerup.png');
+        this.load.image('powerup_firerate', 'assets/powerup.png');
+        this.load.image('powerup_doublexp', 'assets/powerup.png');
+        this.load.image('powerup_triplescore', 'assets/powerup.png');
+        this.load.image('powerup_shield', 'assets/powerup.png');
     }
 
     create() {

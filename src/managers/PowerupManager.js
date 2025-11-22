@@ -25,6 +25,7 @@ export default class PowerupManager {
         if (powerup) {
             powerup.enableBody(true, x, y, true, true);
             powerup.setVelocityY(100);
+            powerup.setScale(1.5); // Scale 16x16 sprite to 24x24 for original size
             powerup.powerupType = type;
         }
     }

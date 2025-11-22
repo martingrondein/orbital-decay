@@ -288,6 +288,7 @@ export default class GameScene extends Phaser.Scene {
                 fuel.enableBody(true, x, y, true, true);
                 fuel.setVelocityY(GameConstants.drops.velocityY);
                 fuel.setVelocityX(Phaser.Math.Between(-50, 50));
+                fuel.setScale(1); // 16x16 sprite, no scaling needed
             }
         }
 

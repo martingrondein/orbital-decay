@@ -83,6 +83,7 @@ export default class EnemyManager {
                     const b = this.enemyBullets.get(child.x, child.y);
                     if (b) {
                         b.enableBody(true, child.x, child.y, true, true);
+                        b.setScale(1.5); // Scale 8x8 sprite to 12x12 for original size
                         this.scene.physics.moveToObject(b, this.scene.player, GameBalance.enemy.bulletSpeed);
                     }
                 }
@@ -96,12 +97,12 @@ export default class EnemyManager {
         enemy.hp -= damage;
 
         // Flash white by clearing tint (shows white texture)
+        const originalTint = enemy.enemyType === 'blue' ? 0x0000ff : null;
         enemy.clearTint();
 
-        // Restore original tint after 100ms
-        const originalTint = enemy.enemyType === 'blue' ? 0x0000ff : 0xff0000;
+        // Restore original tint after 100ms (if applicable)
         this.scene.time.delayedCall(100, () => {
-            if (enemy.active) {
+            if (enemy.active && originalTint) {
                 enemy.setTint(originalTint);
             }
         });
