@@ -126,11 +126,15 @@ export const GameBalance = {
         fireRateUpgrade: 50,
         fuelUpgrade: 50,
         magneticUpgrade: 100,
+        xpGainUpgrade: 50,
+        damageUpgrade: 100,
         extraShooter: 400,
         revive: 2000,
         healthUpgradeAmount: 10,
         fireRateUpgradeAmount: 10,
         fuelUpgradeAmount: 100,
-        magneticUpgradeAmount: 10
+        magneticUpgradeAmount: 10,
+        xpGainUpgradeAmount: 10,
+        damageUpgradeAmount: 0.5
     }
 };

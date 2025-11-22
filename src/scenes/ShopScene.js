@@ -72,9 +72,25 @@ export default class ShopScene extends Phaser.Scene {
             () => this.purchaseMagnetic()
         );
 
-        // 6. Extra Shooter
-        const extraShooterStatus = this.stats.hasExtraShooter ? 'OWNED' : 'Not owned';
+        // 6. XP Gain Upgrade
         this.createShopItem(w/2, startY + itemSpacing * 5,
+            `+${GameBalance.shop.xpGainUpgradeAmount} XP per Pickup`,
+            `Cost: ${GameBalance.shop.xpGainUpgrade}g`,
+            `Current: ${this.stats.xpGain || GameBalance.progression.xpPerPickup}`,
+            () => this.purchaseXPGain()
+        );
+
+        // 7. Damage Upgrade
+        this.createShopItem(w/2, startY + itemSpacing * 6,
+            `+${GameBalance.shop.damageUpgradeAmount.toFixed(1)} Damage`,
+            `Cost: ${GameBalance.shop.damageUpgrade}g`,
+            `Current: x${this.stats.damageMult.toFixed(2)}`,
+            () => this.purchaseDamage()
+        );
+
+        // 8. Extra Shooter
+        const extraShooterStatus = this.stats.hasExtraShooter ? 'OWNED' : 'Not owned';
+        this.createShopItem(w/2, startY + itemSpacing * 7,
             'Extra Shooter',
             `Cost: ${GameBalance.shop.extraShooter}g`,
             extraShooterStatus,
@@ -82,9 +98,9 @@ export default class ShopScene extends Phaser.Scene {
             this.stats.hasExtraShooter
         );
 
-        // 7. Revive
+        // 9. Revive
         const reviveStatus = this.stats.hasRevive ? 'OWNED' : 'Not owned';
-        this.createShopItem(w/2, startY + itemSpacing * 6,
+        this.createShopItem(w/2, startY + itemSpacing * 8,
             'Revive (Once per run)',
             `Cost: ${GameBalance.shop.revive}g`,
             reviveStatus,
@@ -208,6 +224,28 @@ export default class ShopScene extends Phaser.Scene {
         if (this.stats.gold >= GameBalance.shop.magneticUpgrade) {
             this.stats.gold -= GameBalance.shop.magneticUpgrade;
             this.stats.magneticRange += GameBalance.shop.magneticUpgradeAmount;
+            SaveSystem.save(this.stats);
+            this.scene.restart();
+        } else {
+            this.showInsufficientFunds();
+        }
+    }
+
+    purchaseXPGain() {
+        if (this.stats.gold >= GameBalance.shop.xpGainUpgrade) {
+            this.stats.gold -= GameBalance.shop.xpGainUpgrade;
+            this.stats.xpGain = (this.stats.xpGain || GameBalance.progression.xpPerPickup) + GameBalance.shop.xpGainUpgradeAmount;
+            SaveSystem.save(this.stats);
+            this.scene.restart();
+        } else {
+            this.showInsufficientFunds();
+        }
+    }
+
+    purchaseDamage() {
+        if (this.stats.gold >= GameBalance.shop.damageUpgrade) {
+            this.stats.gold -= GameBalance.shop.damageUpgrade;
+            this.stats.damageMult += GameBalance.shop.damageUpgradeAmount;
             SaveSystem.save(this.stats);
             this.scene.restart();
         } else {

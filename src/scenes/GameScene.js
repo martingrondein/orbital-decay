@@ -324,7 +324,8 @@ export default class GameScene extends Phaser.Scene {
         createCollectionEffect(this, xpItem.x, xpItem.y, 0x00ffff);
 
         xpItem.disableBody(true, true);
-        this.stats.xp += (GameBalance.progression.xpPerPickup * this.stats.xpMult);
+        const xpGain = this.stats.xpGain || GameBalance.progression.xpPerPickup;
+        this.stats.xp += (xpGain * this.stats.xpMult);
         AudioEngine.play('xp');
 
         if (this.stats.xp >= this.stats.reqXp) {
