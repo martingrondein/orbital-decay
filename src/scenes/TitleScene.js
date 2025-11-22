@@ -14,7 +14,7 @@ export default class TitleScene extends Phaser.Scene {
         this.load.image('bg3-nebulae', 'assets/bg3-nebulae.png');
 
         // Load custom font
-        this.load.font('PixelifySans', 'fonts/PixelifySans-Regular.ttf');
+        this.load.font('Silkscreen', 'fonts/Silkscreen-Regular.ttf');
 
         // Load game assets
         this.load.image('player', 'assets/player.png');
@@ -49,7 +49,7 @@ export default class TitleScene extends Phaser.Scene {
 
         // Display version number
         this.add.text(w - 10, h - 10, 'v0.251122', {
-            fontFamily: 'PixelifySans',
+            fontFamily: 'Silkscreen',
             fontSize: '16px',
             color: '#888888'
         }).setOrigin(1, 1);
@@ -57,7 +57,7 @@ export default class TitleScene extends Phaser.Scene {
         // Display high score
         const highScore = SaveSystem.loadHighScore();
         this.add.text(w/2, 190, `High Score: ${highScore}`, {
-            fontFamily: 'PixelifySans',
+            fontFamily: 'Silkscreen',
             fontSize: '24px',
             color: '#ffff00',
             stroke: '#000',
@@ -67,7 +67,7 @@ export default class TitleScene extends Phaser.Scene {
         // Display best distance
         const bestDistance = SaveSystem.loadBestDistance();
         this.add.text(w/2, 220, `Best Distance: ${bestDistance}m`, {
-            fontFamily: 'PixelifySans',
+            fontFamily: 'Silkscreen',
             fontSize: '24px',
             color: '#00ffff',
             stroke: '#000',
@@ -86,7 +86,7 @@ export default class TitleScene extends Phaser.Scene {
         ].join('\n');
 
         this.add.text(w/2, h/2 - 50, statsText, {
-            fontFamily: 'PixelifySans',
+            fontFamily: 'Silkscreen',
             fontSize: '20px',
             color: '#fff',
             align: 'center',
@@ -96,7 +96,7 @@ export default class TitleScene extends Phaser.Scene {
         // START button
         const startBtn = this.add.rectangle(w/2, h/2 + 120, 200, 50, 0x00aaff).setInteractive();
         const startTxt = this.add.text(w/2, h/2 + 120, 'START', {
-            fontFamily: 'PixelifySans',
+            fontFamily: 'Silkscreen',
             fontSize: '24px',
             color: 'black'
         }).setOrigin(0.5);
@@ -109,7 +109,7 @@ export default class TitleScene extends Phaser.Scene {
         // SHOP button
         const shopBtn = this.add.rectangle(w/2, h/2 + 185, 200, 50, 0xffd700).setInteractive();
         const shopTxt = this.add.text(w/2, h/2 + 185, 'SHOP', {
-            fontFamily: 'PixelifySans',
+            fontFamily: 'Silkscreen',
             fontSize: '24px',
             color: 'black'
         }).setOrigin(0.5);
@@ -121,7 +121,7 @@ export default class TitleScene extends Phaser.Scene {
         // Reset Stats button
         const resetBtn = this.add.rectangle(w/2, h/2 + 250, 200, 50, 0xff3333).setInteractive();
         const resetTxt = this.add.text(w/2, h/2 + 250, 'RESET STATS', {
-            fontFamily: 'PixelifySans',
+            fontFamily: 'Silkscreen',
             fontSize: '18px',
             color: 'black'
         }).setOrigin(0.5);
@@ -137,7 +137,7 @@ export default class TitleScene extends Phaser.Scene {
         // +1000 Gold button
         const goldBtn = this.add.rectangle(w/2 - 110, debugY, 180, 40, 0xffd700).setInteractive();
         const goldTxt = this.add.text(w/2 - 110, debugY, '+1000 GOLD', {
-            fontFamily: 'PixelifySans',
+            fontFamily: 'Silkscreen',
             fontSize: '16px',
             color: 'black'
         }).setOrigin(0.5);
@@ -152,7 +152,7 @@ export default class TitleScene extends Phaser.Scene {
         // +1 Level button
         const lvlBtn = this.add.rectangle(w/2 + 110, debugY, 180, 40, 0x00aaff).setInteractive();
         const lvlTxt = this.add.text(w/2 + 110, debugY, '+1 LEVEL', {
-            fontFamily: 'PixelifySans',
+            fontFamily: 'Silkscreen',
             fontSize: '16px',
             color: 'black'
         }).setOrigin(0.5);

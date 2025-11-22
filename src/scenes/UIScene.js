@@ -47,10 +47,10 @@ export default class UIScene extends Phaser.Scene {
         const w = this.scale.width;
         const h = this.scale.height;
 
-        this.scoreText = this.add.text(10, 10, '0', { fontFamily: 'PixelifySans', fontSize: '18px' }).setDepth(100);
-        this.goldText = this.add.text(w-10, 10, 'G: 0', { fontFamily: 'PixelifySans', fontSize: '18px', color: '#ffd700' }).setOrigin(1,0).setDepth(100);
-        this.distanceText = this.add.text(w/2, 10, '0m', { fontFamily: 'PixelifySans', fontSize: '18px' }).setOrigin(0.5,0).setDepth(100);
-        this.lvlText = this.add.text(10, h-30, 'Lvl: 1', { fontFamily: 'PixelifySans', fontSize: '18px' }).setOrigin(0,1).setDepth(100);
+        this.scoreText = this.add.text(10, 10, '0', { fontFamily: 'Silkscreen', fontSize: '18px' }).setDepth(100);
+        this.goldText = this.add.text(w-10, 10, 'G: 0', { fontFamily: 'Silkscreen', fontSize: '18px', color: '#ffd700' }).setOrigin(1,0).setDepth(100);
+        this.distanceText = this.add.text(w/2, 10, '0m', { fontFamily: 'Silkscreen', fontSize: '18px' }).setOrigin(0.5,0).setDepth(100);
+        this.lvlText = this.add.text(10, h-30, 'Lvl: 1', { fontFamily: 'Silkscreen', fontSize: '18px' }).setOrigin(0,1).setDepth(100);
 
         // Bar backgrounds for better visibility (moved to top)
         this.hpBarBg = this.add.rectangle(10, 40, w-20, 15, 0x333333).setOrigin(0).setDepth(99);
@@ -64,7 +64,7 @@ export default class UIScene extends Phaser.Scene {
 
         // Bar text labels
         this.hpText = this.add.text(w/2, 47.5, '', {
-            fontFamily: 'PixelifySans',
+            fontFamily: 'Silkscreen',
             fontSize: '12px',
             color: '#fff',
             stroke: '#000',
@@ -72,7 +72,7 @@ export default class UIScene extends Phaser.Scene {
         }).setOrigin(0.5).setDepth(101);
 
         this.xpText = this.add.text(w/2, 72.5, '', {
-            fontFamily: 'PixelifySans',
+            fontFamily: 'Silkscreen',
             fontSize: '12px',
             color: '#fff',
             stroke: '#000',
@@ -80,7 +80,7 @@ export default class UIScene extends Phaser.Scene {
         }).setOrigin(0.5).setDepth(101);
 
         this.fuelText = this.add.text(w/2, 97.5, '', {
-            fontFamily: 'PixelifySans',
+            fontFamily: 'Silkscreen',
             fontSize: '12px',
             color: '#fff',
             stroke: '#000',
@@ -89,7 +89,7 @@ export default class UIScene extends Phaser.Scene {
 
         // Powerup indicator (moved down to give space for bars)
         this.powerupText = this.add.text(w/2, 120, '', {
-            fontFamily: 'PixelifySans',
+            fontFamily: 'Silkscreen',
             fontSize: '18px',
             color: '#fff',
             stroke: '#000',
@@ -193,9 +193,9 @@ export default class UIScene extends Phaser.Scene {
         const con = this.add.container(0,0);
 
         const bg = this.add.rectangle(w/2, h/2, w, h, 0x000000, 0.9);
-        const title = this.add.text(w/2, h/2-150, 'LEVEL UP!', { fontFamily: 'PixelifySans', fontSize: '40px', color: '#ff0' }).setOrigin(0.5);
+        const title = this.add.text(w/2, h/2-150, 'LEVEL UP!', { fontFamily: 'Silkscreen', fontSize: '40px', color: '#ff0' }).setOrigin(0.5);
 
-        const levelText = this.add.text(w/2, h/2-90, `Level ${stats.level}`, { fontFamily: 'PixelifySans', fontSize: '24px', color: '#0ff' }).setOrigin(0.5);
+        const levelText = this.add.text(w/2, h/2-90, `Level ${stats.level}`, { fontFamily: 'Silkscreen', fontSize: '24px', color: '#0ff' }).setOrigin(0.5);
 
         const info = this.add.text(w/2, h/2-20,
             `Stats Increased:\n` +
@@ -203,11 +203,11 @@ export default class UIScene extends Phaser.Scene {
             `Speed: ${stats.moveSpeed} (+${GameBalance.levelUp.speedIncrease})\n` +
             `Fire Rate: ${stats.fireRateMs}ms (-${GameBalance.levelUp.fireRateDecrease}ms)\n` +
             `Damage: x${stats.damageMult.toFixed(2)} (+${GameBalance.levelUp.damageIncrease})`,
-            { fontFamily: 'PixelifySans', fontSize: '20px', align: 'center', lineSpacing: 5, color: '#0f0' }
+            { fontFamily: 'Silkscreen', fontSize: '20px', align: 'center', lineSpacing: 5, color: '#0f0' }
         ).setOrigin(0.5);
 
         const btn = this.add.rectangle(w/2, h/2+130, 200, 50, 0x00ff00).setInteractive();
-        const btnTxt = this.add.text(w/2, h/2+130, 'CONTINUE', { fontFamily: 'PixelifySans', color: 'black', fontSize: '20px' }).setOrigin(0.5);
+        const btnTxt = this.add.text(w/2, h/2+130, 'CONTINUE', { fontFamily: 'Silkscreen', color: 'black', fontSize: '20px' }).setOrigin(0.5);
 
         btn.on('pointerdown', () => {
             con.destroy();
@@ -216,7 +216,7 @@ export default class UIScene extends Phaser.Scene {
 
         // Save & Exit button
         const exitBtn = this.add.rectangle(w/2, h/2+200, 200, 50, 0xff9900).setInteractive();
-        const exitTxt = this.add.text(w/2, h/2+200, 'SAVE & EXIT RUN', { fontFamily: 'PixelifySans', color: 'black', fontSize: '18px' }).setOrigin(0.5);
+        const exitTxt = this.add.text(w/2, h/2+200, 'SAVE & EXIT RUN', { fontFamily: 'Silkscreen', color: 'black', fontSize: '18px' }).setOrigin(0.5);
 
         exitBtn.on('pointerdown', () => {
             con.destroy();
@@ -232,18 +232,18 @@ export default class UIScene extends Phaser.Scene {
     showGameOver(finalScore, isNewHighScore = false) {
         const w = this.scale.width, h = this.scale.height;
         this.add.rectangle(w/2, h/2, w, h, 0x000000, 0.9);
-        this.add.text(w/2, h/2-80, 'GAME OVER', { fontFamily: 'PixelifySans', fontSize: '40px', color: 'red' }).setOrigin(0.5);
+        this.add.text(w/2, h/2-80, 'GAME OVER', { fontFamily: 'Silkscreen', fontSize: '40px', color: 'red' }).setOrigin(0.5);
 
         // Show "NEW HIGH SCORE!" if applicable
         if (isNewHighScore) {
-            this.add.text(w/2, h/2-30, 'NEW HIGH SCORE!', { fontFamily: 'PixelifySans', fontSize: '28px', color: '#ffff00' }).setOrigin(0.5);
+            this.add.text(w/2, h/2-30, 'NEW HIGH SCORE!', { fontFamily: 'Silkscreen', fontSize: '28px', color: '#ffff00' }).setOrigin(0.5);
         }
 
-        this.add.text(w/2, h/2+20, `${finalScore}`, { fontFamily: 'PixelifySans', fontSize: '24px' }).setOrigin(0.5);
+        this.add.text(w/2, h/2+20, `${finalScore}`, { fontFamily: 'Silkscreen', fontSize: '24px' }).setOrigin(0.5);
 
         // Retry button
         const retryBtn = this.add.rectangle(w/2, h/2+100, 200, 50, 0x00ff00).setInteractive();
-        const retryTxt = this.add.text(w/2, h/2+100, 'RETRY', { fontFamily: 'PixelifySans', color: 'black', fontSize: '20px' }).setOrigin(0.5);
+        const retryTxt = this.add.text(w/2, h/2+100, 'RETRY', { fontFamily: 'Silkscreen', color: 'black', fontSize: '20px' }).setOrigin(0.5);
 
         retryBtn.on('pointerdown', () => {
             this.scene.stop('UIScene');
@@ -254,7 +254,7 @@ export default class UIScene extends Phaser.Scene {
 
         // Main menu button
         const menuBtn = this.add.rectangle(w/2, h/2+170, 200, 50, 0xffffff).setInteractive();
-        const menuTxt = this.add.text(w/2, h/2+170, 'MAIN MENU', { fontFamily: 'PixelifySans', color: 'black', fontSize: '20px' }).setOrigin(0.5);
+        const menuTxt = this.add.text(w/2, h/2+170, 'MAIN MENU', { fontFamily: 'Silkscreen', color: 'black', fontSize: '20px' }).setOrigin(0.5);
 
         menuBtn.on('pointerdown', () => {
             // Full page reload to cleanly reset all scenes and managers
