@@ -35,6 +35,13 @@ export default class GameScene extends Phaser.Scene {
         // 2. Systems
         AudioEngine.init(this);
         this.background = new Background(this);
+
+        // Start background music
+        if (!this.sound.get('bgmusic')) {
+            this.bgMusic = this.sound.add('bgmusic', { loop: true, volume: 0.4 });
+            this.bgMusic.play();
+        }
+
         this.events.emit('startUI', this.stats); // Notify UIScene
         this.events.emit('updateFuel', this.fuel); // Notify UIScene of initial fuel
 
@@ -425,5 +432,14 @@ export default class GameScene extends Phaser.Scene {
         this.scene.get('UIScene').showLevelUp(this.stats, () => {
             this.scene.resume();
         });
+    }
+
+    shutdown() {
+        // Stop background music when scene shuts down
+        if (this.bgMusic) {
+            this.bgMusic.stop();
+            this.bgMusic.destroy();
+            this.bgMusic = null;
+        }
     }
 }

@@ -44,6 +44,9 @@ export default class TitleScene extends Phaser.Scene {
         this.load.audio('level-up', 'sounds/level-up.wav');
         this.load.audio('player-hit', 'sounds/player-hit.wav');
         this.load.audio('spend-gold', 'sounds/spend-gold.wav');
+
+        // Load background music
+        this.load.audio('bgmusic', 'music/DavidKBD-Eternity Pack - 02 - Agony Space-deep - loop.ogg');
     }
 
     create() {
