@@ -68,7 +68,7 @@ export default class EnemyManager {
                     Phaser.Math.Between(GameBalance.enemy.velocityY.min, GameBalance.enemy.velocityY.max)
                 );
                 e.hp = GameBalance.enemy.baseHealth;
-                e.setTint(0xff0000); // Red tint
+                e.clearTint(); // No tint, use original sprite colors
                 e.setScale(1.25); // Scale 32x32 sprite to 40x40 for original size
                 e.enemyType = 'red';
             }
