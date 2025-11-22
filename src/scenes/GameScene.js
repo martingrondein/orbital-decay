@@ -276,7 +276,7 @@ export default class GameScene extends Phaser.Scene {
                     gold.enableBody(true, x + (i * GameConstants.drops.horizontalSpacing), y, true, true);
                     gold.setVelocityY(GameConstants.drops.velocityY);
                     gold.setVelocityX(Phaser.Math.Between(-50, 50));
-                    gold.setScale(1.25); // Scale 16x16 sprite to 20x20 for original size
+                    gold.setScale(1); // 16x16 sprite, no scaling needed
                 }
             }
         }
