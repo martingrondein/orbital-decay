@@ -28,6 +28,14 @@ export default class ShopScene extends Phaser.Scene {
             color: '#ffd700'
         }).setOrigin(0.5);
 
+        // Create scrollable container for shop items
+        this.scrollContainer = this.add.container(0, 0);
+
+        // Scroll parameters
+        this.scrollY = 0;
+        this.maxScrollY = 0;
+        this.scrollSpeed = 30;
+
         // Create shop items
         const startY = 140;
         const itemSpacing = 90;
@@ -108,6 +116,53 @@ export default class ShopScene extends Phaser.Scene {
             this.stats.hasRevive
         );
 
+        // Calculate max scroll based on content
+        const totalContentHeight = startY + (itemSpacing * 9);
+        const visibleHeight = h - 140 - 80; // Space between header and back button
+        this.maxScrollY = Math.max(0, totalContentHeight - visibleHeight - startY);
+
+        // Create mask for scrollable area
+        const maskShape = this.make.graphics();
+        maskShape.fillStyle(0xffffff);
+        maskShape.fillRect(0, 120, w, visibleHeight + 20);
+        const mask = maskShape.createGeometryMask();
+        this.scrollContainer.setMask(mask);
+
+        // Mouse wheel scrolling
+        this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY) => {
+            this.scroll(deltaY > 0 ? 1 : -1);
+        });
+
+        // Touch/drag scrolling
+        this.isDragging = false;
+        this.lastPointerY = 0;
+
+        this.input.on('pointerdown', (pointer) => {
+            if (pointer.y > 120 && pointer.y < h - 80) {
+                this.isDragging = true;
+                this.lastPointerY = pointer.y;
+            }
+        });
+
+        this.input.on('pointermove', (pointer) => {
+            if (this.isDragging) {
+                const deltaY = pointer.y - this.lastPointerY;
+                this.scroll(deltaY > 0 ? -1 : 1, Math.abs(deltaY) * 0.5);
+                this.lastPointerY = pointer.y;
+            }
+        });
+
+        this.input.on('pointerup', () => {
+            this.isDragging = false;
+        });
+
+        // Draw scroll bar background
+        this.scrollBarBg = this.add.rectangle(w - 10, 140, 8, visibleHeight, 0x333333).setOrigin(0.5, 0);
+
+        // Draw scroll bar handle
+        const scrollBarHeight = Math.max(30, (visibleHeight / (totalContentHeight - startY)) * visibleHeight);
+        this.scrollBarHandle = this.add.rectangle(w - 10, 140, 8, scrollBarHeight, 0x00ff00).setOrigin(0.5, 0);
+
         // Back button
         const backBtn = this.add.rectangle(w/2, h - 60, 200, 50, 0xff3333).setInteractive();
         const backTxt = this.add.text(w/2, h - 60, 'BACK', {
@@ -121,30 +176,49 @@ export default class ShopScene extends Phaser.Scene {
         });
     }
 
+    scroll(direction, amount = this.scrollSpeed) {
+        this.scrollY += direction * amount;
+        this.scrollY = Phaser.Math.Clamp(this.scrollY, 0, this.maxScrollY);
+
+        // Update container position
+        this.scrollContainer.y = -this.scrollY;
+
+        // Update scroll bar handle position
+        if (this.maxScrollY > 0) {
+            const scrollPercent = this.scrollY / this.maxScrollY;
+            const maxHandleY = this.scrollBarBg.height - this.scrollBarHandle.height;
+            this.scrollBarHandle.y = 140 + (scrollPercent * maxHandleY);
+        }
+    }
+
     createShopItem(x, y, name, cost, status, onPurchase, isOwned = false) {
         // Container background
         const bg = this.add.rectangle(x, y, 350, 75, 0x222222).setStrokeStyle(2, 0x444444);
+        this.scrollContainer.add(bg);
 
         // Item name
-        this.add.text(x - 165, y - 25, name, {
+        const nameText = this.add.text(x - 165, y - 25, name, {
             fontFamily: 'PixelifySans',
             fontSize: '18px',
             color: '#ffffff'
         });
+        this.scrollContainer.add(nameText);
 
         // Cost
-        this.add.text(x - 165, y, cost, {
+        const costText = this.add.text(x - 165, y, cost, {
             fontFamily: 'PixelifySans',
             fontSize: '16px',
             color: '#ffd700'
         });
+        this.scrollContainer.add(costText);
 
         // Status/Current value
-        this.add.text(x - 165, y + 22, status, {
+        const statusText = this.add.text(x - 165, y + 22, status, {
             fontFamily: 'PixelifySans',
             fontSize: '14px',
             color: '#aaaaaa'
         });
+        this.scrollContainer.add(statusText);
 
         // Buy button
         if (!isOwned) {
@@ -155,17 +229,23 @@ export default class ShopScene extends Phaser.Scene {
                 color: 'black'
             }).setOrigin(0.5);
 
+            this.scrollContainer.add(buyBtn);
+            this.scrollContainer.add(buyTxt);
+
             buyBtn.on('pointerdown', () => {
                 onPurchase();
             });
         } else {
             // Show owned badge
-            this.add.rectangle(x + 130, y, 70, 50, 0x666666);
-            this.add.text(x + 130, y, 'OWNED', {
+            const ownedBg = this.add.rectangle(x + 130, y, 70, 50, 0x666666);
+            const ownedText = this.add.text(x + 130, y, 'OWNED', {
                 fontFamily: 'PixelifySans',
                 fontSize: '14px',
                 color: 'white'
             }).setOrigin(0.5);
+
+            this.scrollContainer.add(ownedBg);
+            this.scrollContainer.add(ownedText);
         }
     }
 
