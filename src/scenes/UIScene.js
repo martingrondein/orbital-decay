@@ -176,7 +176,7 @@ export default class UIScene extends Phaser.Scene {
             `Health: ${stats.maxHealth} (+${GameBalance.levelUp.healthIncrease})\n` +
             `Speed: ${stats.moveSpeed} (+${GameBalance.levelUp.speedIncrease})\n` +
             `Fire Rate: ${stats.fireRateMs}ms (-${GameBalance.levelUp.fireRateDecrease}ms)\n` +
-            `Damage: x${stats.damageMult.toFixed(1)} (+${GameBalance.levelUp.damageIncrease})`,
+            `Damage: x${stats.damageMult.toFixed(2)} (+${GameBalance.levelUp.damageIncrease})`,
             { fontFamily: 'PixelifySans', fontSize: '20px', align: 'center', lineSpacing: 5, color: '#0f0' }
         ).setOrigin(0.5);
 

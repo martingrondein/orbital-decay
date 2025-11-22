@@ -81,7 +81,7 @@ export default class TitleScene extends Phaser.Scene {
             `Health: ${stats.maxHealth}`,
             `Speed: ${stats.moveSpeed}`,
             `Fire Rate: ${stats.fireRateMs}ms`,
-            `Damage: x${stats.damageMult}`,
+            `Damage: x${stats.damageMult.toFixed(2)}`,
             `XP Mult: x${stats.xpMult}`
         ].join('\n');
 
