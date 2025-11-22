@@ -83,7 +83,7 @@ export default class EnemyManager {
                     const b = this.enemyBullets.get(child.x, child.y);
                     if (b) {
                         b.enableBody(true, child.x, child.y, true, true);
-                        b.setScale(1.5); // Scale 8x8 sprite to 12x12 for original size
+                        b.setScale(1); // 8x8 sprite, no scaling needed
                         this.scene.physics.moveToObject(b, this.scene.player, GameBalance.enemy.bulletSpeed);
                     }
                 }
