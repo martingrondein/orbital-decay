@@ -9,7 +9,7 @@ import Joystick from '../utils/Joystick.js';
 import { GameBalance } from '../config/GameBalance.js';
 import { GameConstants } from '../config/GameConstants.js';
 import { applyPowerup, clearPowerup } from '../config/PowerupConfig.js';
-import { createCollectionEffect, createExplosionEffect } from '../utils/EffectsUtils.js';
+import { createCollectionEffect, createExplosionEffect, createCelebrationBurst, createRadialParticleBurst } from '../utils/EffectsUtils.js';
 
 export default class GameScene extends Phaser.Scene {
     constructor() { super({ key: 'GameScene' }); }
@@ -370,7 +370,30 @@ export default class GameScene extends Phaser.Scene {
 
     collectPowerup(powerup) {
         const type = powerup.powerupType;
+        const x = powerup.x;
+        const y = powerup.y;
         powerup.disableBody(true, true);
+
+        // Powerup-specific visual effects
+        const powerupColors = {
+            'spray': 0x00ff00,
+            'damage': 0xff0000,
+            'firerate': 0xffaa00,
+            'doublexp': 0x00ffff,
+            'triplescore': 0xffff00,
+            'shield': 0x00aaff
+        };
+        const color = powerupColors[type] || 0xffffff;
+
+        // Create vibrant pickup effect
+        createRadialParticleBurst(this, x, y, {
+            count: 12,
+            radius: 4,
+            color: color,
+            spread: 50,
+            duration: 400,
+            depth: 50
+        });
 
         // Clear any existing powerup
         if (this.activePowerupTimer) {
@@ -400,6 +423,15 @@ export default class GameScene extends Phaser.Scene {
 
     levelUp() {
         AudioEngine.play('levelup');
+
+        // Celebration effect around player
+        createCelebrationBurst(this, this.player.x, this.player.y, {
+            count: 20,
+            colors: [0xffd700, 0xffffff, 0xffaa00],
+            spread: 70,
+            duration: 600
+        });
+
         this.stats.level++;
         this.stats.xp = 0;
         this.stats.reqXp = Math.floor(this.stats.reqXp * GameBalance.levelUp.xpRequirementMultiplier);

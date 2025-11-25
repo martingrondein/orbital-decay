@@ -233,3 +233,173 @@ export function createExhaustEffect(scene, x, y, config = {}) {
         });
     }
 }
+
+/**
+ * Creates a muzzle flash effect for weapon fire
+ * @param {Phaser.Scene} scene - The scene to create effect in
+ * @param {number} x - X position
+ * @param {number} y - Y position
+ * @param {Object} config - Effect configuration
+ * @param {number} config.direction - Direction angle in radians (default: -Math.PI/2 for upward)
+ * @param {number} config.color - Flash color hex (default: 0xffffff)
+ * @param {number} config.count - Number of particles (default: 4)
+ * @param {number} config.spread - Cone spread in radians (default: Math.PI/4)
+ * @param {number} config.distance - Distance particles travel (default: 20)
+ * @param {number} config.duration - Animation duration in ms (default: 100)
+ */
+export function createMuzzleFlash(scene, x, y, config = {}) {
+    const {
+        direction = -Math.PI / 2,
+        color = 0xffffff,
+        count = 4,
+        spread = Math.PI / 4,
+        distance = 20,
+        duration = 100
+    } = config;
+
+    for (let i = 0; i < count; i++) {
+        const angle = direction + (Math.random() - 0.5) * spread;
+        const dist = distance * (0.5 + Math.random() * 0.5);
+
+        const particle = scene.add.circle(x, y, 2, color, 0.9).setDepth(50);
+
+        scene.tweens.add({
+            targets: particle,
+            x: x + Math.cos(angle) * dist,
+            y: y + Math.sin(angle) * dist,
+            radius: 0.5,
+            alpha: 0,
+            duration: duration,
+            ease: 'Power2',
+            onComplete: () => particle.destroy()
+        });
+    }
+}
+
+/**
+ * Creates a directional particle burst (for impacts, hits)
+ * @param {Phaser.Scene} scene - The scene to create effect in
+ * @param {number} x - X position
+ * @param {number} y - Y position
+ * @param {number} direction - Direction angle in radians
+ * @param {Object} config - Effect configuration
+ */
+export function createDirectionalBurst(scene, x, y, direction, config = {}) {
+    const {
+        count = 6,
+        radius = 3,
+        color = 0xffffff,
+        alpha = 1,
+        spread = 30,
+        duration = 200,
+        depth = 50
+    } = config;
+
+    for (let i = 0; i < count; i++) {
+        const angle = direction + (Math.random() - 0.5) * Math.PI / 2;
+        const particle = scene.add.circle(x, y, radius, color, alpha).setDepth(depth);
+
+        scene.tweens.add({
+            targets: particle,
+            x: x + Math.cos(angle) * spread,
+            y: y + Math.sin(angle) * spread,
+            alpha: 0,
+            radius: 0.5,
+            duration: duration,
+            ease: 'Power2',
+            onComplete: () => particle.destroy()
+        });
+    }
+}
+
+/**
+ * Creates a spawn effect with inward-collapsing particles
+ * @param {Phaser.Scene} scene - The scene to create effect in
+ * @param {number} x - X position
+ * @param {number} y - Y position
+ * @param {number} color - Effect color hex
+ * @param {Object} config - Optional configuration
+ */
+export function createSpawnEffect(scene, x, y, color = 0xff0000, config = {}) {
+    const {
+        count = 8,
+        radius = 3,
+        alpha = 0.8,
+        distance = 40,
+        duration = 300
+    } = config;
+
+    // Expanding circle
+    createExpandingCircle(scene, x, y, {
+        startRadius: 5,
+        endRadius: 30,
+        color: color,
+        alpha: 0.5,
+        duration: 250,
+        depth: 50
+    });
+
+    // Particles that collapse inward
+    for (let i = 0; i < count; i++) {
+        const angle = (Math.PI * 2 / count) * i;
+        const startX = x + Math.cos(angle) * distance;
+        const startY = y + Math.sin(angle) * distance;
+
+        const particle = scene.add.circle(startX, startY, radius, color, alpha).setDepth(50);
+
+        scene.tweens.add({
+            targets: particle,
+            x: x,
+            y: y,
+            alpha: 0,
+            radius: 0.5,
+            duration: duration,
+            ease: 'Power2',
+            onComplete: () => particle.destroy()
+        });
+    }
+}
+
+/**
+ * Creates a celebratory burst effect (for level ups, achievements)
+ * @param {Phaser.Scene} scene - The scene to create effect in
+ * @param {number} x - X position
+ * @param {number} y - Y position
+ * @param {Object} config - Effect configuration
+ */
+export function createCelebrationBurst(scene, x, y, config = {}) {
+    const {
+        count = 16,
+        colors = [0xffd700, 0xffffff, 0xffaa00],
+        spread = 60,
+        duration = 500
+    } = config;
+
+    // Large expanding circle
+    createExpandingCircle(scene, x, y, {
+        startRadius: 10,
+        endRadius: 80,
+        color: 0xffd700,
+        alpha: 0.6,
+        duration: 400,
+        depth: 50
+    });
+
+    // Colorful particles
+    for (let i = 0; i < count; i++) {
+        const angle = (Math.PI * 2 / count) * i;
+        const color = colors[i % colors.length];
+        const particle = scene.add.circle(x, y, 4, color, 1).setDepth(50);
+
+        scene.tweens.add({
+            targets: particle,
+            x: x + Math.cos(angle) * spread,
+            y: y + Math.sin(angle) * spread,
+            alpha: 0,
+            radius: 1,
+            duration: duration,
+            ease: 'Power2',
+            onComplete: () => particle.destroy()
+        });
+    }
+}

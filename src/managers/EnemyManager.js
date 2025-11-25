@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { AudioEngine } from '../systems/AudioEngine.js';
 import { GameBalance } from '../config/GameBalance.js';
+import { createSpawnEffect, createMuzzleFlash, createDirectionalBurst } from '../utils/EffectsUtils.js';
 
 export default class EnemyManager {
     constructor(scene) {
@@ -96,6 +97,9 @@ export default class EnemyManager {
             e.setScale(1.25);
             e.body.setCircle(12);
             e.enemyType = 'red';
+
+            // Spawn effect
+            createSpawnEffect(this.scene, x, -50, 0xff0000);
         }
     }
 
@@ -112,6 +116,9 @@ export default class EnemyManager {
             e.setScale(1.25);
             e.body.setCircle(12);
             e.enemyType = 'blue';
+
+            // Spawn effect
+            createSpawnEffect(this.scene, x, -50, 0x0000ff);
         }
     }
 
@@ -128,6 +135,9 @@ export default class EnemyManager {
             e.setScale(1.25);
             e.body.setCircle(12);
             e.enemyType = 'green';
+
+            // Spawn effect
+            createSpawnEffect(this.scene, x, -50, 0x00ff00);
         }
     }
 
@@ -144,6 +154,9 @@ export default class EnemyManager {
             e.setScale(1.25);
             e.body.setCircle(12);
             e.enemyType = 'yellow';
+
+            // Spawn effect
+            createSpawnEffect(this.scene, x, -50, 0xffff00);
         }
     }
 
@@ -159,6 +172,15 @@ export default class EnemyManager {
                         b.body.setCircle(3); // Circular hitbox with 3px radius (ignores transparent edges)
                         this.scene.physics.moveToObject(b, this.scene.player, GameBalance.enemy.bulletSpeed);
                         AudioEngine.play('enemyshoot', 0.3);
+
+                        // Muzzle flash effect
+                        const angle = Phaser.Math.Angle.Between(child.x, child.y, this.scene.player.x, this.scene.player.y);
+                        createMuzzleFlash(this.scene, child.x, child.y, {
+                            direction: angle,
+                            color: 0xffaa00,
+                            count: 3,
+                            distance: 12
+                        });
                     }
                 }
             });
@@ -174,6 +196,15 @@ export default class EnemyManager {
 
         // Play hit sound
         AudioEngine.play('enemyhit', 0.3);
+
+        // Impact particles
+        createDirectionalBurst(this.scene, enemy.x, enemy.y, Math.PI / 2, {
+            count: 4,
+            radius: 2,
+            color: 0xffffff,
+            spread: 20,
+            duration: 150
+        });
 
         // Cancel any existing flash timer to ensure new flash is visible
         if (enemy.flashTimer) {

@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { AudioEngine } from '../systems/AudioEngine.js';
 import { GameBalance } from '../config/GameBalance.js';
-import { createExhaustEffect } from '../utils/EffectsUtils.js';
+import { createExhaustEffect, createMuzzleFlash } from '../utils/EffectsUtils.js';
 
 export default class Player extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, stats) {
@@ -86,6 +86,13 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
                     bullet.setScale(1); // 8x8 sprite, no scaling needed
                     bullet.body.setCircle(3); // Circular hitbox with 3px radius (ignores transparent edges)
                     bullet.clearTint(); // No tint, use original sprite colors
+
+                    // Muzzle flash effect
+                    createMuzzleFlash(this.scene, this.x + offset, this.y - 20, {
+                        color: 0x00ffff,
+                        count: 3,
+                        distance: 15
+                    });
                 }
             });
         } else {
@@ -97,6 +104,13 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
                 bullet.setScale(1); // 8x8 sprite, no scaling needed
                 bullet.body.setCircle(3); // Circular hitbox with 3px radius (ignores transparent edges)
                 bullet.clearTint(); // No tint, use original sprite colors
+
+                // Muzzle flash effect
+                createMuzzleFlash(this.scene, this.x, this.y - 20, {
+                    color: 0x00ffff,
+                    count: 3,
+                    distance: 15
+                });
             }
         }
         AudioEngine.play('shoot');
@@ -122,6 +136,14 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
                     bullet.setScale(1); // 8x8 sprite, no scaling needed
                     bullet.body.setCircle(3); // Circular hitbox with 3px radius (ignores transparent edges)
                     bullet.clearTint(); // No tint, use original sprite colors
+
+                    // Muzzle flash effect (directional based on bullet angle)
+                    createMuzzleFlash(this.scene, this.x + xOffset, this.y - 20, {
+                        direction: angleRad,
+                        color: 0x00ff00,
+                        count: 2,
+                        distance: 12
+                    });
                 }
             });
         });
