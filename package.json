@@ -8,7 +8,9 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "vite": "^7.0.0"
+    "sharp": "^0.34.5",
+    "vite": "^7.0.0",
+    "vite-plugin-pwa": "^1.1.0"
   },
   "dependencies": {
     "phaser": "^3.90.0"

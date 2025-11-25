@@ -3,11 +3,12 @@ import TitleScene from './scenes/TitleScene.js';
 import GameScene from './scenes/GameScene.js';
 import UIScene from './scenes/UIScene.js';
 import ShopScene from './scenes/ShopScene.js';
+import { initPWAInstall } from './utils/pwa.js';
 
 const config = {
     type: Phaser.AUTO,
     width: 375,
-    height: 812,
+    height: 720,
     pixelArt: true,
     zoom: 5,
     backgroundColor: '#000000',
@@ -37,3 +38,6 @@ game.events.once('ready', () => {
         setTimeout(() => loader.remove(), 500); // Remove after fade out
     }
 });
+
+// Initialize PWA install prompt
+initPWAInstall();
