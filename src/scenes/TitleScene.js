@@ -56,24 +56,36 @@ export default class TitleScene extends Phaser.Scene {
         // Load player stats
         const stats = SaveSystem.load();
 
+        // === LAYOUT SPACING CONFIGURATION ===
+        // Organized sections for better visual hierarchy
+        const HEADER_Y = 70;           // Logo position
+        const SCORES_START_Y = 170;    // High score position
+        const SCORES_GAP = 35;         // Gap between score lines
+        const STATS_Y = 280;           // Player stats section
+        const BUTTONS_START_Y = 470;   // Action buttons section
+        const BUTTON_GAP = 65;         // Gap between buttons
+        const DEBUG_Y = h - 55;        // Debug buttons at bottom
+
+        // === HEADER SECTION ===
         // Display logo
-        const logo = this.add.image(w/2, 120, 'logo');
+        const logo = this.add.image(w/2, HEADER_Y, 'logo');
         // Scale logo to fit width (with padding)
-        const logoScale = Math.min((w - 40) / logo.width, 150 / logo.height);
+        const logoScale = Math.min((w - 40) / logo.width, 120 / logo.height);
         logo.setScale(logoScale);
 
         // Display version number
         this.add.text(w - 10, h - 10, 'v0.251122', {
             fontFamily: 'Silkscreen',
-            fontSize: '16px',
-            color: '#888888'
+            fontSize: '14px',
+            color: '#666666'
         }).setOrigin(1, 1);
 
+        // === ACHIEVEMENTS SECTION ===
         // Display high score
         const highScore = SaveSystem.loadHighScore();
-        this.add.text(w/2, 190, `High Score: ${highScore}`, {
+        this.add.text(w/2, SCORES_START_Y, `High Score: ${highScore}`, {
             fontFamily: 'Silkscreen',
-            fontSize: '24px',
+            fontSize: '22px',
             color: '#ffff00',
             stroke: '#000',
             strokeThickness: 3
@@ -81,15 +93,16 @@ export default class TitleScene extends Phaser.Scene {
 
         // Display best distance
         const bestDistance = SaveSystem.loadBestDistance();
-        this.add.text(w/2, 220, `Best Distance: ${bestDistance}m`, {
+        this.add.text(w/2, SCORES_START_Y + SCORES_GAP, `Best Distance: ${bestDistance}m`, {
             fontFamily: 'Silkscreen',
-            fontSize: '24px',
+            fontSize: '22px',
             color: '#00ffff',
             stroke: '#000',
             strokeThickness: 3
         }).setOrigin(0.5);
 
-        // Display player stats
+        // === PLAYER STATS SECTION ===
+        // Display player stats with better line spacing
         const statsText = [
             `Level: ${stats.level}`,
             `Gold: ${stats.gold}`,
@@ -100,20 +113,21 @@ export default class TitleScene extends Phaser.Scene {
             `XP Mult: x${stats.xpMult}`
         ].join('\n');
 
-        this.add.text(w/2, h/2 - 50, statsText, {
+        this.add.text(w/2, STATS_Y, statsText, {
             fontFamily: 'Silkscreen',
-            fontSize: '20px',
-            color: '#fff',
+            fontSize: '18px',
+            color: '#ffffff',
             align: 'center',
-            lineSpacing: 5
+            lineSpacing: 8
         }).setOrigin(0.5);
 
+        // === ACTION BUTTONS SECTION ===
         // START button
-        const startBtn = this.add.rectangle(w/2, h/2 + 120, 200, 50, 0x00aaff).setInteractive();
-        const startTxt = this.add.text(w/2, h/2 + 120, 'START', {
+        const startBtn = this.add.rectangle(w/2, BUTTONS_START_Y, 220, 50, 0x00aaff).setInteractive();
+        const startTxt = this.add.text(w/2, BUTTONS_START_Y, 'START', {
             fontFamily: 'Silkscreen',
-            fontSize: '24px',
-            color: 'black'
+            fontSize: '28px',
+            color: '#000000'
         }).setOrigin(0.5);
 
         startBtn.on('pointerdown', () => {
@@ -122,11 +136,11 @@ export default class TitleScene extends Phaser.Scene {
         });
 
         // SHOP button
-        const shopBtn = this.add.rectangle(w/2, h/2 + 185, 200, 50, 0xffd700).setInteractive();
-        const shopTxt = this.add.text(w/2, h/2 + 185, 'SHOP', {
+        const shopBtn = this.add.rectangle(w/2, BUTTONS_START_Y + BUTTON_GAP, 220, 50, 0xffd700).setInteractive();
+        const shopTxt = this.add.text(w/2, BUTTONS_START_Y + BUTTON_GAP, 'SHOP', {
             fontFamily: 'Silkscreen',
-            fontSize: '24px',
-            color: 'black'
+            fontSize: '28px',
+            color: '#000000'
         }).setOrigin(0.5);
 
         shopBtn.on('pointerdown', () => {
@@ -134,11 +148,11 @@ export default class TitleScene extends Phaser.Scene {
         });
 
         // Reset Stats button
-        const resetBtn = this.add.rectangle(w/2, h/2 + 250, 200, 50, 0xff3333).setInteractive();
-        const resetTxt = this.add.text(w/2, h/2 + 250, 'RESET STATS', {
+        const resetBtn = this.add.rectangle(w/2, BUTTONS_START_Y + (BUTTON_GAP * 2), 220, 50, 0xff3333).setInteractive();
+        const resetTxt = this.add.text(w/2, BUTTONS_START_Y + (BUTTON_GAP * 2), 'RESET STATS', {
             fontFamily: 'Silkscreen',
-            fontSize: '18px',
-            color: 'black'
+            fontSize: '20px',
+            color: '#000000'
         }).setOrigin(0.5);
 
         resetBtn.on('pointerdown', () => {
@@ -146,15 +160,13 @@ export default class TitleScene extends Phaser.Scene {
             this.scene.restart();
         });
 
-        // Debug buttons
-        const debugY = h - 70;
-
+        // === DEBUG SECTION ===
         // +1000 Gold button
-        const goldBtn = this.add.rectangle(w/2 - 110, debugY, 180, 40, 0xffd700).setInteractive();
-        const goldTxt = this.add.text(w/2 - 110, debugY, '+1000 GOLD', {
+        const goldBtn = this.add.rectangle(w/2 - 110, DEBUG_Y, 180, 40, 0xffd700).setInteractive();
+        const goldTxt = this.add.text(w/2 - 110, DEBUG_Y, '+1000 GOLD', {
             fontFamily: 'Silkscreen',
-            fontSize: '16px',
-            color: 'black'
+            fontSize: '15px',
+            color: '#000000'
         }).setOrigin(0.5);
 
         goldBtn.on('pointerdown', () => {
@@ -165,11 +177,11 @@ export default class TitleScene extends Phaser.Scene {
         });
 
         // +1 Level button
-        const lvlBtn = this.add.rectangle(w/2 + 110, debugY, 180, 40, 0x00aaff).setInteractive();
-        const lvlTxt = this.add.text(w/2 + 110, debugY, '+1 LEVEL', {
+        const lvlBtn = this.add.rectangle(w/2 + 110, DEBUG_Y, 180, 40, 0x00aaff).setInteractive();
+        const lvlTxt = this.add.text(w/2 + 110, DEBUG_Y, '+1 LEVEL', {
             fontFamily: 'Silkscreen',
-            fontSize: '16px',
-            color: 'black'
+            fontSize: '15px',
+            color: '#000000'
         }).setOrigin(0.5);
 
         lvlBtn.on('pointerdown', () => {
