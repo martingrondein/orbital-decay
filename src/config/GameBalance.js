@@ -104,12 +104,12 @@ export const GameBalance = {
 
     // XP and scoring
     progression: {
-        xpPerPickup: 20,
+        xpPerPickup: 25,
         scorePerKill: 100,
         goldDropChance: 0.6, // 60% chance to drop gold on enemy death
         goldPerDrop: 1,
         fuelDropChance: 0.2, // 20% chance to drop fuel on enemy death
-        fuelPerPickup: 200
+        fuelPerPickup: 500
     },
 
     // Fuel system
