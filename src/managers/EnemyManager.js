@@ -92,7 +92,7 @@ export default class EnemyManager {
                 Phaser.Math.Between(GameBalance.enemy.velocityY.min, GameBalance.enemy.velocityY.max)
             );
             e.hp = GameBalance.enemy.baseHealth;
-            e.clearTint();
+            e.setTint(0xff0000);
             e.setScale(1.25);
             e.body.setCircle(12);
             e.enemyType = 'red';
@@ -185,7 +185,7 @@ export default class EnemyManager {
             'blue': 0x0000ff,
             'green': 0x00ff00,
             'yellow': 0xffff00,
-            'red': null
+            'red': 0xff0000
         };
         const originalTint = originalTints[enemy.enemyType];
         enemy.clearTint();
@@ -198,7 +198,6 @@ export default class EnemyManager {
                 if (originalTint) {
                     enemy.setTint(originalTint);
                 }
-                // Red enemies stay with no tint (original sprite colors)
             }
             enemy.flashTimer = null;
         });
