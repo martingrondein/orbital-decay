@@ -61,9 +61,9 @@ export default class TitleScene extends Phaser.Scene {
         const HEADER_Y = 70;           // Logo position
         const SCORES_START_Y = 170;    // High score position
         const SCORES_GAP = 35;         // Gap between score lines
-        const STATS_Y = 280;           // Player stats section
-        const BUTTONS_START_Y = 470;   // Action buttons section
-        const BUTTON_GAP = 65;         // Gap between buttons
+        const STATS_Y = 365;           // Player stats section (center point)
+        const BUTTONS_START_Y = 520;   // Action buttons section
+        const BUTTON_GAP = 60;         // Gap between buttons
         const DEBUG_Y = h - 55;        // Debug buttons at bottom
 
         // === HEADER SECTION ===
