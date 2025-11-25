@@ -182,3 +182,54 @@ export function createExplosionEffect(scene, x, y, color = 0xff0000, config = {}
         ...config.particles
     });
 }
+
+/**
+ * Creates exhaust trail particles for ship movement
+ * @param {Phaser.Scene} scene - The scene to create effect in
+ * @param {number} x - X position
+ * @param {number} y - Y position
+ * @param {Object} config - Effect configuration
+ * @param {number} config.count - Number of particles (default: 3)
+ * @param {number} config.radius - Particle radius (default: 2)
+ * @param {number} config.color - Particle color hex (default: 0x00ffff)
+ * @param {number} config.alpha - Starting opacity (default: 0.8)
+ * @param {number} config.spread - Distance particles travel (default: 15)
+ * @param {number} config.duration - Animation duration in ms (default: 200)
+ * @param {number} config.depth - Z-depth for rendering (default: 0)
+ */
+export function createExhaustEffect(scene, x, y, config = {}) {
+    const {
+        count = 3,
+        radius = 2,
+        color = 0x00ffff,
+        alpha = 0.8,
+        spread = 15,
+        duration = 200,
+        depth = 0
+    } = config;
+
+    for (let i = 0; i < count; i++) {
+        // Randomize particle position slightly for organic feel
+        const offsetX = (Math.random() - 0.5) * 4;
+        const offsetY = (Math.random() - 0.5) * 4;
+
+        const particle = scene.add.circle(
+            x + offsetX,
+            y + offsetY,
+            radius,
+            color,
+            alpha
+        ).setDepth(depth);
+
+        // Particles fade downward and shrink
+        scene.tweens.add({
+            targets: particle,
+            y: y + spread + (Math.random() * 10),
+            radius: 0.5,
+            alpha: 0,
+            duration: duration + (Math.random() * 100),
+            ease: 'Power2',
+            onComplete: () => particle.destroy()
+        });
+    }
+}

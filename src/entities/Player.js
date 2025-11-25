@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { AudioEngine } from '../systems/AudioEngine.js';
 import { GameBalance } from '../config/GameBalance.js';
+import { createExhaustEffect } from '../utils/EffectsUtils.js';
 
 export default class Player extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, stats) {
@@ -19,6 +20,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.lastFired = 0;
         this.isInvulnerable = false;
         this.sprayShot = false; // Powerup flag
+        this.exhaustCounter = 0; // Counter for exhaust spawning
     }
 
     update(time, joystickData) {
@@ -37,8 +39,24 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
                     this.scene.canMove = false; // Stop player movement when out of fuel
                 }
             }
+
+            // Spawn exhaust particles every 2 frames
+            this.exhaustCounter++;
+            if (this.exhaustCounter >= 2) {
+                createExhaustEffect(this.scene, this.x, this.y + 20, {
+                    count: 2,
+                    radius: 2,
+                    color: 0x00ffff,
+                    alpha: 0.6,
+                    spread: 12,
+                    duration: 150,
+                    depth: 0
+                });
+                this.exhaustCounter = 0;
+            }
         } else {
             this.setVelocity(0);
+            this.exhaustCounter = 0; // Reset counter when not moving
         }
 
         // Auto Fire
