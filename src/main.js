@@ -4,18 +4,29 @@ import GameScene from './scenes/GameScene.js';
 import UIScene from './scenes/UIScene.js';
 import ShopScene from './scenes/ShopScene.js';
 import { initPWAInstall } from './utils/pwa.js';
+import {
+    GAME_WIDTH,
+    GAME_HEIGHT,
+    calculateOptimalZoom,
+    getScaleConfig,
+    setupResizeHandler,
+    logScalingInfo
+} from './utils/scaleManager.js';
+
+// Calculate optimal zoom for current device
+const initialZoom = calculateOptimalZoom();
+
+// Log scaling information for debugging
+logScalingInfo();
 
 const config = {
     type: Phaser.AUTO,
-    width: 375,
-    height: 720,
+    width: GAME_WIDTH,
+    height: GAME_HEIGHT,
     pixelArt: true,
-    zoom: 5,
+    zoom: initialZoom,
     backgroundColor: '#000000',
-    scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
-    },
+    scale: getScaleConfig(),
     physics: {
         default: 'arcade',
         arcade: { debug: false },
@@ -38,6 +49,9 @@ game.events.once('ready', () => {
         setTimeout(() => loader.remove(), 500); // Remove after fade out
     }
 });
+
+// Setup dynamic scaling with resize handler
+setupResizeHandler(game);
 
 // Initialize PWA install prompt
 initPWAInstall();
