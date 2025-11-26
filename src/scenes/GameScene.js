@@ -318,9 +318,15 @@ export default class GameScene extends Phaser.Scene {
         };
         const mult = multipliers[enemyType] || multipliers['red'];
 
-        // Apply score multiplier
-        this.score += GameBalance.progression.scorePerKill * this.scoreMultiplier * mult.score;
+        // Calculate score value
+        const scoreValue = Math.floor(GameBalance.progression.scorePerKill * this.scoreMultiplier * mult.score);
+
+        // Apply score
+        this.score += scoreValue;
         this.events.emit('updateScore', this.score);
+
+        // Display floating score popup
+        this.showScorePopup(x, y, scoreValue);
 
         // Drop XP
         for (let i = 0; i < mult.xp; i++) {
@@ -364,6 +370,27 @@ export default class GameScene extends Phaser.Scene {
         if (!this.activePowerupType && Math.random() < GameConstants.spawn.powerupSpawnChance) {
             this.powerupManager.spawnAtPosition(x, y);
         }
+    }
+
+    showScorePopup(x, y, scoreValue) {
+        // Create floating score text
+        const scoreText = this.add.text(x, y, `+${scoreValue}`, {
+            fontFamily: 'Silkscreen',
+            fontSize: '16px',
+            color: '#ffff00',
+            stroke: '#000',
+            strokeThickness: 3
+        }).setOrigin(0.5).setDepth(100);
+
+        // Animate upward and fade out
+        this.tweens.add({
+            targets: scoreText,
+            y: y - 50,
+            alpha: 0,
+            duration: 800,
+            ease: 'Power2',
+            onComplete: () => scoreText.destroy()
+        });
     }
 
     collectXP(xpItem) {

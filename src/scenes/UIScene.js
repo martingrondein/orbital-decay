@@ -48,6 +48,10 @@ export default class UIScene extends Phaser.Scene {
             this.powerupRainbowTimer.remove();
             this.powerupRainbowTimer = null;
         }
+        if (this.fuelWarningTimer) {
+            this.fuelWarningTimer.remove();
+            this.fuelWarningTimer = null;
+        }
 
         // Clean up event listeners when scene shuts down
         const game = this.scene.get('GameScene');
@@ -104,6 +108,17 @@ export default class UIScene extends Phaser.Scene {
             stroke: '#000',
             strokeThickness: 3
         }).setOrigin(0.5).setDepth(101);
+
+        // Fuel warning (flashing red text)
+        this.fuelWarning = this.add.text(w/2, 35, 'OUT OF FUEL!', {
+            fontFamily: 'Silkscreen',
+            fontSize: '16px',
+            color: '#ff0000',
+            stroke: '#000',
+            strokeThickness: 4,
+            backgroundColor: '#000000aa',
+            padding: { x: 8, y: 4 }
+        }).setOrigin(0.5).setDepth(103).setVisible(false);
 
         // Powerup indicator (moved down to give space for bars)
         this.powerupText = this.add.text(w/2, 120, '', {
@@ -194,7 +209,42 @@ export default class UIScene extends Phaser.Scene {
             });
         }
 
+        // Show/hide fuel warning
+        if (fuel <= 0 && this.prevFuel > 0) {
+            // Fuel just ran out, show warning
+            this.showFuelWarning();
+        } else if (fuel > 0 && this.prevFuel <= 0) {
+            // Fuel restored, hide warning
+            this.hideFuelWarning();
+        }
+
         this.prevFuel = fuel;
+    }
+
+    showFuelWarning() {
+        this.fuelWarning.setVisible(true);
+
+        // Clear any existing timer
+        if (this.fuelWarningTimer) {
+            this.fuelWarningTimer.remove();
+        }
+
+        // Flash effect (alternating visibility)
+        this.fuelWarningTimer = this.time.addEvent({
+            delay: 500,
+            callback: () => {
+                this.fuelWarning.setVisible(!this.fuelWarning.visible);
+            },
+            loop: true
+        });
+    }
+
+    hideFuelWarning() {
+        if (this.fuelWarningTimer) {
+            this.fuelWarningTimer.remove();
+            this.fuelWarningTimer = null;
+        }
+        this.fuelWarning.setVisible(false);
     }
 
     showPowerup(type) {
