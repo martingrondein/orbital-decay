@@ -186,6 +186,21 @@ export default class GameScene extends Phaser.Scene {
             }
         });
 
+        // Create enemy bullet trails
+        this.enemyManager.enemyBullets.children.iterate(bullet => {
+            if (bullet.active) {
+                // Spawn red contrail effect
+                createBulletTrail(this, bullet.x, bullet.y, {
+                    count: 2,
+                    radius: 1.5,
+                    color: 0xff5555,
+                    alpha: 0.7,
+                    duration: 150,
+                    depth: 1
+                });
+            }
+        });
+
         // Cleanup XP/Gold/Fuel
         [this.xpItems, this.goldItems, this.fuelItems].forEach(g => {
             g.children.iterate(c => {
