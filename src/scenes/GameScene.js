@@ -398,6 +398,7 @@ export default class GameScene extends Phaser.Scene {
                 xp.setVelocityX(Phaser.Math.Between(-50, 50));
                 xp.setScale(1); // 16x16 sprite, no scaling needed
                 xp.body.setCircle(6); // Circular hitbox with 6px radius (ignores transparent edges)
+                this.addGlowEffect(xp);
             }
         }
 
@@ -411,6 +412,7 @@ export default class GameScene extends Phaser.Scene {
                     gold.setVelocityX(Phaser.Math.Between(-50, 50));
                     gold.setScale(1); // 16x16 sprite, no scaling needed
                     gold.body.setCircle(6); // Circular hitbox with 6px radius (ignores transparent edges)
+                    this.addGlowEffect(gold);
                 }
             }
         }
@@ -424,6 +426,7 @@ export default class GameScene extends Phaser.Scene {
                 fuel.setVelocityX(Phaser.Math.Between(-50, 50));
                 fuel.setScale(1); // 16x16 sprite, no scaling needed
                 fuel.body.setCircle(6); // Circular hitbox with 6px radius (ignores transparent edges)
+                this.addGlowEffect(fuel);
             }
         }
 
@@ -454,10 +457,34 @@ export default class GameScene extends Phaser.Scene {
         });
     }
 
+    addGlowEffect(item) {
+        // Add pulsing glow effect to collectible items
+        if (!item.glowTween) {
+            item.glowTween = this.tweens.add({
+                targets: item,
+                alpha: 0.7,
+                scale: item.scale * 1.1,
+                duration: 800,
+                yoyo: true,
+                repeat: -1,
+                ease: 'Sine.easeInOut'
+            });
+        }
+    }
+
+    removeGlowEffect(item) {
+        // Clean up glow tween when item is collected
+        if (item.glowTween) {
+            item.glowTween.remove();
+            item.glowTween = null;
+        }
+    }
+
     collectXP(xpItem) {
         // Create collection effect before disabling
         createCollectionEffect(this, xpItem.x, xpItem.y, 0x00ffff);
 
+        this.removeGlowEffect(xpItem);
         xpItem.disableBody(true, true);
         const xpGain = this.stats.xpGain || GameBalance.progression.xpPerPickup;
         this.stats.xp += (xpGain * this.stats.xpMult);
@@ -473,6 +500,7 @@ export default class GameScene extends Phaser.Scene {
         // Create collection effect before disabling
         createCollectionEffect(this, goldItem.x, goldItem.y, 0xffd700);
 
+        this.removeGlowEffect(goldItem);
         goldItem.disableBody(true, true);
         this.stats.gold += (GameBalance.progression.goldPerDrop * this.stats.goldMultiplier);
         this.events.emit('updateGold', this.stats.gold);
@@ -483,6 +511,7 @@ export default class GameScene extends Phaser.Scene {
         // Create collection effect before disabling
         createCollectionEffect(this, fuelItem.x, fuelItem.y, 0x9932cc);
 
+        this.removeGlowEffect(fuelItem);
         fuelItem.disableBody(true, true);
         this.fuel = Math.min(
             this.fuel + GameBalance.progression.fuelPerPickup,
@@ -496,6 +525,7 @@ export default class GameScene extends Phaser.Scene {
         const type = powerup.powerupType;
         const x = powerup.x;
         const y = powerup.y;
+        this.removeGlowEffect(powerup);
         powerup.disableBody(true, true);
 
         // Powerup-specific visual effects
