@@ -46,7 +46,7 @@ export function calculateOptimalZoom() {
  */
 export function getScaleConfig() {
   return {
-    mode: Phaser.Scale.FIT,
+    mode: Phaser.Scale.NONE,
     autoCenter: Phaser.Scale.CENTER_BOTH,
     width: GAME_WIDTH,
     height: GAME_HEIGHT,

@@ -24,9 +24,16 @@ const config = {
     width: GAME_WIDTH,
     height: GAME_HEIGHT,
     pixelArt: true,
+    roundPixels: true,
+    antialias: false,
     zoom: initialZoom,
     backgroundColor: '#000000',
     scale: getScaleConfig(),
+    render: {
+        pixelArt: true,
+        roundPixels: true,
+        antialias: false
+    },
     physics: {
         default: 'arcade',
         arcade: { debug: false },

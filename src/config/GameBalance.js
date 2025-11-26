@@ -6,7 +6,7 @@ export const GameBalance = {
     player: {
         startLevel: 1,
         startXP: 0,
-        startReqXP: 50,
+        startReqXP: 100,
         startMoveSpeed: 200,
         startFireRateMs: 1000,
         startMaxHealth: 10,
@@ -22,7 +22,7 @@ export const GameBalance = {
         fireRateDecrease: 10,
         fireRateMin: 50,
         damageIncrease: 0.1,
-        xpRequirementMultiplier: 1.5,
+        xpRequirementMultiplier: 1.25,
         fuelBonus: 100
     },
 

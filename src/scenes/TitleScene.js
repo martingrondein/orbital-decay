@@ -74,7 +74,7 @@ export default class TitleScene extends Phaser.Scene {
         logo.setScale(logoScale);
 
         // Display version number
-        this.add.text(w - 10, h - 10, 'v0.251122', {
+        this.add.text(w - 10, h - 10, 'v0.25.1126', {
             fontFamily: 'Silkscreen',
             fontSize: '14px',
             color: '#666666'
