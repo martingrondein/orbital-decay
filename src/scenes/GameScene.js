@@ -28,6 +28,15 @@ export default class GameScene extends Phaser.Scene {
         this.activePowerupType = null;
         this.activePowerupTimer = null;
         this.baseDamageMult = this.stats.damageMult;
+
+        // Wave tracking
+        this.currentWave = 1;
+        this.waveAnnounced = {
+            1: false,
+            2: false,
+            3: false,
+            4: false
+        };
         this.baseFireRateMs = this.stats.fireRateMs;
         this.baseXPMult = this.stats.xpMult;
         this.scoreMultiplier = 1; // For triple score powerup
@@ -44,6 +53,12 @@ export default class GameScene extends Phaser.Scene {
 
         this.events.emit('startUI', this.stats); // Notify UIScene
         this.events.emit('updateFuel', this.fuel); // Notify UIScene of initial fuel
+
+        // Show Wave 1 announcement after a short delay
+        this.time.delayedCall(500, () => {
+            this.scene.get('UIScene').showWaveAnnouncement(1);
+            this.waveAnnounced[1] = true;
+        });
 
         // Fuel depletion and distance tracking timer (1 per second)
         this.time.addEvent({
@@ -151,6 +166,23 @@ export default class GameScene extends Phaser.Scene {
 
     update(time, delta) {
         if (this.isGameOver) return;
+
+        // Check for wave transitions based on game time
+        const elapsedTime = Date.now() - this.enemyManager.gameStartTime;
+
+        if (elapsedTime >= GameBalance.blueEnemy.introductionTime && !this.waveAnnounced[2]) {
+            this.currentWave = 2;
+            this.scene.get('UIScene').showWaveAnnouncement(2);
+            this.waveAnnounced[2] = true;
+        } else if (elapsedTime >= GameBalance.greenEnemy.introductionTime && !this.waveAnnounced[3]) {
+            this.currentWave = 3;
+            this.scene.get('UIScene').showWaveAnnouncement(3);
+            this.waveAnnounced[3] = true;
+        } else if (elapsedTime >= GameBalance.yellowEnemy.introductionTime && !this.waveAnnounced[4]) {
+            this.currentWave = 4;
+            this.scene.get('UIScene').showWaveAnnouncement(4);
+            this.waveAnnounced[4] = true;
+        }
 
         this.background.update();
         this.player.update(time, this.joystick.getData());

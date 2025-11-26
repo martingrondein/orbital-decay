@@ -247,6 +247,41 @@ export default class UIScene extends Phaser.Scene {
         this.fuelWarning.setVisible(false);
     }
 
+    showWaveAnnouncement(waveNumber) {
+        const w = this.scale.width;
+        const h = this.scale.height;
+
+        // Create wave announcement text
+        const waveText = this.add.text(w/2, h/2, `WAVE ${waveNumber}`, {
+            fontFamily: 'Silkscreen',
+            fontSize: '48px',
+            color: '#ffff00',
+            stroke: '#000',
+            strokeThickness: 6
+        }).setOrigin(0.5).setDepth(200).setAlpha(0).setScale(0.5);
+
+        // Animate in
+        this.tweens.add({
+            targets: waveText,
+            alpha: 1,
+            scale: 1,
+            duration: 300,
+            ease: 'Back.easeOut'
+        });
+
+        // Hold for a moment, then fade out
+        this.time.delayedCall(2000, () => {
+            this.tweens.add({
+                targets: waveText,
+                alpha: 0,
+                scale: 1.2,
+                duration: 500,
+                ease: 'Power2',
+                onComplete: () => waveText.destroy()
+            });
+        });
+    }
+
     showPowerup(type) {
         const names = {
             'spray': 'SPRAY SHOT',
