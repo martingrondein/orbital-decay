@@ -403,3 +403,51 @@ export function createCelebrationBurst(scene, x, y, config = {}) {
         });
     }
 }
+
+/**
+ * Creates a light contrail effect for bullets
+ * @param {Phaser.Scene} scene - The scene to create effect in
+ * @param {number} x - X position
+ * @param {number} y - Y position
+ * @param {Object} config - Effect configuration
+ * @param {number} config.count - Number of particles (default: 2)
+ * @param {number} config.radius - Particle radius (default: 1.5)
+ * @param {number} config.color - Particle color hex (default: 0xaaffff)
+ * @param {number} config.alpha - Starting opacity (default: 0.7)
+ * @param {number} config.duration - Animation duration in ms (default: 150)
+ * @param {number} config.depth - Z-depth for rendering (default: 1)
+ */
+export function createBulletTrail(scene, x, y, config = {}) {
+    const {
+        count = 2,
+        radius = 1.5,
+        color = 0xaaffff,
+        alpha = 0.7,
+        duration = 150,
+        depth = 1
+    } = config;
+
+    for (let i = 0; i < count; i++) {
+        // Slight randomization for organic feel
+        const offsetX = (Math.random() - 0.5) * 3;
+        const offsetY = (Math.random() - 0.5) * 3;
+
+        const particle = scene.add.circle(
+            x + offsetX,
+            y + offsetY,
+            radius,
+            color,
+            alpha
+        ).setDepth(depth);
+
+        // Particles fade and shrink quickly
+        scene.tweens.add({
+            targets: particle,
+            radius: 0.3,
+            alpha: 0,
+            duration: duration + (Math.random() * 50),
+            ease: 'Power2',
+            onComplete: () => particle.destroy()
+        });
+    }
+}

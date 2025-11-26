@@ -9,7 +9,7 @@ import Joystick from '../utils/Joystick.js';
 import { GameBalance } from '../config/GameBalance.js';
 import { GameConstants } from '../config/GameConstants.js';
 import { applyPowerup, clearPowerup } from '../config/PowerupConfig.js';
-import { createCollectionEffect, createExplosionEffect, createCelebrationBurst, createRadialParticleBurst } from '../utils/EffectsUtils.js';
+import { createCollectionEffect, createExplosionEffect, createCelebrationBurst, createRadialParticleBurst, createBulletTrail } from '../utils/EffectsUtils.js';
 
 export default class GameScene extends Phaser.Scene {
     constructor() { super({ key: 'GameScene' }); }
@@ -165,8 +165,29 @@ export default class GameScene extends Phaser.Scene {
         // Magnetic attraction for collectibles
         this.applyMagneticAttraction();
 
-        // Cleanup bullets/XP/Gold/Fuel
-        [this.bullets, this.xpItems, this.goldItems, this.fuelItems].forEach(g => {
+        // Create bullet trails and cleanup
+        this.bullets.children.iterate(bullet => {
+            if (bullet.active) {
+                // Spawn light contrail effect
+                createBulletTrail(this, bullet.x, bullet.y, {
+                    count: 2,
+                    radius: 1.5,
+                    color: 0xaaffff,
+                    alpha: 0.7,
+                    duration: 150,
+                    depth: 1
+                });
+
+                // Cleanup if out of bounds
+                const boundary = GameConstants.spawn.cleanupBoundary;
+                if (bullet.y < -boundary || bullet.y > this.scale.height + boundary) {
+                    bullet.disableBody(true, true);
+                }
+            }
+        });
+
+        // Cleanup XP/Gold/Fuel
+        [this.xpItems, this.goldItems, this.fuelItems].forEach(g => {
             g.children.iterate(c => {
                 const boundary = GameConstants.spawn.cleanupBoundary;
                 if(c.active && (c.y < -boundary || c.y > this.scale.height + boundary)) {
