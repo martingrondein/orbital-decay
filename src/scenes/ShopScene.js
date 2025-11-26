@@ -19,7 +19,7 @@ export default class ShopScene extends Phaser.Scene {
         // Title
         this.add.text(w/2, 40, 'SHOP', {
             fontFamily: 'Silkscreen',
-            fontSize: '36px',
+            fontSize: '32px',
             color: '#ffd700',
             stroke: '#000',
             strokeThickness: 4
@@ -28,7 +28,7 @@ export default class ShopScene extends Phaser.Scene {
         // Display current gold
         this.goldText = this.add.text(w/2, 90, `Gold: ${this.stats.gold}`, {
             fontFamily: 'Silkscreen',
-            fontSize: '24px',
+            fontSize: '22px',
             color: '#ffd700'
         }).setOrigin(0.5);
 
@@ -171,7 +171,7 @@ export default class ShopScene extends Phaser.Scene {
         const backBtn = this.add.rectangle(w/2, h - 60, 200, 50, 0xff3333).setInteractive();
         const backTxt = this.add.text(w/2, h - 60, 'BACK', {
             fontFamily: 'Silkscreen',
-            fontSize: '24px',
+            fontSize: '22px',
             color: 'black'
         }).setOrigin(0.5);
 
@@ -203,7 +203,7 @@ export default class ShopScene extends Phaser.Scene {
         // Item name
         const nameText = this.add.text(x - 165, y - 25, name, {
             fontFamily: 'Silkscreen',
-            fontSize: '18px',
+            fontSize: '16px',
             color: '#ffffff'
         });
         this.scrollContainer.add(nameText);
@@ -211,7 +211,7 @@ export default class ShopScene extends Phaser.Scene {
         // Cost
         const costText = this.add.text(x - 165, y, cost, {
             fontFamily: 'Silkscreen',
-            fontSize: '16px',
+            fontSize: '14px',
             color: '#ffd700'
         });
         this.scrollContainer.add(costText);
@@ -219,7 +219,7 @@ export default class ShopScene extends Phaser.Scene {
         // Status/Current value
         const statusText = this.add.text(x - 165, y + 22, status, {
             fontFamily: 'Silkscreen',
-            fontSize: '14px',
+            fontSize: '13px',
             color: '#aaaaaa'
         });
         this.scrollContainer.add(statusText);
@@ -229,7 +229,7 @@ export default class ShopScene extends Phaser.Scene {
             const buyBtn = this.add.rectangle(x + 130, y, 70, 50, 0x00ff00).setInteractive();
             const buyTxt = this.add.text(x + 130, y, 'BUY', {
                 fontFamily: 'Silkscreen',
-                fontSize: '18px',
+                fontSize: '16px',
                 color: 'black'
             }).setOrigin(0.5);
 
@@ -244,7 +244,7 @@ export default class ShopScene extends Phaser.Scene {
             const ownedBg = this.add.rectangle(x + 130, y, 70, 50, 0x666666);
             const ownedText = this.add.text(x + 130, y, 'OWNED', {
                 fontFamily: 'Silkscreen',
-                fontSize: '14px',
+                fontSize: '13px',
                 color: 'white'
             }).setOrigin(0.5);
 
@@ -384,7 +384,7 @@ export default class ShopScene extends Phaser.Scene {
         const w = this.scale.width;
         const msg = this.add.text(w/2, 100, text, {
             fontFamily: 'Silkscreen',
-            fontSize: '20px',
+            fontSize: '18px',
             color: '#ff0000',
             backgroundColor: '#000000',
             padding: { x: 10, y: 5 }
