@@ -525,6 +525,8 @@ export function createBarParticleEffect(scene, x, y, width, config = {}) {
  * @param {Phaser.Scene} scene - The scene to create effect in
  * @param {number} x - X position
  * @param {number} y - Y position
+ * @param {number} velocityX - Enemy's X velocity
+ * @param {number} velocityY - Enemy's Y velocity
  * @param {number} time - Current game time for wave animation
  * @param {Object} config - Effect configuration
  * @param {number} config.color - Tail color hex (default: 0xff0000)
@@ -536,7 +538,7 @@ export function createBarParticleEffect(scene, x, y, width, config = {}) {
  * @param {number} config.duration - Fade duration in ms (default: 200)
  * @param {number} config.depth - Z-depth for rendering (default: 0)
  */
-export function createEnemyTail(scene, x, y, time, config = {}) {
+export function createEnemyTail(scene, x, y, velocityX, velocityY, time, config = {}) {
     const {
         color = 0xff0000,
         count = 3,
@@ -548,17 +550,32 @@ export function createEnemyTail(scene, x, y, time, config = {}) {
         depth = 0
     } = config;
 
+    // Calculate the direction of movement (normalize velocity)
+    const speed = Math.sqrt(velocityX * velocityX + velocityY * velocityY);
+    if (speed < 0.1) return; // Don't render tail if enemy is nearly stationary
+
+    // Direction vector (opposite to velocity for trailing effect)
+    const dirX = -velocityX / speed;
+    const dirY = -velocityY / speed;
+
+    // Perpendicular vector for wiggle (rotated 90 degrees)
+    const perpX = -dirY;
+    const perpY = dirX;
+
     for (let i = 0; i < count; i++) {
         // Calculate wiggle offset using sine wave for organic movement
         const wiggleOffset = Math.sin((time * 0.005) + (i * 0.8)) * wiggleAmount;
 
-        // Position segments behind the enemy with decreasing size
-        const segmentY = y + (i * spacing);
+        // Position segments behind the enemy (opposite to velocity direction)
+        const distance = (i + 1) * spacing;
+        const segmentX = x + (dirX * distance) + (perpX * wiggleOffset);
+        const segmentY = y + (dirY * distance) + (perpY * wiggleOffset);
+
         const segmentRadius = radius * (1 - (i * 0.2));
         const segmentAlpha = alpha * (1 - (i * 0.25));
 
         const particle = scene.add.circle(
-            x + wiggleOffset,
+            segmentX,
             segmentY,
             segmentRadius,
             color,

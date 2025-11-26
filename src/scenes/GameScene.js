@@ -159,8 +159,8 @@ export default class GameScene extends Phaser.Scene {
 
         // Create wiggly tails for all enemies
         this.enemyManager.enemies.children.iterate(enemy => {
-            if (enemy.active) {
-                createEnemyTail(this, enemy.x, enemy.y, time, {
+            if (enemy.active && enemy.body) {
+                createEnemyTail(this, enemy.x, enemy.y, enemy.body.velocity.x, enemy.body.velocity.y, time, {
                     color: 0xff4444,
                     count: 3,
                     radius: 2.5,
@@ -174,8 +174,8 @@ export default class GameScene extends Phaser.Scene {
         });
 
         this.enemyManager.blueEnemies.children.iterate(enemy => {
-            if (enemy.active) {
-                createEnemyTail(this, enemy.x, enemy.y, time, {
+            if (enemy.active && enemy.body) {
+                createEnemyTail(this, enemy.x, enemy.y, enemy.body.velocity.x, enemy.body.velocity.y, time, {
                     color: 0x4444ff,
                     count: 3,
                     radius: 2.5,
@@ -189,8 +189,8 @@ export default class GameScene extends Phaser.Scene {
         });
 
         this.enemyManager.greenEnemies.children.iterate(enemy => {
-            if (enemy.active) {
-                createEnemyTail(this, enemy.x, enemy.y, time, {
+            if (enemy.active && enemy.body) {
+                createEnemyTail(this, enemy.x, enemy.y, enemy.body.velocity.x, enemy.body.velocity.y, time, {
                     color: 0x44ff44,
                     count: 3,
                     radius: 2.5,
@@ -204,8 +204,8 @@ export default class GameScene extends Phaser.Scene {
         });
 
         this.enemyManager.yellowEnemies.children.iterate(enemy => {
-            if (enemy.active) {
-                createEnemyTail(this, enemy.x, enemy.y, time, {
+            if (enemy.active && enemy.body) {
+                createEnemyTail(this, enemy.x, enemy.y, enemy.body.velocity.x, enemy.body.velocity.y, time, {
                     color: 0xffff44,
                     count: 3,
                     radius: 2.5,
