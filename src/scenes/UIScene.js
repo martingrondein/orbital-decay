@@ -1,8 +1,16 @@
 import Phaser from 'phaser';
 import { GameBalance } from '../config/GameBalance.js';
+import { createBarParticleEffect } from '../utils/EffectsUtils.js';
 
 export default class UIScene extends Phaser.Scene {
-    constructor() { super({ key: 'UIScene', active: false }); }
+    constructor() {
+        super({ key: 'UIScene', active: false });
+
+        // Track previous values for particle effects
+        this.prevHealth = 0;
+        this.prevXP = 0;
+        this.prevFuel = 0;
+    }
 
     create() {
         this.createHUD();
@@ -112,6 +120,12 @@ export default class UIScene extends Phaser.Scene {
     initUI(stats) {
         this.lvlText.setText(`Lvl: ${stats.level}`);
         this.goldText.setText(`G: ${stats.gold}`);
+
+        // Initialize previous values to avoid particle effects on init
+        this.prevHealth = stats.maxHealth;
+        this.prevXP = stats.xp;
+        this.prevFuel = GameBalance.fuel.startFuel;
+
         this.updateHealth(stats.maxHealth, stats.maxHealth);
         this.updateXP(stats.xp, stats.reqXp);
         // Initialize fuel bar (GameScene emits updateFuel separately but we need initial state)
@@ -120,19 +134,67 @@ export default class UIScene extends Phaser.Scene {
     }
 
     updateHealth(curr, max) {
-        this.hpBar.width = (this.scale.width - 20) * Math.max(0, curr/max);
+        const newWidth = (this.scale.width - 20) * Math.max(0, curr/max);
+        this.hpBar.width = newWidth;
         this.hpText.setText(`HP: ${Math.floor(curr)}/${max}`);
+
+        // Spawn particle effects when health changes
+        if (curr !== this.prevHealth && this.prevHealth > 0) {
+            const isIncrease = curr > this.prevHealth;
+            createBarParticleEffect(this, this.hpBar.x, this.hpBar.y + 7.5, newWidth, {
+                color: isIncrease ? 0x00ff00 : 0xff0000,
+                type: isIncrease ? 'increase' : 'decrease',
+                count: isIncrease ? 5 : 8,
+                radius: isIncrease ? 2.5 : 3,
+                alpha: 0.8,
+                duration: 400
+            });
+        }
+
+        this.prevHealth = curr;
     }
 
     updateXP(curr, req) {
-        this.xpBar.width = (this.scale.width - 20) * Math.max(0, curr/req);
+        const newWidth = (this.scale.width - 20) * Math.max(0, curr/req);
+        this.xpBar.width = newWidth;
         this.xpText.setText(`XP: ${Math.floor(curr)}/${req}`);
+
+        // Spawn particle effects when XP changes
+        if (curr !== this.prevXP && this.prevXP > 0) {
+            const isIncrease = curr > this.prevXP;
+            createBarParticleEffect(this, this.xpBar.x, this.xpBar.y + 7.5, newWidth, {
+                color: isIncrease ? 0x00ffff : 0x0088ff,
+                type: isIncrease ? 'increase' : 'decrease',
+                count: isIncrease ? 6 : 4,
+                radius: 2.5,
+                alpha: 0.9,
+                duration: 350
+            });
+        }
+
+        this.prevXP = curr;
     }
 
     updateFuel(fuel) {
         const maxFuel = GameBalance.fuel.startFuel;
-        this.fuelBar.width = (this.scale.width - 20) * Math.max(0, fuel/maxFuel);
+        const newWidth = (this.scale.width - 20) * Math.max(0, fuel/maxFuel);
+        this.fuelBar.width = newWidth;
         this.fuelText.setText(`Fuel: ${Math.floor(fuel)}`);
+
+        // Spawn particle effects when fuel changes
+        if (fuel !== this.prevFuel && this.prevFuel > 0) {
+            const isIncrease = fuel > this.prevFuel;
+            createBarParticleEffect(this, this.fuelBar.x, this.fuelBar.y + 7.5, newWidth, {
+                color: isIncrease ? 0xff00ff : 0x9932cc,
+                type: isIncrease ? 'increase' : 'decrease',
+                count: isIncrease ? 5 : 3,
+                radius: 2.5,
+                alpha: 0.8,
+                duration: 380
+            });
+        }
+
+        this.prevFuel = fuel;
     }
 
     showPowerup(type) {

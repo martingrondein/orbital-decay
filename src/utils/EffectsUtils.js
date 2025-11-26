@@ -451,3 +451,71 @@ export function createBulletTrail(scene, x, y, config = {}) {
         });
     }
 }
+
+/**
+ * Creates particle effects for UI bar changes (health, XP, fuel)
+ * @param {Phaser.Scene} scene - The scene to create effect in
+ * @param {number} x - X position (bar position)
+ * @param {number} y - Y position (bar position)
+ * @param {number} width - Width of the bar
+ * @param {Object} config - Effect configuration
+ * @param {number} config.color - Particle color hex (default: 0xffffff)
+ * @param {string} config.type - Type of change: 'increase' or 'decrease' (default: 'increase')
+ * @param {number} config.count - Number of particles (default: 5)
+ * @param {number} config.radius - Particle radius (default: 3)
+ * @param {number} config.alpha - Starting opacity (default: 0.8)
+ * @param {number} config.duration - Animation duration in ms (default: 400)
+ * @param {number} config.depth - Z-depth for rendering (default: 102)
+ */
+export function createBarParticleEffect(scene, x, y, width, config = {}) {
+    const {
+        color = 0xffffff,
+        type = 'increase',
+        count = 5,
+        radius = 3,
+        alpha = 0.8,
+        duration = 400,
+        depth = 102
+    } = config;
+
+    // Spawn particles along the bar
+    for (let i = 0; i < count; i++) {
+        // Random position along the visible bar width
+        const offsetX = Math.random() * Math.max(width, 20);
+        const offsetY = (Math.random() - 0.5) * 8;
+
+        const particle = scene.add.circle(
+            x + offsetX,
+            y + offsetY,
+            radius,
+            color,
+            alpha
+        ).setDepth(depth);
+
+        if (type === 'increase') {
+            // Particles burst upward for increases
+            scene.tweens.add({
+                targets: particle,
+                y: y - 20 - (Math.random() * 10),
+                x: particle.x + (Math.random() - 0.5) * 15,
+                radius: 0.5,
+                alpha: 0,
+                duration: duration + (Math.random() * 100),
+                ease: 'Power2',
+                onComplete: () => particle.destroy()
+            });
+        } else {
+            // Particles fall downward for decreases
+            scene.tweens.add({
+                targets: particle,
+                y: y + 15 + (Math.random() * 10),
+                x: particle.x + (Math.random() - 0.5) * 10,
+                radius: 1,
+                alpha: 0,
+                duration: duration + (Math.random() * 100),
+                ease: 'Power2',
+                onComplete: () => particle.destroy()
+            });
+        }
+    }
+}
