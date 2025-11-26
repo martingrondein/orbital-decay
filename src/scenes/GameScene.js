@@ -294,12 +294,21 @@ export default class GameScene extends Phaser.Scene {
             }
         });
 
-        // Cleanup XP/Gold/Fuel
-        [this.xpItems, this.goldItems, this.fuelItems].forEach(g => {
+        // Update glow aura positions and cleanup XP/Gold/Fuel/Powerups
+        [this.xpItems, this.goldItems, this.fuelItems, this.powerupManager.powerups].forEach(g => {
             g.children.iterate(c => {
-                const boundary = GameConstants.spawn.cleanupBoundary;
-                if(c.active && (c.y < -boundary || c.y > this.scale.height + boundary)) {
-                    c.disableBody(true,true);
+                if (c.active) {
+                    // Sync glow aura position with item
+                    if (c.glowAura) {
+                        c.glowAura.setPosition(c.x, c.y);
+                    }
+
+                    // Cleanup if out of bounds
+                    const boundary = GameConstants.spawn.cleanupBoundary;
+                    if (c.y < -boundary || c.y > this.scale.height + boundary) {
+                        this.removeGlowEffect(c);
+                        c.disableBody(true, true);
+                    }
                 }
             });
         });
@@ -492,6 +501,34 @@ export default class GameScene extends Phaser.Scene {
     addGlowEffect(item) {
         // Add pulsing glow effect to collectible items
         if (!item.glowTween) {
+            // Determine glow color based on item texture
+            let glowColor = 0xffffff;
+            if (item.texture) {
+                const key = item.texture.key;
+                if (key === 'xp') glowColor = 0x00ffff;
+                else if (key === 'gold') glowColor = 0xffd700;
+                else if (key === 'fuel') glowColor = 0x9932cc;
+                else if (key.startsWith('powerup_')) glowColor = 0xff00ff;
+            }
+
+            // Create glow aura circle
+            item.glowAura = this.add.circle(item.x, item.y, 12, glowColor, 0.3).setDepth(item.depth - 1);
+
+            // Sync aura position with item
+            item.glowAura.originalScale = 1;
+
+            // Animate the glow aura
+            item.glowAuraTween = this.tweens.add({
+                targets: item.glowAura,
+                alpha: 0.6,
+                scale: 1.3,
+                duration: 800,
+                yoyo: true,
+                repeat: -1,
+                ease: 'Sine.easeInOut'
+            });
+
+            // Animate the item itself
             item.glowTween = this.tweens.add({
                 targets: item,
                 alpha: 0.7,
@@ -509,6 +546,14 @@ export default class GameScene extends Phaser.Scene {
         if (item.glowTween) {
             item.glowTween.remove();
             item.glowTween = null;
+        }
+        if (item.glowAuraTween) {
+            item.glowAuraTween.remove();
+            item.glowAuraTween = null;
+        }
+        if (item.glowAura) {
+            item.glowAura.destroy();
+            item.glowAura = null;
         }
     }
 
