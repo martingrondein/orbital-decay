@@ -519,3 +519,60 @@ export function createBarParticleEffect(scene, x, y, width, config = {}) {
         }
     }
 }
+
+/**
+ * Creates a wiggly alien-like tail effect for enemies
+ * @param {Phaser.Scene} scene - The scene to create effect in
+ * @param {number} x - X position
+ * @param {number} y - Y position
+ * @param {number} time - Current game time for wave animation
+ * @param {Object} config - Effect configuration
+ * @param {number} config.color - Tail color hex (default: 0xff0000)
+ * @param {number} config.count - Number of tail segments (default: 3)
+ * @param {number} config.radius - Particle radius (default: 2)
+ * @param {number} config.alpha - Opacity (default: 0.6)
+ * @param {number} config.spacing - Spacing between segments (default: 8)
+ * @param {number} config.wiggleAmount - How much to wiggle (default: 3)
+ * @param {number} config.duration - Fade duration in ms (default: 200)
+ * @param {number} config.depth - Z-depth for rendering (default: 0)
+ */
+export function createEnemyTail(scene, x, y, time, config = {}) {
+    const {
+        color = 0xff0000,
+        count = 3,
+        radius = 2,
+        alpha = 0.6,
+        spacing = 8,
+        wiggleAmount = 3,
+        duration = 200,
+        depth = 0
+    } = config;
+
+    for (let i = 0; i < count; i++) {
+        // Calculate wiggle offset using sine wave for organic movement
+        const wiggleOffset = Math.sin((time * 0.005) + (i * 0.8)) * wiggleAmount;
+
+        // Position segments behind the enemy with decreasing size
+        const segmentY = y + (i * spacing);
+        const segmentRadius = radius * (1 - (i * 0.2));
+        const segmentAlpha = alpha * (1 - (i * 0.25));
+
+        const particle = scene.add.circle(
+            x + wiggleOffset,
+            segmentY,
+            segmentRadius,
+            color,
+            segmentAlpha
+        ).setDepth(depth);
+
+        // Fade out quickly
+        scene.tweens.add({
+            targets: particle,
+            alpha: 0,
+            radius: segmentRadius * 0.5,
+            duration: duration,
+            ease: 'Power2',
+            onComplete: () => particle.destroy()
+        });
+    }
+}

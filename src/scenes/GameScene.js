@@ -9,7 +9,7 @@ import Joystick from '../utils/Joystick.js';
 import { GameBalance } from '../config/GameBalance.js';
 import { GameConstants } from '../config/GameConstants.js';
 import { applyPowerup, clearPowerup } from '../config/PowerupConfig.js';
-import { createCollectionEffect, createExplosionEffect, createCelebrationBurst, createRadialParticleBurst, createBulletTrail } from '../utils/EffectsUtils.js';
+import { createCollectionEffect, createExplosionEffect, createCelebrationBurst, createRadialParticleBurst, createBulletTrail, createEnemyTail } from '../utils/EffectsUtils.js';
 
 export default class GameScene extends Phaser.Scene {
     constructor() { super({ key: 'GameScene' }); }
@@ -156,6 +156,67 @@ export default class GameScene extends Phaser.Scene {
         this.player.update(time, this.joystick.getData());
         this.enemyManager.cleanup();
         this.powerupManager.cleanup();
+
+        // Create wiggly tails for all enemies
+        this.enemyManager.enemies.children.iterate(enemy => {
+            if (enemy.active) {
+                createEnemyTail(this, enemy.x, enemy.y, time, {
+                    color: 0xff4444,
+                    count: 3,
+                    radius: 2.5,
+                    alpha: 0.5,
+                    spacing: 8,
+                    wiggleAmount: 4,
+                    duration: 250,
+                    depth: 0
+                });
+            }
+        });
+
+        this.enemyManager.blueEnemies.children.iterate(enemy => {
+            if (enemy.active) {
+                createEnemyTail(this, enemy.x, enemy.y, time, {
+                    color: 0x4444ff,
+                    count: 3,
+                    radius: 2.5,
+                    alpha: 0.5,
+                    spacing: 8,
+                    wiggleAmount: 4,
+                    duration: 250,
+                    depth: 0
+                });
+            }
+        });
+
+        this.enemyManager.greenEnemies.children.iterate(enemy => {
+            if (enemy.active) {
+                createEnemyTail(this, enemy.x, enemy.y, time, {
+                    color: 0x44ff44,
+                    count: 3,
+                    radius: 2.5,
+                    alpha: 0.5,
+                    spacing: 8,
+                    wiggleAmount: 4,
+                    duration: 250,
+                    depth: 0
+                });
+            }
+        });
+
+        this.enemyManager.yellowEnemies.children.iterate(enemy => {
+            if (enemy.active) {
+                createEnemyTail(this, enemy.x, enemy.y, time, {
+                    color: 0xffff44,
+                    count: 3,
+                    radius: 2.5,
+                    alpha: 0.5,
+                    spacing: 8,
+                    wiggleAmount: 4,
+                    duration: 250,
+                    depth: 0
+                });
+            }
+        });
 
         // Update shield bubble position
         if (this.shieldBubble) {
