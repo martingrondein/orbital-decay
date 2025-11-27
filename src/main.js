@@ -3,7 +3,7 @@ import TitleScene from './scenes/TitleScene.js';
 import GameScene from './scenes/GameScene.js';
 import UIScene from './scenes/UIScene.js';
 import ShopScene from './scenes/ShopScene.js';
-import { initPWAInstall } from './utils/pwa.js';
+import { initPWAInstall, registerSWUpdate } from './utils/pwa.js';
 import {
     GAME_WIDTH,
     GAME_HEIGHT,
@@ -62,3 +62,6 @@ setupResizeHandler(game);
 
 // Initialize PWA install prompt
 initPWAInstall();
+
+// Register service worker and check for updates
+registerSWUpdate();

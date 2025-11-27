@@ -215,6 +215,101 @@ async function handleInstallClick() {
 }
 
 /**
+ * Show update notification
+ */
+function showUpdateNotification() {
+  // Create update notification
+  const updatePrompt = document.createElement('div');
+  updatePrompt.id = 'pwa-update-prompt';
+  updatePrompt.style.cssText = `
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #0f0 0%, #0a0 100%);
+    color: #000;
+    padding: 30px 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 255, 0, 0.5);
+    z-index: 20000;
+    font-family: 'Silkscreen', monospace;
+    text-align: center;
+    animation: popIn 0.3s ease-out;
+    max-width: 90%;
+  `;
+
+  // Create text
+  const text = document.createElement('div');
+  text.innerHTML = `
+    <div style="font-size: 24px; font-weight: bold; margin-bottom: 15px;">UPDATE AVAILABLE!</div>
+    <div style="font-size: 14px; margin-bottom: 20px;">A new version is ready to install</div>
+  `;
+  updatePrompt.appendChild(text);
+
+  // Create button
+  const updateButton = document.createElement('button');
+  updateButton.textContent = 'RELOAD NOW';
+  updateButton.style.cssText = `
+    background: #000;
+    color: #0f0;
+    border: 3px solid #0f0;
+    padding: 12px 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Silkscreen', monospace;
+    font-weight: bold;
+    font-size: 16px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  `;
+  updateButton.onmouseover = () => {
+    updateButton.style.background = '#0f0';
+    updateButton.style.color = '#000';
+    updateButton.style.transform = 'scale(1.05)';
+  };
+  updateButton.onmouseout = () => {
+    updateButton.style.background = '#000';
+    updateButton.style.color = '#0f0';
+    updateButton.style.transform = 'scale(1)';
+  };
+  updateButton.onclick = () => {
+    window.location.reload();
+  };
+  updatePrompt.appendChild(updateButton);
+
+  // Add background overlay
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 19999;
+  `;
+  document.body.appendChild(overlay);
+
+  // Add animation
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes popIn {
+      from {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+      }
+      to {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+
+  document.body.appendChild(updatePrompt);
+}
+
+/**
  * Register service worker updates
  */
 export function registerSWUpdate() {
@@ -222,24 +317,33 @@ export function registerSWUpdate() {
     navigator.serviceWorker.register('/orbital-decay/sw.js').then((registration) => {
       console.log('Service Worker registered:', registration);
 
-      // Check for updates periodically
+      // Check for updates immediately on load
+      registration.update();
+
+      // Check for updates every 5 minutes (more aggressive)
       setInterval(() => {
+        console.log('Checking for updates...');
         registration.update();
-      }, 60 * 60 * 1000); // Check every hour
+      }, 5 * 60 * 1000);
+
+      // Check for updates when page becomes visible
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+          console.log('Page visible, checking for updates...');
+          registration.update();
+        }
+      });
 
       // Listen for updates
       registration.addEventListener('updatefound', () => {
         const newWorker = registration.installing;
+        console.log('New service worker found, installing...');
 
         newWorker.addEventListener('statechange', () => {
           if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
             // New service worker available, show update prompt
-            console.log('New content available, please refresh.');
-
-            // You can show a custom update prompt here
-            if (confirm('New version available! Reload to update?')) {
-              window.location.reload();
-            }
+            console.log('New content available, showing update prompt');
+            showUpdateNotification();
           }
         });
       });
