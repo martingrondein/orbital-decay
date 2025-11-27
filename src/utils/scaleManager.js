@@ -16,18 +16,15 @@ const ASPECT_RATIO_TOLERANCE = 0.1;
 
 /**
  * Calculate the optimal zoom level for the current screen
+ * Scale based on width only for pixel-perfect rendering
  * @returns {number} The optimal zoom level
  */
 export function calculateOptimalZoom() {
   const screenWidth = window.innerWidth;
   const screenHeight = window.innerHeight;
 
-  // Calculate zoom that fits the game within the screen
-  const zoomWidth = screenWidth / GAME_WIDTH;
-  const zoomHeight = screenHeight / GAME_HEIGHT;
-
-  // Use the smaller zoom to ensure the game fits in both dimensions
-  let zoom = Math.min(zoomWidth, zoomHeight);
+  // Calculate zoom based on width only for pixel-perfect scaling
+  let zoom = screenWidth / GAME_WIDTH;
 
   // Floor the zoom to avoid sub-pixel rendering issues with pixel art
   zoom = Math.floor(zoom);
@@ -35,7 +32,7 @@ export function calculateOptimalZoom() {
   // Clamp between min and max
   zoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom));
 
-  console.log(`Screen: ${screenWidth}x${screenHeight}, Calculated zoom: ${zoom}`);
+  console.log(`Screen: ${screenWidth}x${screenHeight}, Width-based zoom: ${zoom}`);
 
   return zoom;
 }
