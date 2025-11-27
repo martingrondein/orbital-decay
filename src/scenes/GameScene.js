@@ -273,7 +273,12 @@ export default class GameScene extends Phaser.Scene {
 
                 // Cleanup if out of bounds
                 const boundary = GameConstants.spawn.cleanupBoundary;
-                if (bullet.y < -boundary || bullet.y > this.scale.height + boundary) {
+                if (
+                    bullet.y < -boundary ||
+                    bullet.y > this.scale.height + boundary ||
+                    bullet.x < -boundary ||
+                    bullet.x > this.scale.width + boundary
+                ) {
                     bullet.disableBody(true, true);
                 }
             }
@@ -305,7 +310,12 @@ export default class GameScene extends Phaser.Scene {
 
                     // Cleanup if out of bounds
                     const boundary = GameConstants.spawn.cleanupBoundary;
-                    if (c.y < -boundary || c.y > this.scale.height + boundary) {
+                    if (
+                        c.y < -boundary ||
+                        c.y > this.scale.height + boundary ||
+                        c.x < -boundary ||
+                        c.x > this.scale.width + boundary
+                    ) {
                         this.removeGlowEffect(c);
                         c.disableBody(true, true);
                     }

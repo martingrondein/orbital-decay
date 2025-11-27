@@ -33,9 +33,17 @@ export default class PowerupManager {
     }
 
     cleanup() {
+        const w = this.scene.scale.width;
         const h = this.scene.scale.height;
+        const boundary = 60;
+
         this.powerups.children.iterate(p => {
-            if (p.active && (p.y < -60 || p.y > h + 60)) {
+            if (p.active && (
+                p.y < -boundary ||
+                p.y > h + boundary ||
+                p.x < -boundary ||
+                p.x > w + boundary
+            )) {
                 this.scene.removeGlowEffect(p);
                 p.disableBody(true, true);
             }

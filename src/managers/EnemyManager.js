@@ -292,9 +292,17 @@ export default class EnemyManager {
     }
 
     cleanup() {
+        const w = this.scene.scale.width;
         const h = this.scene.scale.height;
+        const boundary = 60;
+
         const clean = (g) => g.children.iterate(c => {
-            if(c.active && (c.y < -60 || c.y > h + 60)) {
+            if(c.active && (
+                c.y < -boundary ||
+                c.y > h + boundary ||
+                c.x < -boundary ||
+                c.x > w + boundary
+            )) {
                 // Clean up flash timer if it exists
                 if (c.flashTimer) {
                     c.flashTimer.remove();
