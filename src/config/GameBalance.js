@@ -102,6 +102,42 @@ export const GameBalance = {
         scoreMultiplier: 4
     },
 
+    // Purple enemy stats (legendary variant introduced after 150 seconds)
+    purpleEnemy: {
+        introductionTime: 150000, // 150 seconds in milliseconds
+        spawnChance: 0.1, // 10% chance to spawn purple
+        maxPoolSize: 15,
+
+        // Movement (insanely fast and aggressive)
+        velocityX: { min: -100, max: 100 },
+        velocityY: { min: 180, max: 240 },
+
+        // Health (legendary enemy)
+        baseHealth: 10,
+
+        // Rewards (legendary drops)
+        xpMultiplier: 5,
+        goldMultiplier: 5,
+        scoreMultiplier: 5
+    },
+
+    // Wave system (infinite waves with color cycling)
+    waves: {
+        // Wave duration in milliseconds
+        waveDuration: 30000, // 30 seconds per wave
+
+        // Difficulty scaling per wave (exponential)
+        healthMultiplier: 1.15, // 15% more health per wave
+        velocityMultiplier: 1.1, // 10% faster per wave
+
+        // Color cycle order (repeats infinitely)
+        colorCycle: ['red', 'blue', 'green', 'yellow', 'purple'],
+
+        // Tail count increases after each complete cycle
+        baseTailCount: 3,
+        tailsPerCycle: 1
+    },
+
     // XP and scoring
     progression: {
         xpPerPickup: 25,

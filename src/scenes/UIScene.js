@@ -199,14 +199,15 @@ export default class UIScene extends Phaser.Scene {
         this.fuelWarning.setVisible(false);
     }
 
-    showWaveAnnouncement(waveNumber) {
+    showWaveAnnouncement(waveNumber, waveColor = '') {
         const w = this.scale.width;
         const h = this.scale.height;
 
         // Create wave announcement text
-        const waveText = this.add.text(w/2, h/2, `WAVE ${waveNumber}`, {
+        const colorName = waveColor ? ` - ${waveColor}` : '';
+        const waveText = this.add.text(w/2, h/2, `WAVE ${waveNumber}${colorName}`, {
             fontFamily: 'Silkscreen',
-            fontSize: '48px',
+            fontSize: '36px',
             color: '#ffff00',
             stroke: '#000',
             strokeThickness: 6

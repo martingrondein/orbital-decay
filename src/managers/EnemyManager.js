@@ -22,12 +22,20 @@ export default class EnemyManager {
             defaultKey: 'enemy',
             maxSize: GameBalance.yellowEnemy.maxPoolSize
         });
+        this.purpleEnemies = scene.physics.add.group({
+            defaultKey: 'enemy',
+            maxSize: GameBalance.purpleEnemy.maxPoolSize
+        });
         this.enemyBullets = scene.physics.add.group({
             defaultKey: 'ebullet',
             maxSize: GameBalance.enemy.bulletPoolSize
         });
 
         this.gameStartTime = Date.now();
+
+        // Wave tracking
+        this.currentWave = 1;
+        this.currentCycle = 1;
 
         // Timers
         scene.time.addEvent({
@@ -47,28 +55,18 @@ export default class EnemyManager {
     spawn() {
         if (this.scene.isGameOver) return;
 
-        const elapsedTime = Date.now() - this.gameStartTime;
         const x = Phaser.Math.Between(30, this.scene.scale.width - 30);
 
-        // Check which enemy types are unlocked
-        const yellowUnlocked = elapsedTime >= GameBalance.yellowEnemy.introductionTime;
-        const greenUnlocked = elapsedTime >= GameBalance.greenEnemy.introductionTime;
-        const blueUnlocked = elapsedTime >= GameBalance.blueEnemy.introductionTime;
+        // Get current wave's color from cycle
+        const colorCycle = GameBalance.waves.colorCycle;
+        const waveIndex = (this.currentWave - 1) % colorCycle.length;
+        const enemyType = colorCycle[waveIndex];
 
-        // Determine which enemy to spawn (prioritize harder enemies)
-        let enemyType = 'red'; // Default
-        const roll = Math.random();
-
-        if (yellowUnlocked && roll < GameBalance.yellowEnemy.spawnChance) {
-            enemyType = 'yellow';
-        } else if (greenUnlocked && roll < (GameBalance.yellowEnemy.spawnChance + GameBalance.greenEnemy.spawnChance)) {
-            enemyType = 'green';
-        } else if (blueUnlocked && roll < (GameBalance.yellowEnemy.spawnChance + GameBalance.greenEnemy.spawnChance + GameBalance.blueEnemy.spawnChance)) {
-            enemyType = 'blue';
-        }
-
-        // Spawn the selected enemy type
+        // Spawn the enemy type for this wave
         switch (enemyType) {
+            case 'purple':
+                this.spawnPurpleEnemy(x);
+                break;
             case 'yellow':
                 this.spawnYellowEnemy(x);
                 break;
@@ -84,15 +82,35 @@ export default class EnemyManager {
         }
     }
 
+    /**
+     * Calculate difficulty scaling for current wave
+     */
+    getWaveDifficultyMultiplier() {
+        const wave = this.currentWave;
+        return {
+            health: Math.pow(GameBalance.waves.healthMultiplier, wave - 1),
+            velocity: Math.pow(GameBalance.waves.velocityMultiplier, wave - 1)
+        };
+    }
+
+    /**
+     * Get tail count for current cycle
+     */
+    getTailCount() {
+        return GameBalance.waves.baseTailCount + ((this.currentCycle - 1) * GameBalance.waves.tailsPerCycle);
+    }
+
     spawnRedEnemy(x) {
         const e = this.enemies.get(x, -50);
         if (e) {
+            const multiplier = this.getWaveDifficultyMultiplier();
+
             e.enableBody(true, x, -50, true, true);
             e.setVelocity(
-                Phaser.Math.Between(GameBalance.enemy.velocityX.min, GameBalance.enemy.velocityX.max),
-                Phaser.Math.Between(GameBalance.enemy.velocityY.min, GameBalance.enemy.velocityY.max)
+                Phaser.Math.Between(GameBalance.enemy.velocityX.min, GameBalance.enemy.velocityX.max) * multiplier.velocity,
+                Phaser.Math.Between(GameBalance.enemy.velocityY.min, GameBalance.enemy.velocityY.max) * multiplier.velocity
             );
-            e.hp = GameBalance.enemy.baseHealth;
+            e.hp = Math.ceil(GameBalance.enemy.baseHealth * multiplier.health);
             e.setTint(0xff0000);
             e.setScale(1.25);
             e.body.setCircle(12);
@@ -106,12 +124,14 @@ export default class EnemyManager {
     spawnBlueEnemy(x) {
         const e = this.blueEnemies.get(x, -50);
         if (e) {
+            const multiplier = this.getWaveDifficultyMultiplier();
+
             e.enableBody(true, x, -50, true, true);
             e.setVelocity(
-                Phaser.Math.Between(GameBalance.blueEnemy.velocityX.min, GameBalance.blueEnemy.velocityX.max),
-                Phaser.Math.Between(GameBalance.blueEnemy.velocityY.min, GameBalance.blueEnemy.velocityY.max)
+                Phaser.Math.Between(GameBalance.blueEnemy.velocityX.min, GameBalance.blueEnemy.velocityX.max) * multiplier.velocity,
+                Phaser.Math.Between(GameBalance.blueEnemy.velocityY.min, GameBalance.blueEnemy.velocityY.max) * multiplier.velocity
             );
-            e.hp = GameBalance.blueEnemy.baseHealth;
+            e.hp = Math.ceil(GameBalance.blueEnemy.baseHealth * multiplier.health);
             e.setTint(0x0000ff);
             e.setScale(1.25);
             e.body.setCircle(12);
@@ -125,12 +145,14 @@ export default class EnemyManager {
     spawnGreenEnemy(x) {
         const e = this.greenEnemies.get(x, -50);
         if (e) {
+            const multiplier = this.getWaveDifficultyMultiplier();
+
             e.enableBody(true, x, -50, true, true);
             e.setVelocity(
-                Phaser.Math.Between(GameBalance.greenEnemy.velocityX.min, GameBalance.greenEnemy.velocityX.max),
-                Phaser.Math.Between(GameBalance.greenEnemy.velocityY.min, GameBalance.greenEnemy.velocityY.max)
+                Phaser.Math.Between(GameBalance.greenEnemy.velocityX.min, GameBalance.greenEnemy.velocityX.max) * multiplier.velocity,
+                Phaser.Math.Between(GameBalance.greenEnemy.velocityY.min, GameBalance.greenEnemy.velocityY.max) * multiplier.velocity
             );
-            e.hp = GameBalance.greenEnemy.baseHealth;
+            e.hp = Math.ceil(GameBalance.greenEnemy.baseHealth * multiplier.health);
             e.setTint(0x00ff00);
             e.setScale(1.25);
             e.body.setCircle(12);
@@ -144,12 +166,14 @@ export default class EnemyManager {
     spawnYellowEnemy(x) {
         const e = this.yellowEnemies.get(x, -50);
         if (e) {
+            const multiplier = this.getWaveDifficultyMultiplier();
+
             e.enableBody(true, x, -50, true, true);
             e.setVelocity(
-                Phaser.Math.Between(GameBalance.yellowEnemy.velocityX.min, GameBalance.yellowEnemy.velocityX.max),
-                Phaser.Math.Between(GameBalance.yellowEnemy.velocityY.min, GameBalance.yellowEnemy.velocityY.max)
+                Phaser.Math.Between(GameBalance.yellowEnemy.velocityX.min, GameBalance.yellowEnemy.velocityX.max) * multiplier.velocity,
+                Phaser.Math.Between(GameBalance.yellowEnemy.velocityY.min, GameBalance.yellowEnemy.velocityY.max) * multiplier.velocity
             );
-            e.hp = GameBalance.yellowEnemy.baseHealth;
+            e.hp = Math.ceil(GameBalance.yellowEnemy.baseHealth * multiplier.health);
             e.setTint(0xffff00);
             e.setScale(1.25);
             e.body.setCircle(12);
@@ -157,6 +181,27 @@ export default class EnemyManager {
 
             // Spawn effect
             createSpawnEffect(this.scene, x, -50, 0xffff00);
+        }
+    }
+
+    spawnPurpleEnemy(x) {
+        const e = this.purpleEnemies.get(x, -50);
+        if (e) {
+            const multiplier = this.getWaveDifficultyMultiplier();
+
+            e.enableBody(true, x, -50, true, true);
+            e.setVelocity(
+                Phaser.Math.Between(GameBalance.purpleEnemy.velocityX.min, GameBalance.purpleEnemy.velocityX.max) * multiplier.velocity,
+                Phaser.Math.Between(GameBalance.purpleEnemy.velocityY.min, GameBalance.purpleEnemy.velocityY.max) * multiplier.velocity
+            );
+            e.hp = Math.ceil(GameBalance.purpleEnemy.baseHealth * multiplier.health);
+            e.setTint(0x9932cc);
+            e.setScale(1.25);
+            e.body.setCircle(12);
+            e.enemyType = 'purple';
+
+            // Spawn effect
+            createSpawnEffect(this.scene, x, -50, 0x9932cc);
         }
     }
 
@@ -189,6 +234,7 @@ export default class EnemyManager {
         fireFromGroup(this.blueEnemies);
         fireFromGroup(this.greenEnemies);
         fireFromGroup(this.yellowEnemies);
+        fireFromGroup(this.purpleEnemies);
     }
 
     handleHit(enemy, damage) {
@@ -245,7 +291,8 @@ export default class EnemyManager {
                 'red': 0xff0000,
                 'blue': 0x0000ff,
                 'green': 0x00ff00,
-                'yellow': 0xffff00
+                'yellow': 0xffff00,
+                'purple': 0x9932cc
             };
             const explosionColor = explosionColors[enemy.enemyType] || 0xff0000;
             this.createExplosion(enemy.x, enemy.y, explosionColor);
@@ -315,6 +362,7 @@ export default class EnemyManager {
         clean(this.blueEnemies);
         clean(this.greenEnemies);
         clean(this.yellowEnemies);
+        clean(this.purpleEnemies);
         clean(this.enemyBullets);
     }
 }

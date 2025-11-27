@@ -29,14 +29,8 @@ export default class GameScene extends Phaser.Scene {
         this.activePowerupTimer = null;
         this.baseDamageMult = this.stats.damageMult;
 
-        // Wave tracking
-        this.currentWave = 1;
-        this.waveAnnounced = {
-            1: false,
-            2: false,
-            3: false,
-            4: false
-        };
+        // Wave tracking (infinite waves with color cycling)
+        this.lastWaveChangeTime = Date.now();
         this.baseFireRateMs = this.stats.fireRateMs;
         this.baseXPMult = this.stats.xpMult;
         this.scoreMultiplier = 1; // For triple score powerup
@@ -56,8 +50,9 @@ export default class GameScene extends Phaser.Scene {
 
         // Show Wave 1 announcement after a short delay
         this.time.delayedCall(500, () => {
-            this.scene.get('UIScene').showWaveAnnouncement(1);
-            this.waveAnnounced[1] = true;
+            const colorCycle = GameBalance.waves.colorCycle;
+            const waveColor = colorCycle[0].toUpperCase();
+            this.scene.get('UIScene').showWaveAnnouncement(1, waveColor);
         });
 
         // Fuel depletion and distance tracking timer (1 per second)
@@ -128,6 +123,9 @@ export default class GameScene extends Phaser.Scene {
         this.physics.add.overlap(this.bullets, this.enemyManager.yellowEnemies,
             (b, e) => { b.disableBody(true,true); this.enemyManager.handleHit(e, this.stats.damageMult); });
 
+        this.physics.add.overlap(this.bullets, this.enemyManager.purpleEnemies,
+            (b, e) => { b.disableBody(true,true); this.enemyManager.handleHit(e, this.stats.damageMult); });
+
         this.physics.add.overlap(this.player, this.xpItems,
             (p, xp) => this.collectXP(xp));
 
@@ -149,6 +147,9 @@ export default class GameScene extends Phaser.Scene {
         this.physics.add.overlap(this.player, this.enemyManager.yellowEnemies,
             (p, e) => { e.disableBody(true,true); this.handlePlayerHit(GameConstants.damage.collision); });
 
+        this.physics.add.overlap(this.player, this.enemyManager.purpleEnemies,
+            (p, e) => { e.disableBody(true,true); this.handlePlayerHit(GameConstants.damage.collision); });
+
         this.physics.add.overlap(this.player, this.enemyManager.enemyBullets,
             (p, b) => { b.disableBody(true,true); this.handlePlayerHit(GameConstants.damage.collision); });
 
@@ -167,21 +168,29 @@ export default class GameScene extends Phaser.Scene {
     update(time, delta) {
         if (this.isGameOver) return;
 
-        // Check for wave transitions based on game time
-        const elapsedTime = Date.now() - this.enemyManager.gameStartTime;
+        // Check for wave transitions (infinite cycling every waveDuration)
+        const currentTime = Date.now();
+        const timeSinceLastWave = currentTime - this.lastWaveChangeTime;
 
-        if (elapsedTime >= GameBalance.blueEnemy.introductionTime && !this.waveAnnounced[2]) {
-            this.currentWave = 2;
-            this.scene.get('UIScene').showWaveAnnouncement(2);
-            this.waveAnnounced[2] = true;
-        } else if (elapsedTime >= GameBalance.greenEnemy.introductionTime && !this.waveAnnounced[3]) {
-            this.currentWave = 3;
-            this.scene.get('UIScene').showWaveAnnouncement(3);
-            this.waveAnnounced[3] = true;
-        } else if (elapsedTime >= GameBalance.yellowEnemy.introductionTime && !this.waveAnnounced[4]) {
-            this.currentWave = 4;
-            this.scene.get('UIScene').showWaveAnnouncement(4);
-            this.waveAnnounced[4] = true;
+        if (timeSinceLastWave >= GameBalance.waves.waveDuration) {
+            // Advance to next wave
+            this.enemyManager.currentWave++;
+
+            // Calculate current cycle (complete 5-color cycles)
+            const colorCycle = GameBalance.waves.colorCycle;
+            this.enemyManager.currentCycle = Math.floor((this.enemyManager.currentWave - 1) / colorCycle.length) + 1;
+
+            // Get wave color
+            const waveIndex = (this.enemyManager.currentWave - 1) % colorCycle.length;
+            const waveColor = colorCycle[waveIndex].toUpperCase();
+
+            // Show announcement
+            this.scene.get('UIScene').showWaveAnnouncement(this.enemyManager.currentWave, waveColor);
+
+            // Update last wave change time
+            this.lastWaveChangeTime = currentTime;
+
+            console.log(`Wave ${this.enemyManager.currentWave} (${waveColor}) - Cycle ${this.enemyManager.currentCycle}`);
         }
 
         this.background.update();
@@ -189,12 +198,14 @@ export default class GameScene extends Phaser.Scene {
         this.enemyManager.cleanup();
         this.powerupManager.cleanup();
 
-        // Create wiggly tails for all enemies
+        // Create wiggly tails for all enemies (count increases per cycle)
+        const tailCount = this.enemyManager.getTailCount();
+
         this.enemyManager.enemies.children.iterate(enemy => {
             if (enemy.active && enemy.body) {
                 createEnemyTail(this, enemy.x, enemy.y, enemy.body.velocity.x, enemy.body.velocity.y, time, {
                     color: 0xff4444,
-                    count: 3,
+                    count: tailCount,
                     radius: 2.5,
                     alpha: 0.5,
                     spacing: 8,
@@ -209,7 +220,7 @@ export default class GameScene extends Phaser.Scene {
             if (enemy.active && enemy.body) {
                 createEnemyTail(this, enemy.x, enemy.y, enemy.body.velocity.x, enemy.body.velocity.y, time, {
                     color: 0x4444ff,
-                    count: 3,
+                    count: tailCount,
                     radius: 2.5,
                     alpha: 0.5,
                     spacing: 8,
@@ -224,7 +235,7 @@ export default class GameScene extends Phaser.Scene {
             if (enemy.active && enemy.body) {
                 createEnemyTail(this, enemy.x, enemy.y, enemy.body.velocity.x, enemy.body.velocity.y, time, {
                     color: 0x44ff44,
-                    count: 3,
+                    count: tailCount,
                     radius: 2.5,
                     alpha: 0.5,
                     spacing: 8,
@@ -239,7 +250,22 @@ export default class GameScene extends Phaser.Scene {
             if (enemy.active && enemy.body) {
                 createEnemyTail(this, enemy.x, enemy.y, enemy.body.velocity.x, enemy.body.velocity.y, time, {
                     color: 0xffff44,
-                    count: 3,
+                    count: tailCount,
+                    radius: 2.5,
+                    alpha: 0.5,
+                    spacing: 8,
+                    wiggleAmount: 4,
+                    duration: 250,
+                    depth: 0
+                });
+            }
+        });
+
+        this.enemyManager.purpleEnemies.children.iterate(enemy => {
+            if (enemy.active && enemy.body) {
+                createEnemyTail(this, enemy.x, enemy.y, enemy.body.velocity.x, enemy.body.velocity.y, time, {
+                    color: 0x9932cc,
+                    count: tailCount,
                     radius: 2.5,
                     alpha: 0.5,
                     spacing: 8,
@@ -426,7 +452,8 @@ export default class GameScene extends Phaser.Scene {
             'red': { score: 1, xp: 1, gold: 1 },
             'blue': { score: GameBalance.blueEnemy.scoreMultiplier, xp: GameBalance.blueEnemy.xpMultiplier, gold: GameBalance.blueEnemy.goldMultiplier },
             'green': { score: GameBalance.greenEnemy.scoreMultiplier, xp: GameBalance.greenEnemy.xpMultiplier, gold: GameBalance.greenEnemy.goldMultiplier },
-            'yellow': { score: GameBalance.yellowEnemy.scoreMultiplier, xp: GameBalance.yellowEnemy.xpMultiplier, gold: GameBalance.yellowEnemy.goldMultiplier }
+            'yellow': { score: GameBalance.yellowEnemy.scoreMultiplier, xp: GameBalance.yellowEnemy.xpMultiplier, gold: GameBalance.yellowEnemy.goldMultiplier },
+            'purple': { score: GameBalance.purpleEnemy.scoreMultiplier, xp: GameBalance.purpleEnemy.xpMultiplier, gold: GameBalance.purpleEnemy.goldMultiplier }
         };
         const mult = multipliers[enemyType] || multipliers['red'];
 
