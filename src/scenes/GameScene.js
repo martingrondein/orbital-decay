@@ -50,9 +50,7 @@ export default class GameScene extends Phaser.Scene {
 
         // Show Wave 1 announcement after a short delay
         this.time.delayedCall(500, () => {
-            const colorCycle = GameBalance.waves.colorCycle;
-            const waveColor = colorCycle[0].toUpperCase();
-            this.scene.get('UIScene').showWaveAnnouncement(1, waveColor);
+            this.scene.get('UIScene').showWaveAnnouncement(1);
         });
 
         // Fuel depletion and distance tracking timer (1 per second)
@@ -180,12 +178,12 @@ export default class GameScene extends Phaser.Scene {
             const colorCycle = GameBalance.waves.colorCycle;
             this.enemyManager.currentCycle = Math.floor((this.enemyManager.currentWave - 1) / colorCycle.length) + 1;
 
-            // Get wave color
+            // Get wave color for logging
             const waveIndex = (this.enemyManager.currentWave - 1) % colorCycle.length;
             const waveColor = colorCycle[waveIndex].toUpperCase();
 
             // Show announcement
-            this.scene.get('UIScene').showWaveAnnouncement(this.enemyManager.currentWave, waveColor);
+            this.scene.get('UIScene').showWaveAnnouncement(this.enemyManager.currentWave);
 
             // Update last wave change time
             this.lastWaveChangeTime = currentTime;
