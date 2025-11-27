@@ -164,7 +164,7 @@ export default class ShopScene extends Phaser.Scene {
         this.scrollBarBg = this.add.rectangle(w - 10, 140, 8, visibleHeight, 0x333333).setOrigin(0.5, 0);
 
         // Draw scroll bar handle
-        const scrollBarHeight = Math.max(30, (visibleHeight / (totalContentHeight - startY)) * visibleHeight);
+        const scrollBarHeight = Math.max(30, (visibleHeight / totalContentHeight) * visibleHeight);
         this.scrollBarHandle = this.add.rectangle(w - 10, 140, 8, scrollBarHeight, 0x00ff00).setOrigin(0.5, 0);
 
         // Back button
@@ -190,8 +190,12 @@ export default class ShopScene extends Phaser.Scene {
         // Update scroll bar handle position
         if (this.maxScrollY > 0) {
             const scrollPercent = this.scrollY / this.maxScrollY;
-            const maxHandleY = this.scrollBarBg.height - this.scrollBarHandle.height;
-            this.scrollBarHandle.y = 140 + (scrollPercent * maxHandleY);
+            const scrollableAreaHeight = this.scrollBarBg.height - this.scrollBarHandle.height;
+            this.scrollBarHandle.y = Phaser.Math.Clamp(
+                140 + (scrollPercent * scrollableAreaHeight),
+                140,
+                140 + scrollableAreaHeight
+            );
         }
     }
 
